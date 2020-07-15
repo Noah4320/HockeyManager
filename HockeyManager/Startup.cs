@@ -53,6 +53,10 @@ namespace HockeyManager
             app.UseStaticFiles();
             app.UseCookiePolicy();
 
+            app.UseAuthentication();
+
+
+
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
