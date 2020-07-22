@@ -44,7 +44,6 @@ namespace HockeyManager.Controllers
         {
             var url = "https://statsapi.web.nhl.com/api/v1/teams";
             var httpClient = HttpClientFactory.Create();
-            //HttpResponseMessage httpResponseMessage = await httpClient.GetAsync(url);
             var data = await httpClient.GetStringAsync(url);
 
             var teams = JsonConvert.DeserializeObject<Root>(data);
@@ -63,9 +62,14 @@ namespace HockeyManager.Controllers
                 });
             }
 
-            await _context.Teams.AddRangeAsync(hMTeams);
-            await _context.SaveChangesAsync();
+            if (_context.Teams.Count() == 0)
+            {
+                await _context.Teams.AddRangeAsync(hMTeams);
+                await _context.SaveChangesAsync();
+            }
 
+            //https://statsapi.web.nhl.com/api/v1/teams/1/roster
+            //https://nhl.bamcontent.com/images/headshots/current/168x168/8477474.jpg
 
             return View("Index");
         }
