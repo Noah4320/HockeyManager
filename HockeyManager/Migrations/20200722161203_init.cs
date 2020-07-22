@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace HockeyManager.Migrations
 {
-    public partial class InitialCreate : Migration
+    public partial class init : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -47,6 +47,30 @@ namespace HockeyManager.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Teams",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Name = table.Column<string>(nullable: true),
+                    Division = table.Column<string>(nullable: true),
+                    Conference = table.Column<string>(nullable: true),
+                    Place = table.Column<string>(nullable: true),
+                    GamesPlayed = table.Column<int>(nullable: false),
+                    Wins = table.Column<int>(nullable: false),
+                    Loses = table.Column<int>(nullable: false),
+                    OvertimeLoses = table.Column<int>(nullable: false),
+                    Points = table.Column<int>(nullable: false),
+                    RegulationWins = table.Column<int>(nullable: false),
+                    logoUrl = table.Column<string>(nullable: true),
+                    ApiId = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Teams", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -211,6 +235,9 @@ namespace HockeyManager.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUserTokens");
+
+            migrationBuilder.DropTable(
+                name: "Teams");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using HockeyManager.Areas.Identity.Data;
+using HockeyManager.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -15,6 +16,8 @@ namespace HockeyManager.Data
             : base(options)
         {
         }
+
+        public DbSet<HMTeam> Teams { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

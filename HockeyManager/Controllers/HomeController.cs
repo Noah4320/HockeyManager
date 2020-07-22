@@ -6,13 +6,24 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using HockeyManager.Models;
 using Microsoft.AspNetCore.Authorization;
+using System.Net.Http;
+using Newtonsoft.Json;
+using HockeyManager.Data;
 
 namespace HockeyManager.Controllers
 {
     //Only members can access this page
-    [Authorize]
+    //[Authorize]
     public class HomeController : Controller
     {
+        private readonly HockeyContext _context;
+
+
+        public HomeController(HockeyContext context)
+        {
+            _context = context;
+        }
+
         public IActionResult Index()
         {
             return View();
@@ -27,6 +38,36 @@ namespace HockeyManager.Controllers
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
+
+        public async Task<IActionResult> FetchApiData()
+        {
+            var url = "https://statsapi.web.nhl.com/api/v1/teams";
+            var httpClient = HttpClientFactory.Create();
+            //HttpResponseMessage httpResponseMessage = await httpClient.GetAsync(url);
+            var data = await httpClient.GetStringAsync(url);
+
+            var teams = JsonConvert.DeserializeObject<Root>(data);
+
+            List<HMTeam> hMTeams = new List<HMTeam>();
+
+            foreach (var team in teams.teams)
+            {
+                hMTeams.Add(new HMTeam
+                {
+                    ApiId = team.id,
+                    Name = team.name,
+                    Conference = team.conference.name,
+                    Division = team.division.name,
+                    logoUrl = $"https://www-league.nhlstatic.com/images/logos/teams-current-primary-light/{team.id}.svg"
+                });
+            }
+
+            await _context.Teams.AddRangeAsync(hMTeams);
+            await _context.SaveChangesAsync();
+
+
+            return View("Index");
         }
     }
 }

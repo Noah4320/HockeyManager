@@ -76,6 +76,41 @@ namespace HockeyManager.Migrations
                     b.ToTable("AspNetUsers");
                 });
 
+            modelBuilder.Entity("HockeyManager.Models.HMTeam", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("ApiId");
+
+                    b.Property<string>("Conference");
+
+                    b.Property<string>("Division");
+
+                    b.Property<int>("GamesPlayed");
+
+                    b.Property<int>("Loses");
+
+                    b.Property<string>("Name");
+
+                    b.Property<int>("OvertimeLoses");
+
+                    b.Property<string>("Place");
+
+                    b.Property<int>("Points");
+
+                    b.Property<int>("RegulationWins");
+
+                    b.Property<int>("Wins");
+
+                    b.Property<string>("logoUrl");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Teams");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
                     b.Property<string>("Id")
