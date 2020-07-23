@@ -1,7 +1,7 @@
 # HockeyManager
 Capstone Project
 
-### Project Progresion
+### Project Progression
 
 - [x] Setup IDE, GitHub, database, 
 - [x] Create main page, sign up and login pages. Fully implementing sign up and logging in. Test user validation.
