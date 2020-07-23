@@ -42,16 +42,18 @@ namespace HockeyManager.Controllers
 
         public async Task<IActionResult> FetchApiData()
         {
-            var url = "https://statsapi.web.nhl.com/api/v1/teams";
+            var TeamUrl = "https://statsapi.web.nhl.com/api/v1/teams";
             var httpClient = HttpClientFactory.Create();
-            var data = await httpClient.GetStringAsync(url);
+            var teamData = await httpClient.GetStringAsync(TeamUrl);
 
-            var teams = JsonConvert.DeserializeObject<Root>(data);
+            var teams = JsonConvert.DeserializeObject<TeamRoot>(teamData);
 
             List<HMTeam> hMTeams = new List<HMTeam>();
 
             foreach (var team in teams.teams)
             {
+                List<HMPlayer> hMPlayers = new List<HMPlayer>();
+
                 hMTeams.Add(new HMTeam
                 {
                     ApiId = team.id,
@@ -60,6 +62,49 @@ namespace HockeyManager.Controllers
                     Division = team.division.name,
                     logoUrl = $"https://www-league.nhlstatic.com/images/logos/teams-current-primary-light/{team.id}.svg"
                 });
+
+                var rosterUrl = $"https://statsapi.web.nhl.com/api/v1/teams/{team.id}/roster";
+                var rosterData = await httpClient.GetStringAsync(rosterUrl);
+                var roster = JsonConvert.DeserializeObject<PersonRoot>(rosterData);
+
+
+
+                foreach (var player in roster.roster)
+                {
+                    try {
+                        var playerUrl = $"https://statsapi.web.nhl.com/api/v1/people/{player.person.id}";
+                        var playerData = await httpClient.GetStringAsync(playerUrl);
+                        var playerAbout = JsonConvert.DeserializeObject<PeopleRoot>(playerData);
+
+                        var playerStatsUrl = $"https://statsapi.web.nhl.com/api/v1/people/{player.person.id}/stats?stats=statsSingleSeason&season=20192020";
+                        var playerStatsData = await httpClient.GetStringAsync(playerStatsUrl);
+                        var playerStats = JsonConvert.DeserializeObject<StatsRoot>(playerStatsData);
+
+                        hMPlayers.Add(new HMPlayer
+                        {
+                            Name = player.person.fullName,
+                            Position = player.position.abbreviation,
+                            Country = playerAbout.People[0].BirthCountry,
+                            DateOfBirth = playerAbout.People[0].BirthDate,
+                            Height = playerAbout.People[0].Height,
+                            Weight = playerAbout.People[0].Weight,
+                            Goals = playerStats.stats[0].splits[0].stat.goals,
+                            Assists = playerStats.stats[0].splits[0].stat.assists,
+                            Points = playerStats.stats[0].splits[0].stat.points,
+                            PenalityMinutes = playerStats.stats[0].splits[0].stat.penaltyMinutes,
+                            Saves = playerStats.stats[0].splits[0].stat.saves,
+                            Shutouts = playerStats.stats[0].splits[0].stat.shutouts,
+                            PlusMinus = playerStats.stats[0].splits[0].stat.plusMinus,
+                            ApiId = player.person.id,
+                            HeadShotUrl = $"https://nhl.bamcontent.com/images/headshots/current/168x168/{player.person.id}.jpg"
+                        });
+                    } catch (Exception ex)
+                    {
+                        string test = ex.Message;
+                    }
+                   } 
+                await _context.Players.AddRangeAsync(hMPlayers);
+
             }
 
             if (_context.Teams.Count() == 0)
@@ -68,8 +113,7 @@ namespace HockeyManager.Controllers
                 await _context.SaveChangesAsync();
             }
 
-            //https://statsapi.web.nhl.com/api/v1/teams/1/roster
-            //https://nhl.bamcontent.com/images/headshots/current/168x168/8477474.jpg
+            //
 
             return View("Index");
         }

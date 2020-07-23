@@ -50,6 +50,34 @@ namespace HockeyManager.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Players",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Name = table.Column<string>(nullable: true),
+                    Position = table.Column<string>(nullable: true),
+                    Country = table.Column<string>(nullable: true),
+                    Goals = table.Column<int>(nullable: false),
+                    Assists = table.Column<int>(nullable: false),
+                    Points = table.Column<int>(nullable: false),
+                    Rank = table.Column<int>(nullable: false),
+                    DateOfBirth = table.Column<DateTimeOffset>(nullable: false),
+                    PlusMinus = table.Column<int>(nullable: false),
+                    Height = table.Column<string>(nullable: true),
+                    Weight = table.Column<long>(nullable: false),
+                    PenalityMinutes = table.Column<string>(nullable: true),
+                    Saves = table.Column<int>(nullable: false),
+                    Shutouts = table.Column<int>(nullable: false),
+                    HeadShotUrl = table.Column<string>(nullable: true),
+                    ApiId = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Players", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Teams",
                 columns: table => new
                 {
@@ -235,6 +263,9 @@ namespace HockeyManager.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUserTokens");
+
+            migrationBuilder.DropTable(
+                name: "Players");
 
             migrationBuilder.DropTable(
                 name: "Teams");

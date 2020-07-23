@@ -1,5 +1,4 @@
-﻿// Root myDeserializedClass = JsonConvert.DeserializeObject<Root>(myJsonResponse); 
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 public class TimeZone
 {
@@ -64,7 +63,7 @@ public class Team
 
 }
 
-public class Root
+public class TeamRoot
 {
     public string copyright { get; set; }
     public List<Team> teams { get; set; }

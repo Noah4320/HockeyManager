@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HockeyManager.Migrations
 {
     [DbContext(typeof(HockeyContext))]
-    [Migration("20200722161203_init")]
+    [Migration("20200723222943_init")]
     partial class init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -76,6 +76,49 @@ namespace HockeyManager.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers");
+                });
+
+            modelBuilder.Entity("HockeyManager.Models.HMPlayer", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("ApiId");
+
+                    b.Property<int>("Assists");
+
+                    b.Property<string>("Country");
+
+                    b.Property<DateTimeOffset>("DateOfBirth");
+
+                    b.Property<int>("Goals");
+
+                    b.Property<string>("HeadShotUrl");
+
+                    b.Property<string>("Height");
+
+                    b.Property<string>("Name");
+
+                    b.Property<string>("PenalityMinutes");
+
+                    b.Property<int>("PlusMinus");
+
+                    b.Property<int>("Points");
+
+                    b.Property<string>("Position");
+
+                    b.Property<int>("Rank");
+
+                    b.Property<int>("Saves");
+
+                    b.Property<int>("Shutouts");
+
+                    b.Property<long>("Weight");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Players");
                 });
 
             modelBuilder.Entity("HockeyManager.Models.HMTeam", b =>

@@ -18,6 +18,7 @@ namespace HockeyManager.Data
         }
 
         public DbSet<HMTeam> Teams { get; set; }
+        public DbSet<HMPlayer> Players { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

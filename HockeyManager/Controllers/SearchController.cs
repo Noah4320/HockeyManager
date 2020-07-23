@@ -28,6 +28,15 @@ namespace HockeyManager.Controllers
             return View(teams);
         }
 
+        public ActionResult playersIndex()
+        {
+            List<HMPlayer> players = new List<HMPlayer>();
+
+            players = _context.Players.ToList();
+
+            return View(players);
+        }
+
         // GET: Search/Details/5
         public ActionResult Details(int id)
         {
