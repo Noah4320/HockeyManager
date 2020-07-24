@@ -6,6 +6,7 @@ using HockeyManager.Data;
 using HockeyManager.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace HockeyManager.Controllers
 {
@@ -19,7 +20,7 @@ namespace HockeyManager.Controllers
         }
 
         // GET: Search
-        public ActionResult Index()
+        public ActionResult Teams()
         {
             List<HMTeam> teams = new List<HMTeam>();
 
@@ -28,19 +29,15 @@ namespace HockeyManager.Controllers
             return View(teams);
         }
 
-        public ActionResult playersIndex()
-        {
-            List<HMPlayer> players = new List<HMPlayer>();
-
-            players = _context.Players.ToList();
-
-            return View(players);
-        }
 
         // GET: Search/Details/5
-        public ActionResult Details(int id)
+        public ActionResult Players(int id)
         {
-            return View();
+            List<HMPlayer> roster = _context.Players
+                .Include(c => c.Team)
+                .Where(c => c.Team.Id == id).ToList();
+
+            return View(roster);
         }
 
       

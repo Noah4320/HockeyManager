@@ -26,5 +26,7 @@ namespace HockeyManager.Models
         public int Shutouts { get; set; }
         public string HeadShotUrl { get; set; }
         public int ApiId { get; set; }
+        public int? TeamId { get; set; }
+        public HMTeam Team { get; set; }
     }
 }

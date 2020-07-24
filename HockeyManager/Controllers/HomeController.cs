@@ -49,10 +49,11 @@ namespace HockeyManager.Controllers
             var teams = JsonConvert.DeserializeObject<TeamRoot>(teamData);
 
             List<HMTeam> hMTeams = new List<HMTeam>();
+            List<HMPlayer> hMPlayers = new List<HMPlayer>();
 
             foreach (var team in teams.teams)
             {
-                List<HMPlayer> hMPlayers = new List<HMPlayer>();
+                
 
                 hMTeams.Add(new HMTeam
                 {
@@ -63,15 +64,27 @@ namespace HockeyManager.Controllers
                     logoUrl = $"https://www-league.nhlstatic.com/images/logos/teams-current-primary-light/{team.id}.svg"
                 });
 
-                var rosterUrl = $"https://statsapi.web.nhl.com/api/v1/teams/{team.id}/roster";
+            }
+
+            if (_context.Teams.Count() == 0)
+            {
+                await _context.Teams.AddRangeAsync(hMTeams);
+                await _context.SaveChangesAsync();
+            }
+
+            //Fetch Players
+
+
+            foreach (var team in hMTeams)
+            {
+                var rosterUrl = $"https://statsapi.web.nhl.com/api/v1/teams/{team.ApiId}/roster";
                 var rosterData = await httpClient.GetStringAsync(rosterUrl);
                 var roster = JsonConvert.DeserializeObject<PersonRoot>(rosterData);
 
-
-
                 foreach (var player in roster.roster)
                 {
-                    try {
+                    try
+                    {
                         var playerUrl = $"https://statsapi.web.nhl.com/api/v1/people/{player.person.id}";
                         var playerData = await httpClient.GetStringAsync(playerUrl);
                         var playerAbout = JsonConvert.DeserializeObject<PeopleRoot>(playerData);
@@ -96,24 +109,20 @@ namespace HockeyManager.Controllers
                             Shutouts = playerStats.stats[0].splits[0].stat.shutouts,
                             PlusMinus = playerStats.stats[0].splits[0].stat.plusMinus,
                             ApiId = player.person.id,
-                            HeadShotUrl = $"https://nhl.bamcontent.com/images/headshots/current/168x168/{player.person.id}.jpg"
+                            HeadShotUrl = $"https://nhl.bamcontent.com/images/headshots/current/168x168/{player.person.id}.jpg",
+                            TeamId = team.Id
                         });
-                    } catch (Exception ex)
+                    }
+                    catch (ArgumentOutOfRangeException ex)
                     {
                         string test = ex.Message;
                     }
-                   } 
-                await _context.Players.AddRangeAsync(hMPlayers);
 
+                }
             }
 
-            if (_context.Teams.Count() == 0)
-            {
-                await _context.Teams.AddRangeAsync(hMTeams);
-                await _context.SaveChangesAsync();
-            }
-
-            //
+            await _context.Players.AddRangeAsync(hMPlayers);
+            await _context.SaveChangesAsync();
 
             return View("Index");
         }

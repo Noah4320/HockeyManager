@@ -112,9 +112,13 @@ namespace HockeyManager.Migrations
 
                     b.Property<int>("Shutouts");
 
+                    b.Property<int?>("TeamId");
+
                     b.Property<long>("Weight");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("TeamId");
 
                     b.ToTable("Players");
                 });
@@ -266,6 +270,13 @@ namespace HockeyManager.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens");
+                });
+
+            modelBuilder.Entity("HockeyManager.Models.HMPlayer", b =>
+                {
+                    b.HasOne("HockeyManager.Models.HMTeam", "Team")
+                        .WithMany("Players")
+                        .HasForeignKey("TeamId");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

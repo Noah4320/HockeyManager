@@ -22,5 +22,6 @@ namespace HockeyManager.Models
         public int RegulationWins { get; set; }
         public string logoUrl { get; set; }
         public int ApiId { get; set; }
+        public IList<HMPlayer> Players { get; set; }
     }
 }

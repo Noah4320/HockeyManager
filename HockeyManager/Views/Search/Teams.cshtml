@@ -26,18 +26,13 @@
                 <img src=@Html.DisplayFor(modelItem => item.logoUrl) alt="Logo" width="200" height="75">
             </td>
             <td>
-                @Html.ActionLink(item.Name, "Details", new {  id=item.Id  })
+                @Html.ActionLink(item.Name, "Players", new {  id=item.Id  })
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Division)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Conference)
-            </td>
-            <td>
-                @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
             </td>
         </tr>
 }
