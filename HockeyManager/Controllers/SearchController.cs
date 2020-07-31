@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using HockeyManager.Data;
 using HockeyManager.Models;
+using HockeyManager.ViewModel;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -40,6 +41,19 @@ namespace HockeyManager.Controllers
             return View(roster);
         }
 
-      
+        public ActionResult SearchPlayers()
+        {
+            SearchPlayer VMplayers = new SearchPlayer(_context.Teams.ToList(), _context.Players.ToList());
+
+            return View(VMplayers);
+        }
+
+        [HttpPost]
+        public ActionResult FilterPlayers(IFormCollection data)
+        {
+            return RedirectToAction("SearchPlayers");
+        }
+
+
     }
 }
