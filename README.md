@@ -7,7 +7,7 @@ Capstone Project
 - [x] Create main page, sign up and login pages. Fully implementing sign up and logging in. Test user validation.
 - [x] Populate teams and players tables with NHL API.
 - [ ] Create search users page. Fully implement search players feature. Test functionality.
-- [ ] Create search players page. Fully implement search users feature. Test filter options.
+- [x] Create search players page. Fully implement search users feature. Test filter options.
 - [ ] Populate main page when logged in. Create main pool page.
 - [ ] Write logic for all pool settings. Create pools page and add them to database correctly. Test all pool settings.
 - [ ] Populate pool room page.
