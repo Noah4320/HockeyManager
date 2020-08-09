@@ -56,6 +56,7 @@ namespace HockeyManager.Migrations
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     Name = table.Column<string>(nullable: true),
+                    Abbreviation = table.Column<string>(nullable: true),
                     Division = table.Column<string>(nullable: true),
                     Conference = table.Column<string>(nullable: true),
                     Place = table.Column<string>(nullable: true),

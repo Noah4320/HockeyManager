@@ -49,9 +49,33 @@ namespace HockeyManager.Controllers
         }
 
         [HttpPost]
-        public ActionResult FilterPlayers(IFormCollection data)
+        public ActionResult SearchPlayers(IFormCollection data)
         {
-            return RedirectToAction("SearchPlayers");
+
+            string name = data["Name"];
+            string position = data["Position"];
+
+            List<string> teamFilter = new List<string>();
+
+            foreach (var key in data.Keys)
+            {
+                string value = data[key];
+                string[] values = value.Split(",");
+                if (values[0] == "on" && key != "Name")
+                {
+                    teamFilter.Add(key);
+                }
+            }
+
+            List<HMPlayer> filterPlayers = new List<HMPlayer>();
+
+            filterPlayers = _context.Players.Where(x => x.Position.Contains(position) && x.Name.Contains(name) && teamFilter.Contains(x.Team.Abbreviation)).ToList();
+
+            SearchPlayer VMplayers = new SearchPlayer(_context.Teams.ToList(), filterPlayers);
+
+           
+
+            return View(VMplayers);
         }
 
 

@@ -61,6 +61,7 @@ namespace HockeyManager.Controllers
                     Name = team.name,
                     Conference = team.conference.name,
                     Division = team.division.name,
+                    Abbreviation = team.abbreviation,
                     logoUrl = $"https://www-league.nhlstatic.com/images/logos/teams-current-primary-light/{team.id}.svg"
                 });
 
