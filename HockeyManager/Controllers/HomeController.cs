@@ -12,8 +12,7 @@ using HockeyManager.Data;
 
 namespace HockeyManager.Controllers
 {
-    //Only members can access this page
-    //[Authorize]
+
     public class HomeController : Controller
     {
         private readonly HockeyContext _context;
@@ -53,7 +52,9 @@ namespace HockeyManager.Controllers
 
             foreach (var team in teams.teams)
             {
-                
+                var teamStatsUrl = $"https://statsapi.web.nhl.com/api/v1/teams/{team.id}/stats";
+                var teamStatsData = await httpClient.GetStringAsync(teamStatsUrl);
+                var teamStats = JsonConvert.DeserializeObject<TeamStatRoot>(teamStatsData);
 
                 hMTeams.Add(new HMTeam
                 {
@@ -62,6 +63,10 @@ namespace HockeyManager.Controllers
                     Conference = team.conference.name,
                     Division = team.division.name,
                     Abbreviation = team.abbreviation,
+                    GamesPlayed = teamStats.stats[0].splits[0].stat.gamesPlayed,
+                    Wins = Convert.ToInt32(teamStats.stats[0].splits[0].stat.wins),
+                    Loses = Convert.ToInt32(teamStats.stats[0].splits[0].stat.losses),
+                    Points = Convert.ToInt32(teamStats.stats[0].splits[0].stat.pts),
                     logoUrl = $"https://www-league.nhlstatic.com/images/logos/teams-current-primary-light/{team.id}.svg"
                 });
 
