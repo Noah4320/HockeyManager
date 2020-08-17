@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using HockeyManager.Data;
+using HockeyManager.ViewModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -12,10 +14,20 @@ namespace HockeyManager.Controllers
     [Authorize]
     public class MainController : Controller
     {
+
+        private readonly HockeyContext _context;
+
+        public MainController(HockeyContext context)
+        {
+            _context = context;
+        }
+
         // GET: Main
         public ActionResult Index()
         {
-            return View();
+            SearchPlayer players = new SearchPlayer(_context.Teams.ToList(), _context.Players.ToList());
+            players.Teams = players.Teams.OrderByDescending(x => x.Points);
+            return View(players);
         }
 
         // GET: Main/Details/5
