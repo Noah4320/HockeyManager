@@ -13,6 +13,7 @@ namespace HockeyManager.Models
         public string Name { get; set; }
         public string Position { get; set; }
         public string Country { get; set; }
+        public int GamesPlayed { get; set; }
         public int Goals { get; set; }
         public int Assists { get; set; }
         public int Points { get; set; }

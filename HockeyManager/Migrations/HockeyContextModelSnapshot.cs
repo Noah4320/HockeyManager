@@ -90,6 +90,8 @@ namespace HockeyManager.Migrations
 
                     b.Property<DateTimeOffset>("DateOfBirth");
 
+                    b.Property<int>("GamesPlayed");
+
                     b.Property<int>("Goals");
 
                     b.Property<string>("HeadShotUrl");

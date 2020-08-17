@@ -107,6 +107,7 @@ namespace HockeyManager.Controllers
                             DateOfBirth = playerAbout.People[0].BirthDate,
                             Height = playerAbout.People[0].Height,
                             Weight = playerAbout.People[0].Weight,
+                            GamesPlayed = playerStats.stats[0].splits[0].stat.games,
                             Goals = playerStats.stats[0].splits[0].stat.goals,
                             Assists = playerStats.stats[0].splits[0].stat.assists,
                             Points = playerStats.stats[0].splits[0].stat.points,
