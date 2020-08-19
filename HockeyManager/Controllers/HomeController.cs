@@ -66,6 +66,7 @@ namespace HockeyManager.Controllers
                     GamesPlayed = teamStats.stats[0].splits[0].stat.gamesPlayed,
                     Wins = Convert.ToInt32(teamStats.stats[0].splits[0].stat.wins),
                     Loses = Convert.ToInt32(teamStats.stats[0].splits[0].stat.losses),
+                    OvertimeLoses = Convert.ToInt32(teamStats.stats[0].splits[0].stat.ot),
                     Points = Convert.ToInt32(teamStats.stats[0].splits[0].stat.pts),
                     logoUrl = $"https://www-league.nhlstatic.com/images/logos/teams-current-primary-light/{team.id}.svg"
                 });

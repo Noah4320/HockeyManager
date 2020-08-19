@@ -78,6 +78,13 @@ namespace HockeyManager.Controllers
             return View(VMplayers);
         }
 
+        [HttpPost]
+        public void Post()
+        {
+             string[] favs = Request.Form["fav"];
+             string[] nonFavs = Request.Form["nonFav"];
+        }
+
 
     }
 }

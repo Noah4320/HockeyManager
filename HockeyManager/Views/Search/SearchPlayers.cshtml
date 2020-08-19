@@ -1,23 +1,6 @@
 ﻿@model HockeyManager.ViewModel.SearchPlayer
-<script>
-    function checkAll(ele) {
-        var checkboxes = document.getElementsByTagName('input');
-        if (ele.checked) {
-            for (var i = 0; i < checkboxes.length; i++) {
-                if (checkboxes[i].type == 'checkbox') {
-                    checkboxes[i].checked = true;
-                }
-            }
-        } else {
-            for (var i = 0; i < checkboxes.length; i++) {
-                console.log(i)
-                if (checkboxes[i].type == 'checkbox') {
-                    checkboxes[i].checked = false;
-                }
-            }
-        }
-    }
-</script>
+<script src="~/lib/jquery/dist/jquery.js"></script>
+
 <div class="container">
     <form method="post" action="SearchPlayers">
 
@@ -25,11 +8,11 @@
         <input type="text" id="Name" name="Name" />
         <div class="row">
             <div class="col-12">
-                <input type="checkbox" onchange="checkAll(this)" name="chk[]" /> Select all
+                <input type="checkbox" onclick="checkAll(this.checked)"/> Select all
                 @foreach (var item in Model.Teams)
                 {
                     <label class="checkbox-inline">
-                        <input type="checkbox" name=@item.Abbreviation> @item.Name
+                        <input type="checkbox" name=@item.Abbreviation id="team"> @item.Name
                     </label>
 
                 }
@@ -64,6 +47,9 @@
     <thead>
         <tr>
             <th>
+                Favourite
+            </th>
+            <th>
                 Picture
             </th>
             <th>
@@ -71,7 +57,7 @@
             </th>
             <th>
                 Team
-            </th> 
+            </th>
             <th>
                 Position
             </th>
@@ -117,56 +103,92 @@
     <tbody>
         @foreach (var item in Model.Players)
             {
-            <tr>
-                <td>
-                    <img src=@Html.DisplayFor(modelItem => item.HeadShotUrl) alt="Headshot" width="100" height="100">
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Name)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Team.Abbreviation)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Position)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Country)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Goals)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Assists)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Points)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Rank)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.DateOfBirth)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.PlusMinus)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Height)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Weight)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.PenalityMinutes)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Saves)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Shutouts)
-                </td>
-            </tr>
+        <tr>
+            <td>
+                <input type="checkbox" class="myChk" name="isChecked" id="player" value= @item.Id />
+
+            </td>
+            <td>
+                <img src=@Html.DisplayFor(modelItem => item.HeadShotUrl) alt="Headshot" width="100" height="100">
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Team.Abbreviation)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Position)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Country)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Goals)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Assists)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Points)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Rank)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DateOfBirth)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PlusMinus)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Height)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Weight)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PenalityMinutes)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Saves)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Shutouts)
+            </td>
+        </tr>
         }
     </tbody>
 </table>
+<script>
+    $(function () {
+
+        $(".myChk").click(function () {
+            var favorite = [];
+            var nonFavourite = [];
+            $.each($("input[id='player']:checked"), function () {
+                favorite.push($(this).val());
+            });
+            $.each($("input[id='player']:not(:checked)"), function () {
+                nonFavourite.push($(this).val());
+            });
+           
+            $.ajax({
+                type: "POST",
+                url: "https://localhost:44375/Search/Post",
+                traditional: true,
+                dataType: 'application/json',
+                data: {
+                    fav: favorite,
+                    nonFav: nonFavourite
+                },
+                success: function (data, textStatus, jqXHR) {
+                    //data - response from server
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                }
+            });
+        });
+
+    });
+</script>
