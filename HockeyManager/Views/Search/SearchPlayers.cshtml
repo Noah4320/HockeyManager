@@ -34,6 +34,7 @@
             <div class="form-group">
                 <label for="Favourite">Favourite</label>
                 <select class="form-control" name="Favourite" id="Favourite">
+                    <option value=""></option>
                     <option value="No">No</option>
                     <option value="Yes">Yes</option>
                 </select>
@@ -162,7 +163,19 @@
 </table>
 <script>
     $(function () {
-
+        $.ajax(
+            {
+                url: "https://localhost:44375/Search/getFavourites",
+                success: function (result) {
+                    $('input[id="player"]').each(function () {
+                        if (result.includes($(this).val())) {
+                            this.checked = true;
+                        }
+                        
+                    })
+                }
+            });
+  
         $(".myChk").click(function () {
             var favorite = [];
             var nonFavourite = [];

@@ -9,6 +9,8 @@ using Microsoft.AspNetCore.Authorization;
 using System.Net.Http;
 using Newtonsoft.Json;
 using HockeyManager.Data;
+using HockeyManager.Areas.Identity.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace HockeyManager.Controllers
 {

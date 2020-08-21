@@ -28,6 +28,7 @@ namespace HockeyManager.Models
         public string HeadShotUrl { get; set; }
         public int ApiId { get; set; }
         public int? TeamId { get; set; }
-        public HMTeam Team { get; set; }
+        public virtual HMTeam Team { get; set; }
+        public virtual ICollection<Favourites> Favourites { get; set; }
     }
 }

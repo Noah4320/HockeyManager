@@ -76,6 +76,25 @@ namespace HockeyManager.Migrations
                     b.ToTable("AspNetUsers");
                 });
 
+            modelBuilder.Entity("HockeyManager.Models.Favourites", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int?>("PlayerId");
+
+                    b.Property<string>("UserId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PlayerId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Favourites");
+                });
+
             modelBuilder.Entity("HockeyManager.Models.HMPlayer", b =>
                 {
                     b.Property<int>("Id")
@@ -274,6 +293,17 @@ namespace HockeyManager.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens");
+                });
+
+            modelBuilder.Entity("HockeyManager.Models.Favourites", b =>
+                {
+                    b.HasOne("HockeyManager.Models.HMPlayer", "Player")
+                        .WithMany("Favourites")
+                        .HasForeignKey("PlayerId");
+
+                    b.HasOne("HockeyManager.Areas.Identity.Data.User", "User")
+                        .WithMany("Favourites")
+                        .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("HockeyManager.Models.HMPlayer", b =>

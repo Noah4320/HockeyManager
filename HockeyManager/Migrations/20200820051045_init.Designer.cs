@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HockeyManager.Migrations
 {
     [DbContext(typeof(HockeyContext))]
-    [Migration("20200817023741_init")]
+    [Migration("20200820051045_init")]
     partial class init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -76,6 +76,25 @@ namespace HockeyManager.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers");
+                });
+
+            modelBuilder.Entity("HockeyManager.Models.Favourites", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int?>("PlayerId");
+
+                    b.Property<string>("UserId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PlayerId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Favourites");
                 });
 
             modelBuilder.Entity("HockeyManager.Models.HMPlayer", b =>
@@ -276,6 +295,17 @@ namespace HockeyManager.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens");
+                });
+
+            modelBuilder.Entity("HockeyManager.Models.Favourites", b =>
+                {
+                    b.HasOne("HockeyManager.Models.HMPlayer", "Player")
+                        .WithMany("Favourites")
+                        .HasForeignKey("PlayerId");
+
+                    b.HasOne("HockeyManager.Areas.Identity.Data.User", "User")
+                        .WithMany("Favourites")
+                        .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("HockeyManager.Models.HMPlayer", b =>
