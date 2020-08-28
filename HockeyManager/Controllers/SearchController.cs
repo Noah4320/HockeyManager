@@ -84,16 +84,20 @@ namespace HockeyManager.Controllers
             }
             else if (favourite == "No")
             {
-                //ToDo: Finish favourite filtering.
-                //ToDo: Clean up project. I'm tired and ready to go home D:
+                filterPlayers = _context.Players.Where(x => x.Position.Contains(position) && x.Name.Contains(name) && teamFilter.Contains(x.Team.Abbreviation)).Include(x => x.Favourites).ToList();
+
+                
+                filterPlayers.RemoveAll(x => x.Favourites.Select(y => y.UserId).Contains(user.Id));
+                SearchPlayer VMFavouritePlayers = new SearchPlayer(_context.Teams.ToList(), filterPlayers);
+                return View(VMFavouritePlayers);
+
+            } else
+            {
+                filterPlayers = _context.Players.Where(x => x.Position.Contains(position) && x.Name.Contains(name) && teamFilter.Contains(x.Team.Abbreviation)).ToList();
+                SearchPlayer VMplayers = new SearchPlayer(_context.Teams.ToList(), filterPlayers);
+                return View(VMplayers);
             }
-
-            filterPlayers = _context.Players.Where(x => x.Position.Contains(position) && x.Name.Contains(name) && teamFilter.Contains(x.Team.Abbreviation)).ToList();
-            SearchPlayer VMplayers = new SearchPlayer(_context.Teams.ToList(), filterPlayers);
-
-           
-
-            return View(VMplayers);
+            
         }
 
         [HttpGet]

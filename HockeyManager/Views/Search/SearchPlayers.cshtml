@@ -8,11 +8,11 @@
         <input type="text" id="Name" name="Name" />
         <div class="row">
             <div class="col-12">
-                <input type="checkbox" onclick="checkAll(this.checked)"/> Select all
+                <input type="checkbox" onclick="checkAll(this.checked)" checked/> Select all
                 @foreach (var item in Model.Teams)
                 {
                     <label class="checkbox-inline">
-                        <input type="checkbox" name=@item.Abbreviation id="team"> @item.Name
+                        <input type="checkbox" name=@item.Abbreviation id="team" checked> @item.Name
                     </label>
 
                 }
