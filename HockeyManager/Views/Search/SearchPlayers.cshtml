@@ -6,168 +6,8 @@
 
 <script src="~/lib/jquery/dist/jquery.js"></script>
 
-<div class="container">
-    <form method="post" action="SearchPlayers">
-
-        Name
-        <input type="text" id="Name" name="Name" />
-        <div class="row">
-            <div class="col-12">
-                <input type="checkbox" onclick="checkAll(this.checked)" checked /> Select all
-                @foreach (var item in Model.Teams)
-                {
-                    <label class="checkbox-inline">
-                        <input type="checkbox" name=@item.Abbreviation id="team" checked> @item.Name
-                    </label>
-
-                }
-
-            </div>
-        </div>
-        <div class="form-group">
-            <label for="Position">Position</label>
-            <select class="form-control" name="Position" id="Position">
-                <option value=""></option>
-                <option value="C">Center</option>
-                <option value="LW">Left Wing</option>
-                <option value="RW">Right Wing</option>
-                <option value="D">Defenceman</option>
-                <option value="G">Goalie</option>
-            </select>
-        </div>
-
-        <div class="form-group">
-            <label for="Favourite">Favourite</label>
-            <select class="form-control" name="Favourite" id="Favourite">
-                <option value=""></option>
-                <option value="No">No</option>
-                <option value="Yes">Yes</option>
-            </select>
-        </div>
-
-        <input type="submit" />
-    </form>
-</div>
-
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                Favourite
-            </th>
-            <th>
-                Picture
-            </th>
-            <th>
-                Name
-            </th>
-            <th>
-                Team
-            </th>
-            <th>
-                Position
-            </th>
-            <th>
-                Country
-            </th>
-            <th>
-                Goals
-            </th>
-            <th>
-                Assists
-            </th>
-            <th>
-                Points
-            </th>
-            <th>
-                Rank
-            </th>
-            <th>
-                Birth Date
-            </th>
-            <th>
-                PlusMinus
-            </th>
-            <th>
-                Height
-            </th>
-            <th>
-                Weight
-            </th>
-            <th>
-                PenalityMinutes
-            </th>
-            <th>
-                Saves
-            </th>
-            <th>
-                Shutouts
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model.Players)
-        {
-            <tr>
-                <td>
-                    <input type="checkbox" class="myChk" name="isChecked" id="player" value=@item.Id />
-
-                </td>
-                <td>
-                    <img src=@Html.DisplayFor(modelItem => item.HeadShotUrl) alt="Headshot" width="100" height="100">
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Name)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Team.Abbreviation)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Position)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Country)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Goals)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Assists)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Points)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Rank)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.DateOfBirth)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.PlusMinus)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Height)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Weight)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.PenalityMinutes)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Saves)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Shutouts)
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
 <script>
-    $(function () {
+    $(document).ready(function () {
         $.ajax(
             {
                 url: "https://localhost:44375/Search/getFavourites",
@@ -222,3 +62,167 @@
 
     });
 </script>
+
+<div class="container">
+    <form method="post" action="SearchPlayers">
+
+        Name
+        <input type="text" id="Name" name="Name" />
+        <div class="row">
+            <div class="col-12">
+                <input type="checkbox" onclick="checkAll(this.checked)" checked /> Select all
+                @foreach (var item in Model.Teams)
+                {
+                    <label class="checkbox-inline">
+                        <input type="checkbox" name=@item.Abbreviation id="team" checked> @item.Name
+                    </label>
+
+                }
+
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="Position">Position</label>
+            <select class="form-control" name="Position" id="Position">
+                <option value=""></option>
+                <option value="C">Center</option>
+                <option value="LW">Left Wing</option>
+                <option value="RW">Right Wing</option>
+                <option value="D">Defenceman</option>
+                <option value="G">Goalie</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="Favourite">Favourite</label>
+            <select class="form-control" name="Favourite" id="Favourite">
+                <option value=""></option>
+                <option value="No">No</option>
+                <option value="Yes">Yes</option>
+            </select>
+        </div>
+
+        <input type="submit" />
+    </form>
+</div>
+<div class="tableFixHead">
+    <div class="pre-scrollable">
+        <table class="table">
+            <thead>
+                <tr id="fixedTableColour">
+                    <th id="fixedTableColour">
+                        Favourite
+                    </th>
+                    <th id="fixedTableColour">
+                        Picture
+                    </th>
+                    <th id="fixedTableColour">
+                        Name
+                    </th>
+                    <th id="fixedTableColour">
+                        Team
+                    </th>
+                    <th id="fixedTableColour">
+                        Position
+                    </th>
+                    <th id="fixedTableColour">
+                        Country
+                    </th>
+                    <th id="fixedTableColour">
+                        Goals
+                    </th>
+                    <th id="fixedTableColour">
+                        Assists
+                    </th>
+                    <th id="fixedTableColour">
+                        Points
+                    </th>
+                    <th id="fixedTableColour">
+                        Rank
+                    </th>
+                    <th id="fixedTableColour">
+                        Birth Date
+                    </th>
+                    <th id="fixedTableColour">
+                        PlusMinus
+                    </th>
+                    <th id="fixedTableColour">
+                        Height
+                    </th>
+                    <th id="fixedTableColour">
+                        Weight
+                    </th>
+                    <th id="fixedTableColour">
+                        PenalityMinutes
+                    </th>
+                    <th id="fixedTableColour">
+                        Saves
+                    </th>
+                    <th id="fixedTableColour">
+                        Shutouts
+                    </th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Players)
+                {
+                    <tr>
+                        <td>
+                            <input type="checkbox" class="myChk" name="isChecked" id="player" value=@item.Id />
+
+                        </td>
+                        <td>
+                            <img src=@Html.DisplayFor(modelItem => item.HeadShotUrl) alt="Headshot" width="100" height="100">
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Name)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Team.Abbreviation)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Position)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Country)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Goals)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Assists)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Points)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Rank)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.DateOfBirth)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.PlusMinus)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Height)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Weight)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.PenalityMinutes)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Saves)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Shutouts)
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

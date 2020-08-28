@@ -57,6 +57,7 @@ namespace HockeyManager.Controllers
         [HttpPost]
         public async Task<ActionResult> SearchPlayers(IFormCollection data)
         {
+            //ToDo: Known issue with duplicate favourites. Less code should fix this.
             var user = await _userManager.GetUserAsync(User);
             string name = data["Name"];
             string position = data["Position"];
@@ -86,22 +87,23 @@ namespace HockeyManager.Controllers
             {
                 filterPlayers = _context.Players.Where(x => x.Position.Contains(position) && x.Name.Contains(name) && teamFilter.Contains(x.Team.Abbreviation)).Include(x => x.Favourites).ToList();
 
-                
+
                 filterPlayers.RemoveAll(x => x.Favourites.Select(y => y.UserId).Contains(user.Id));
                 SearchPlayer VMFavouritePlayers = new SearchPlayer(_context.Teams.ToList(), filterPlayers);
                 return View(VMFavouritePlayers);
 
-            } else
+            }
+            else
             {
                 filterPlayers = _context.Players.Where(x => x.Position.Contains(position) && x.Name.Contains(name) && teamFilter.Contains(x.Team.Abbreviation)).ToList();
                 SearchPlayer VMplayers = new SearchPlayer(_context.Teams.ToList(), filterPlayers);
                 return View(VMplayers);
             }
-            
+
         }
 
         [HttpGet]
-        public async Task<string[]> getFavourites ()
+        public async Task<string[]> getFavourites()
         {
             var user = await _userManager.GetUserAsync(User);
             var players = _context.Favourites.Where(x => x.UserId == user.Id).Select(x => x.PlayerId).ToArray();
@@ -116,11 +118,11 @@ namespace HockeyManager.Controllers
             string[] favs = Request.Form["fav"];
             string[] nonFavs = Request.Form["nonFav"];
             List<Favourites> favourites = new List<Favourites>();
-            
+
             foreach (var fav in favs)
             {
                 //prevent duplicates
-                var currentFavourites = _context.Favourites.Where(x => x.PlayerId == int.Parse(fav) && x.UserId == user.Id);             
+                var currentFavourites = _context.Favourites.Where(x => x.PlayerId == int.Parse(fav) && x.UserId == user.Id);
                 if (!currentFavourites.Any())
                 {
                     favourites.Add(new Favourites
@@ -129,7 +131,7 @@ namespace HockeyManager.Controllers
                         UserId = user.Id
                     });
                 }
-                
+
             }
 
             foreach (var nonfav in nonFavs)
@@ -145,9 +147,9 @@ namespace HockeyManager.Controllers
             await _context.Favourites.AddRangeAsync(favourites);
             await _context.SaveChangesAsync();
 
-            
 
-           
+
+
         }
 
 

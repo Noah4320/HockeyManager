@@ -83,13 +83,13 @@
 
                                         @if (team.Conference == "Eastern")
                                         {
-                                    <tr>
-                                        <th scope="row">@counter: <img src=@team.logoUrl alt="Logo" width="50" height="50"></th>
-                                        <td>@team.Name</td>
-                                        <td>@team.Division</td>
-                                        <td>@team.GamesPlayed</td>
-                                        <td>@team.Points</td>
-                                    </tr>
+                                            <tr>
+                                                <th scope="row">@counter: <img src=@team.logoUrl alt="Logo" width="50" height="50"></th>
+                                                <td>@team.Name</td>
+                                                <td>@team.Division</td>
+                                                <td>@team.GamesPlayed</td>
+                                                <td>@team.Points</td>
+                                            </tr>
                                             counter++;
                                         }
                                     }
@@ -122,13 +122,13 @@
 
                                         @if (team.Conference == "Western")
                                         {
-                                    <tr>
-                                        <th scope="row">@counter: <img src=@team.logoUrl alt="Logo" width="50" height="50"></th>
-                                        <td>@team.Name</td>
-                                        <td>@team.Division</td>
-                                        <td>@team.GamesPlayed</td>
-                                        <td>@team.Points</td>
-                                    </tr>
+                                            <tr>
+                                                <th scope="row">@counter: <img src=@team.logoUrl alt="Logo" width="50" height="50"></th>
+                                                <td>@team.Name</td>
+                                                <td>@team.Division</td>
+                                                <td>@team.GamesPlayed</td>
+                                                <td>@team.Points</td>
+                                            </tr>
                                             counter++;
                                         }
                                     }
@@ -145,6 +145,7 @@
                     <span class="carousel-control-next-icon" aria-hidden="true"></span>
                     <span class="sr-only">Next</span>
                 </a>
+                <input type="button" value="My Hockey Pools" onclick="location.href='@Url.Action("Index", "Pool")'" />
             </div>
             <div class="col-md-6">
                 <div id="carouselPlayerStandings" class="carousel slide" data-ride="carousel">
