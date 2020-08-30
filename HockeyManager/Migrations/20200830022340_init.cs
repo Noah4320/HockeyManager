@@ -50,6 +50,20 @@ namespace HockeyManager.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "RuleSets",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Name = table.Column<string>(nullable: true),
+                    Description = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RuleSets", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Teams",
                 columns: table => new
                 {
@@ -181,6 +195,28 @@ namespace HockeyManager.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Pools",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Private = table.Column<bool>(nullable: false),
+                    Size = table.Column<int>(nullable: false),
+                    Status = table.Column<string>(nullable: true),
+                    RuleSetId = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Pools", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Pools_RuleSets_RuleSetId",
+                        column: x => x.RuleSetId,
+                        principalTable: "RuleSets",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Players",
                 columns: table => new
                 {
@@ -212,6 +248,33 @@ namespace HockeyManager.Migrations
                         name: "FK_Players_Teams_TeamId",
                         column: x => x.TeamId,
                         principalTable: "Teams",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "PoolList",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    PoolId = table.Column<int>(nullable: true),
+                    UserId = table.Column<int>(nullable: true),
+                    UserId1 = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PoolList", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_PoolList_Pools_PoolId",
+                        column: x => x.PoolId,
+                        principalTable: "Pools",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_PoolList_AspNetUsers_UserId1",
+                        column: x => x.UserId1,
+                        principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -295,6 +358,21 @@ namespace HockeyManager.Migrations
                 name: "IX_Players_TeamId",
                 table: "Players",
                 column: "TeamId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PoolList_PoolId",
+                table: "PoolList",
+                column: "PoolId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PoolList_UserId1",
+                table: "PoolList",
+                column: "UserId1");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Pools_RuleSetId",
+                table: "Pools",
+                column: "RuleSetId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -318,16 +396,25 @@ namespace HockeyManager.Migrations
                 name: "Favourites");
 
             migrationBuilder.DropTable(
+                name: "PoolList");
+
+            migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
                 name: "Players");
 
             migrationBuilder.DropTable(
+                name: "Pools");
+
+            migrationBuilder.DropTable(
                 name: "AspNetUsers");
 
             migrationBuilder.DropTable(
                 name: "Teams");
+
+            migrationBuilder.DropTable(
+                name: "RuleSets");
         }
     }
 }

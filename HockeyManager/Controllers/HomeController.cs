@@ -134,6 +134,32 @@ namespace HockeyManager.Controllers
             await _context.Players.AddRangeAsync(hMPlayers);
             await _context.SaveChangesAsync();
 
+
+            //Populate Pool rulesets
+
+            List<RuleSet> ruleSets = new List<RuleSet>();
+
+            ruleSets.Add(new RuleSet
+            {
+                Name = "Top Scorers",
+                Description = "Do you believe that you have what it takes to pick the top goal scorers in the league? Pick your top 5 skaters from any team."
+            });
+
+            ruleSets.Add(new RuleSet
+            {
+                Name = "Point Producers",
+                Description = "Pick your top point producers from around the league. Pick 7 forwards and 3 defenceman."
+            });
+
+            ruleSets.Add(new RuleSet
+            {
+                Name = "Assist Machine",
+                Description = "Nothing but assists! Pick your top 5 assist getters."
+            });
+
+            await _context.RuleSets.AddRangeAsync(ruleSets);
+            await _context.SaveChangesAsync();
+
             return View("Index");
         }
     }

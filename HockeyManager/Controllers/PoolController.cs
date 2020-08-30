@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using HockeyManager.Areas.Identity.Data;
 using HockeyManager.Data;
+using HockeyManager.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -45,12 +46,13 @@ namespace HockeyManager.Controllers
         // POST: Pool/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        public ActionResult Create(Pool pool)
         {
             try
             {
                 // TODO: Add insert logic here
 
+                string ruleName = pool.RuleSet.Name;
                 return RedirectToAction(nameof(Index));
             }
             catch

@@ -181,6 +181,64 @@ namespace HockeyManager.Migrations
                     b.ToTable("Teams");
                 });
 
+            modelBuilder.Entity("HockeyManager.Models.Pool", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<bool>("Private");
+
+                    b.Property<int?>("RuleSetId")
+                        .IsRequired();
+
+                    b.Property<int>("Size");
+
+                    b.Property<string>("Status");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RuleSetId");
+
+                    b.ToTable("Pools");
+                });
+
+            modelBuilder.Entity("HockeyManager.Models.PoolList", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int?>("PoolId");
+
+                    b.Property<int?>("UserId");
+
+                    b.Property<string>("UserId1");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PoolId");
+
+                    b.HasIndex("UserId1");
+
+                    b.ToTable("PoolList");
+                });
+
+            modelBuilder.Entity("HockeyManager.Models.RuleSet", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Description");
+
+                    b.Property<string>("Name");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("RuleSets");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
                     b.Property<string>("Id")
@@ -311,6 +369,25 @@ namespace HockeyManager.Migrations
                     b.HasOne("HockeyManager.Models.HMTeam", "Team")
                         .WithMany("Players")
                         .HasForeignKey("TeamId");
+                });
+
+            modelBuilder.Entity("HockeyManager.Models.Pool", b =>
+                {
+                    b.HasOne("HockeyManager.Models.RuleSet", "RuleSet")
+                        .WithMany("Pools")
+                        .HasForeignKey("RuleSetId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("HockeyManager.Models.PoolList", b =>
+                {
+                    b.HasOne("HockeyManager.Models.Pool", "Pool")
+                        .WithMany("PoolList")
+                        .HasForeignKey("PoolId");
+
+                    b.HasOne("HockeyManager.Areas.Identity.Data.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId1");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

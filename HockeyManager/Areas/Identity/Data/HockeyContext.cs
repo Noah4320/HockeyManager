@@ -21,6 +21,9 @@ namespace HockeyManager.Data
         public virtual DbSet<HMTeam> Teams { get; set; }
         public virtual DbSet<HMPlayer> Players { get; set; }
         public virtual DbSet<Favourites> Favourites { get; set; }
+        public virtual DbSet<RuleSet> RuleSets { get; set; }
+        public virtual DbSet<PoolList> PoolList { get; set; }
+        public virtual DbSet<Pool> Pools { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
