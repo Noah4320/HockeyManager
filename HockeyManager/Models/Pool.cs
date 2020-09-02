@@ -20,7 +20,7 @@ namespace HockeyManager.Models
         public string Status { get; set; }
         public virtual ICollection<PoolList> PoolList { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Please select a ruleset.")]
         public int? RuleSetId { get; set; }
         [Required]
         public virtual RuleSet RuleSet { get; set; }

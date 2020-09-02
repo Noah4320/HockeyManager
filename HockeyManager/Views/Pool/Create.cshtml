@@ -15,12 +15,10 @@
                     id: radioValue
                 },
                 success: function (data, textStatus, jqXHR) {
-                    alert(data);
                     document.getElementById('rule').innerHTML = data;
                     //data - response from server
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
-                    alert(errorThrown);
                 }
             });
         });
@@ -31,7 +29,7 @@
     <h4>Pool</h4>
     <hr />
     <div class="row">
-        <div class="col-md-4">
+        <div class="col-md-6">
             <form asp-action="Create">
                 <div class="form-group">
                     <label asp-for="Name" class="control-label"></label>
@@ -44,6 +42,7 @@
                         <input type="radio" asp-for="RuleSetId" class="ruleset" name="rules" value=@rule.Id>
                         <label for="rule">@rule.Name</label><br>
                     }
+                    <span asp-validation-for="RuleSetId" class="text-danger"></span>
                 </div>
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                 <div class="form-group form-check">
@@ -61,8 +60,10 @@
                 </div>
             </form>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-6">
+            <div class="text-center">
             <p id="rule"></p>
+            </div>
             </div>
         </div>
 
