@@ -200,6 +200,7 @@ namespace HockeyManager.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Name = table.Column<string>(nullable: false),
                     Private = table.Column<bool>(nullable: false),
                     Size = table.Column<int>(nullable: false),
                     Status = table.Column<string>(nullable: true),

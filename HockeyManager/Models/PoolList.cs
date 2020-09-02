@@ -13,9 +13,9 @@ namespace HockeyManager.Models
         public int Id { get; set; }
 
         public int? PoolId { get; set; }
-        public Pool Pool { get; set; }
+        public virtual Pool Pool { get; set; }
 
         public int? UserId { get; set; }
-        public User User { get; set; }
+        public virtual User User { get; set; }
     }
 }

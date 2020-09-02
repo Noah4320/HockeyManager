@@ -187,6 +187,9 @@ namespace HockeyManager.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<string>("Name")
+                        .IsRequired();
+
                     b.Property<bool>("Private");
 
                     b.Property<int?>("RuleSetId")

@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace HockeyManager.Controllers
 {
@@ -46,13 +47,15 @@ namespace HockeyManager.Controllers
         // POST: Pool/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(Pool pool)
+        public async Task<ActionResult> Create(Pool pool)
         {
             try
             {
                 // TODO: Add insert logic here
 
-                string ruleName = pool.RuleSet.Name;
+                await _context.Pools.AddAsync(pool);
+                await _context.SaveChangesAsync();
+                var test = _context.Pools.Include(x => x.RuleSet).ToList();
                 return RedirectToAction(nameof(Index));
             }
             catch
@@ -105,6 +108,16 @@ namespace HockeyManager.Controllers
             {
                 return View();
             }
+        }
+
+        [HttpPost]
+        public string GetRule()
+        {
+            int id = int.Parse(Request.Form["id"]);
+
+            var result = _context.RuleSets.Where(x => x.Id == id).Select(x => x.Description);
+
+            return result.First();
         }
     }
 }

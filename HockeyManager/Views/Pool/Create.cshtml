@@ -1,17 +1,50 @@
 ﻿@model HockeyManager.Models.Pool
 @inject HockeyManager.Data.HockeyContext _context
-<h4>Pool</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div class="form-group">
-                @foreach (var rule in _context.RuleSets.ToList())
-                {
-                    <input type="radio" asp-for="RuleSetId" value=@rule.Id>
-                    <label for="rule">@rule.Name</label><br>
+
+<script src="~/lib/jquery/dist/jquery.js"></script>
+
+<script>
+    $(document).ready(function () {
+        $(".ruleset").click(function () {
+            var radioValue = $("input[name='rules']:checked").val();
+            $.ajax({
+                type: "POST",
+                url: "https://localhost:44375/Pool/GetRule",
+                traditional: true,
+                data: {
+                    id: radioValue
+                },
+                success: function (data, textStatus, jqXHR) {
+                    alert(data);
+                    document.getElementById('rule').innerHTML = data;
+                    //data - response from server
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    alert(errorThrown);
                 }
-            </div>
+            });
+        });
+    });
+</script>
+
+<div class="container">
+    <h4>Pool</h4>
+    <hr />
+    <div class="row">
+        <div class="col-md-4">
+            <form asp-action="Create">
+                <div class="form-group">
+                    <label asp-for="Name" class="control-label"></label>
+                    <input asp-for="Name" class="form-control" />
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    @foreach (var rule in _context.RuleSets.ToList())
+                    {
+                        <input type="radio" asp-for="RuleSetId" class="ruleset" name="rules" value=@rule.Id>
+                        <label for="rule">@rule.Name</label><br>
+                    }
+                </div>
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                 <div class="form-group form-check">
                     <label class="form-check-label">
@@ -26,11 +59,14 @@
                 <div class="form-group">
                     <input type="submit" value="Create" class="btn btn-primary" />
                 </div>
-        </form>
+            </form>
+        </div>
+        <div class="col-md-4">
+            <p id="rule"></p>
+            </div>
+        </div>
+
+        <div>
+            <a asp-action="Index">Back to List</a>
+        </div>
     </div>
-</div>
-
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
