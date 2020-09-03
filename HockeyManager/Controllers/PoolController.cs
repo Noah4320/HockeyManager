@@ -49,13 +49,15 @@ namespace HockeyManager.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Create(Pool pool)
         {
+            var user = await _userManager.GetUserAsync(User);
+            pool.Status = "Active";
+            pool.OwnerId = user.Id;
             try
             {
                 // TODO: Add insert logic here
 
                 await _context.Pools.AddAsync(pool);
                 await _context.SaveChangesAsync();
-                var test = _context.Pools.Include(x => x.RuleSet).ToList();
                 return RedirectToAction(nameof(Index));
             }
             catch

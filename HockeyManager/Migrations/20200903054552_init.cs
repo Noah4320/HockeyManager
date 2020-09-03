@@ -204,11 +204,18 @@ namespace HockeyManager.Migrations
                     Private = table.Column<bool>(nullable: false),
                     Size = table.Column<int>(nullable: false),
                     Status = table.Column<string>(nullable: true),
-                    RuleSetId = table.Column<int>(nullable: false)
+                    RuleSetId = table.Column<int>(nullable: false),
+                    OwnerId = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Pools", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Pools_AspNetUsers_OwnerId",
+                        column: x => x.OwnerId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Pools_RuleSets_RuleSetId",
                         column: x => x.RuleSetId,
@@ -371,6 +378,11 @@ namespace HockeyManager.Migrations
                 column: "UserId1");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Pools_OwnerId",
+                table: "Pools",
+                column: "OwnerId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Pools_RuleSetId",
                 table: "Pools",
                 column: "RuleSetId");
@@ -409,10 +421,10 @@ namespace HockeyManager.Migrations
                 name: "Pools");
 
             migrationBuilder.DropTable(
-                name: "AspNetUsers");
+                name: "Teams");
 
             migrationBuilder.DropTable(
-                name: "Teams");
+                name: "AspNetUsers");
 
             migrationBuilder.DropTable(
                 name: "RuleSets");

@@ -19,5 +19,6 @@ namespace HockeyManager.Areas.Identity.Data
         public string LastName { get; set; }
 
         public virtual ICollection<Favourites> Favourites { get; set; }
+        public virtual ICollection<Pool> PoolsOwned { get; set; }
     }
 }

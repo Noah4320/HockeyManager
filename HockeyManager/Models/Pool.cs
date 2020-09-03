@@ -1,4 +1,5 @@
-﻿using System;
+﻿using HockeyManager.Areas.Identity.Data;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -24,5 +25,8 @@ namespace HockeyManager.Models
         public int? RuleSetId { get; set; }
         [Required]
         public virtual RuleSet RuleSet { get; set; }
+
+        public string OwnerId { get; set; }
+        public User Owner { get; set; }
     }
 }

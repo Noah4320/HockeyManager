@@ -6,7 +6,7 @@
 <script>
     $(document).ready(function () {
         $(".ruleset").click(function () {
-            var radioValue = $("input[name='rules']:checked").val();
+            var radioValue = $("input[id='rules']:checked").val();
             $.ajax({
                 type: "POST",
                 url: "https://localhost:44375/Pool/GetRule",
@@ -39,7 +39,7 @@
                 <div class="form-group">
                     @foreach (var rule in _context.RuleSets.ToList())
                     {
-                        <input type="radio" asp-for="RuleSetId" class="ruleset" name="rules" value=@rule.Id>
+                        <input type="radio" asp-for="RuleSetId" class="ruleset" id="rules" value=@rule.Id>
                         <label for="rule">@rule.Name</label><br>
                     }
                     <span asp-validation-for="RuleSetId" class="text-danger"></span>

@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HockeyManager.Migrations
 {
     [DbContext(typeof(HockeyContext))]
-    [Migration("20200830050911_init")]
+    [Migration("20200903054552_init")]
     partial class init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -192,6 +192,8 @@ namespace HockeyManager.Migrations
                     b.Property<string>("Name")
                         .IsRequired();
 
+                    b.Property<string>("OwnerId");
+
                     b.Property<bool>("Private");
 
                     b.Property<int?>("RuleSetId")
@@ -202,6 +204,8 @@ namespace HockeyManager.Migrations
                     b.Property<string>("Status");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("OwnerId");
 
                     b.HasIndex("RuleSetId");
 
@@ -378,6 +382,10 @@ namespace HockeyManager.Migrations
 
             modelBuilder.Entity("HockeyManager.Models.Pool", b =>
                 {
+                    b.HasOne("HockeyManager.Areas.Identity.Data.User", "Owner")
+                        .WithMany("PoolsOwned")
+                        .HasForeignKey("OwnerId");
+
                     b.HasOne("HockeyManager.Models.RuleSet", "RuleSet")
                         .WithMany("Pools")
                         .HasForeignKey("RuleSetId")
