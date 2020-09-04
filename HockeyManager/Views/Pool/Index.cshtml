@@ -1,4 +1,5 @@
-﻿@inject HockeyManager.Data.HockeyContext _context
+﻿@model HockeyManager.Models.Pool
+@inject HockeyManager.Data.HockeyContext _context
 @using Microsoft.AspNetCore.Identity
 @using HockeyManager.Areas.Identity.Data
 @inject UserManager<User> UserManager
@@ -64,10 +65,18 @@
                 }
             </div>
             <div class="col-md-4">
-                <div class="ui-widget">
-                    <label for="pools">Search Pool or enter code: </label>
-                    <input id="pools">
-                </div>
+                <form asp-action="JoinPool">
+                    <div class="form-group">
+                        <div class="ui-widget">
+                            <label asp-for="Name" class="control-label" for="pools">Search Pool or enter code: </label>
+                            <input asp-for="Name" class="form-control" id="pools">
+                            <span asp-validation-for="Name" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <input type="submit" value="Join Pool" class="btn btn-primary" />
+                    </div>
+                </form>
             </div>
         </div>
     </div>

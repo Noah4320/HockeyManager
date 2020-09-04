@@ -66,8 +66,33 @@ namespace HockeyManager.Controllers
             }
         }
 
-        // GET: Pool/Edit/5
-        public ActionResult Edit(int id)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> JoinPool(Pool pool)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            try
+            {
+                PoolList joinPool = new PoolList();
+                var pools = _context.Pools.First(x => x.Name == pool.Name);
+
+                joinPool.PoolId = pools.Id;
+                joinPool.UserId = user.Id;
+
+                await _context.PoolList.AddAsync(joinPool);
+                await _context.SaveChangesAsync();
+
+                return RedirectToAction(nameof(Index));
+            }
+            catch
+            {
+                return View();
+            }
+           
+        }
+
+            // GET: Pool/Edit/5
+            public ActionResult Edit(int id)
         {
             return View();
         }
