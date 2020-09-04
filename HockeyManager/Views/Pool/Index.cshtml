@@ -1,16 +1,73 @@
-﻿<div class="container">
+﻿@inject HockeyManager.Data.HockeyContext _context
+@using Microsoft.AspNetCore.Identity
+@using HockeyManager.Areas.Identity.Data
+@inject UserManager<User> UserManager
+
+@section scripts{
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script>
+        $(function () {
+            $(document).ready(function () {
+                $.ajax(
+                    {
+                        url: "https://localhost:44375/Pool/GetPools",
+                        success: function (result) {
+                            $("#pools").autocomplete({
+                                source: result
+                            });
+                        }
+                    });
+            });
+        });
+    </script>
+}
+<div class="container">
     <div class="text-center">
         <div class="row">
             <div class="col-md-4">
-                <input type="button" value="Create" onclick="location.href='@Url.Action("Create", "Pool")'" />
+                <input type="button" value="Create" onclick="location.href='@Url.Action("CreatePool", "Pool")'" />
             </div>
-            <div class="col-md-4">Pools</div>
             <div class="col-md-4">
-                <input type="text" />
-                <br />
-                <br />
-                <br />
-                <input type="button" value="Join" />
+                <h1>Pools</h1>
+
+
+                @foreach (var pool in _context.PoolList.Where(x => x.UserId == UserManager.GetUserId(User)).ToList())
+                {
+                    <h2>Test</h2>
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th scope="col">Position</th>
+                                <th scope="col">Username</th>
+                                <th scope="col">Points</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                            @{ int counter = 1;}
+
+                            if (counter >= 6)
+                            {
+                            break;
+                            }
+
+                            <tr>
+                                <td>team.Division</td>
+                                <td>team.GamesPlayed</td>
+                                <td>team.Points</td>
+                            </tr>
+                            counter++;
+                        </tbody>
+                    </table>
+                }
+            </div>
+            <div class="col-md-4">
+                <div class="ui-widget">
+                    <label for="pools">Search Pool or enter code: </label>
+                    <input id="pools">
+                </div>
             </div>
         </div>
     </div>

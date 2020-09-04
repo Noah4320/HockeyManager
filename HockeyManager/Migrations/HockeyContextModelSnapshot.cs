@@ -218,15 +218,13 @@ namespace HockeyManager.Migrations
 
                     b.Property<int?>("PoolId");
 
-                    b.Property<int?>("UserId");
-
-                    b.Property<string>("UserId1");
+                    b.Property<string>("UserId");
 
                     b.HasKey("Id");
 
                     b.HasIndex("PoolId");
 
-                    b.HasIndex("UserId1");
+                    b.HasIndex("UserId");
 
                     b.ToTable("PoolList");
                 });
@@ -398,7 +396,7 @@ namespace HockeyManager.Migrations
 
                     b.HasOne("HockeyManager.Areas.Identity.Data.User", "User")
                         .WithMany()
-                        .HasForeignKey("UserId1");
+                        .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

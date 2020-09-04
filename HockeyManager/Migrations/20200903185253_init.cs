@@ -267,8 +267,7 @@ namespace HockeyManager.Migrations
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     PoolId = table.Column<int>(nullable: true),
-                    UserId = table.Column<int>(nullable: true),
-                    UserId1 = table.Column<string>(nullable: true)
+                    UserId = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -280,8 +279,8 @@ namespace HockeyManager.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_PoolList_AspNetUsers_UserId1",
-                        column: x => x.UserId1,
+                        name: "FK_PoolList_AspNetUsers_UserId",
+                        column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
@@ -373,9 +372,9 @@ namespace HockeyManager.Migrations
                 column: "PoolId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_PoolList_UserId1",
+                name: "IX_PoolList_UserId",
                 table: "PoolList",
-                column: "UserId1");
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Pools_OwnerId",

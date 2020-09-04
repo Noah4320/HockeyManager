@@ -39,15 +39,15 @@ namespace HockeyManager.Controllers
         }
 
         // GET: Pool/Create
-        public ActionResult Create()
+        public ActionResult CreatePool()
         {
             return View();
         }
 
-        // POST: Pool/Create
+        // POST: Pool/CreatePool
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Create(Pool pool)
+        public async Task<ActionResult> CreatePool(Pool pool)
         {
             var user = await _userManager.GetUserAsync(User);
             pool.Status = "Active";
@@ -120,6 +120,14 @@ namespace HockeyManager.Controllers
             var result = _context.RuleSets.Where(x => x.Id == id).Select(x => x.Description);
 
             return result.First();
+        }
+
+        [HttpGet]
+        public string[] GetPools()
+        {
+            var pools = _context.Pools.Where(x => x.Private == false).Select(x => x.Name).ToArray();
+
+            return pools;
         }
     }
 }
