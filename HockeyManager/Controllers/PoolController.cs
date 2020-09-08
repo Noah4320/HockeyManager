@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using HockeyManager.Areas.Identity.Data;
 using HockeyManager.Data;
 using HockeyManager.Models;
+using HockeyManager.ViewModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -27,9 +28,15 @@ namespace HockeyManager.Controllers
         }
 
         // GET: Pool
-        public ActionResult Index()
+        public async Task<ActionResult> Index()
         {
-            return View();
+            var user = await _userManager.GetUserAsync(User);
+            var pools = _context.PoolList.Where(x => x.UserId == user.Id).Include(x => x.Pool);
+
+            PoolsViewModel poolsViewModel = new PoolsViewModel();
+            poolsViewModel.poolList = pools;
+
+            return View(poolsViewModel);
         }
 
         // GET: Pool/Details/5

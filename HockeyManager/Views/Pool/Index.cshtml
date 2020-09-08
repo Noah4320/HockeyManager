@@ -1,5 +1,4 @@
-﻿@model HockeyManager.Models.Pool
-@inject HockeyManager.Data.HockeyContext _context
+﻿@model HockeyManager.ViewModel.PoolsViewModel
 @using Microsoft.AspNetCore.Identity
 @using HockeyManager.Areas.Identity.Data
 @inject UserManager<User> UserManager
@@ -34,9 +33,9 @@
                 <h1>Pools</h1>
 
 
-                @foreach (var pool in _context.PoolList.Where(x => x.UserId == UserManager.GetUserId(User)).ToList())
+                @foreach (var pools in Model.poolList)
                 {
-                    <h2>Test</h2>
+                    <h2>@pools.Pool.Name</h2>
                     <table class="table table-striped">
                         <thead>
                             <tr>
@@ -49,13 +48,13 @@
 
                             @{ int counter = 1;}
 
-                            if (counter >= 6)
+                            @if (counter >= 6)
                             {
                             break;
                             }
 
                             <tr>
-                                <td>team.Division</td>
+                                <td>@counter</td>
                                 <td>team.GamesPlayed</td>
                                 <td>team.Points</td>
                             </tr>
@@ -68,9 +67,9 @@
                 <form asp-action="JoinPool">
                     <div class="form-group">
                         <div class="ui-widget">
-                            <label asp-for="Name" class="control-label" for="pools">Search Pool or enter code: </label>
-                            <input asp-for="Name" class="form-control" id="pools">
-                            <span asp-validation-for="Name" class="text-danger"></span>
+                            <label asp-for="Pool.Name" class="control-label" for="pools">Search Pool or enter code: </label>
+                            <input asp-for="Pool.Name" class="form-control" id="pools">
+                            <span asp-validation-for="Pool.Name" class="text-danger"></span>
                         </div>
                     </div>
                     <div class="form-group">
