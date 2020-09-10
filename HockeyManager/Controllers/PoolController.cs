@@ -42,6 +42,12 @@ namespace HockeyManager.Controllers
         // GET: Pool/Details/5
         public ActionResult Details(int id)
         {
+            var pool = _context.Pools.Find(id);
+            return View(pool);
+        }
+
+        public ActionResult CreateOrUpdateTeam()
+        {
             return View();
         }
 

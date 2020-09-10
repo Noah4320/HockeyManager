@@ -35,7 +35,7 @@
 
                 @foreach (var pools in Model.poolList)
                 {
-                    <h2>@pools.Pool.Name</h2>
+                <h2>@Html.ActionLink(pools.Pool.Name, "Details", new { id = pools.Pool.Id })</h2>
                     <table class="table table-striped">
                         <thead>
                             <tr>
