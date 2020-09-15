@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HockeyManager.Migrations
 {
     [DbContext(typeof(HockeyContext))]
-    [Migration("20200903185253_init")]
+    [Migration("20200914161342_init")]
     partial class init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -103,31 +103,19 @@ namespace HockeyManager.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("ApiId");
-
                     b.Property<int>("Assists");
-
-                    b.Property<string>("Country");
-
-                    b.Property<DateTimeOffset>("DateOfBirth");
 
                     b.Property<int>("GamesPlayed");
 
                     b.Property<int>("Goals");
 
-                    b.Property<string>("HeadShotUrl");
-
-                    b.Property<string>("Height");
-
-                    b.Property<string>("Name");
-
                     b.Property<string>("PenalityMinutes");
+
+                    b.Property<int?>("PlayerInfoId");
 
                     b.Property<int>("PlusMinus");
 
                     b.Property<int>("Points");
-
-                    b.Property<string>("Position");
 
                     b.Property<int>("Rank");
 
@@ -137,13 +125,40 @@ namespace HockeyManager.Migrations
 
                     b.Property<int?>("TeamId");
 
-                    b.Property<long>("Weight");
-
                     b.HasKey("Id");
+
+                    b.HasIndex("PlayerInfoId");
 
                     b.HasIndex("TeamId");
 
                     b.ToTable("Players");
+                });
+
+            modelBuilder.Entity("HockeyManager.Models.HMPlayerInfo", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("ApiId");
+
+                    b.Property<string>("Country");
+
+                    b.Property<DateTimeOffset>("DateOfBirth");
+
+                    b.Property<string>("HeadShotUrl");
+
+                    b.Property<string>("Height");
+
+                    b.Property<string>("Name");
+
+                    b.Property<string>("Position");
+
+                    b.Property<long>("Weight");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("PlayerInfo");
                 });
 
             modelBuilder.Entity("HockeyManager.Models.HMTeam", b =>
@@ -373,6 +388,10 @@ namespace HockeyManager.Migrations
 
             modelBuilder.Entity("HockeyManager.Models.HMPlayer", b =>
                 {
+                    b.HasOne("HockeyManager.Models.HMPlayerInfo", "PlayerInfo")
+                        .WithMany("PlayerStats")
+                        .HasForeignKey("PlayerInfoId");
+
                     b.HasOne("HockeyManager.Models.HMTeam", "Team")
                         .WithMany("Players")
                         .HasForeignKey("TeamId");

@@ -176,19 +176,19 @@
 
                     </td>
                     <td>
-                        <img src=@Html.DisplayFor(modelItem => item.HeadShotUrl) alt="Headshot" width="100" height="100">
+                        <img src=@Html.DisplayFor(modelItem => item.PlayerInfo.HeadShotUrl) alt="Headshot" width="100" height="100">
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.Name)
+                        @Html.DisplayFor(modelItem => item.PlayerInfo.Name)
                     </td>
                     <td>
                         @Html.DisplayFor(modelItem => item.Team.Abbreviation)
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.Position)
+                        @Html.DisplayFor(modelItem => item.PlayerInfo.Position)
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.Country)
+                        @Html.DisplayFor(modelItem => item.PlayerInfo.Country)
                     </td>
                     <td>
                         @Html.DisplayFor(modelItem => item.GamesPlayed)
@@ -206,16 +206,16 @@
                         @Html.DisplayFor(modelItem => item.Rank)
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.DateOfBirth.Year)
+                        @Html.DisplayFor(modelItem => item.PlayerInfo.DateOfBirth.Year)
                     </td>
                     <td>
                         @Html.DisplayFor(modelItem => item.PlusMinus)
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.Height)
+                        @Html.DisplayFor(modelItem => item.PlayerInfo.Height)
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.Weight)
+                        @Html.DisplayFor(modelItem => item.PlayerInfo.Weight)
                     </td>
                     <td>
                         @Html.DisplayFor(modelItem => item.PenalityMinutes)

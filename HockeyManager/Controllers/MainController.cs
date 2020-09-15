@@ -7,6 +7,7 @@ using HockeyManager.ViewModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace HockeyManager.Controllers
 {
@@ -25,7 +26,7 @@ namespace HockeyManager.Controllers
         // GET: Main
         public ActionResult Index()
         {
-            SearchPlayer players = new SearchPlayer(_context.Teams.OrderByDescending(x => x.Points).ToList(), _context.Players.ToList());
+            SearchPlayer players = new SearchPlayer(_context.Teams.OrderByDescending(x => x.Points).ToList(), _context.Players.Include(x => x.PlayerInfo).Where(x => x.Rank == 0).ToList());
             return View(players);
         }
 

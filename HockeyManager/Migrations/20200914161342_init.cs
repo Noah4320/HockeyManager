@@ -50,6 +50,26 @@ namespace HockeyManager.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "PlayerInfo",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Name = table.Column<string>(nullable: true),
+                    Position = table.Column<string>(nullable: true),
+                    Country = table.Column<string>(nullable: true),
+                    DateOfBirth = table.Column<DateTimeOffset>(nullable: false),
+                    Height = table.Column<string>(nullable: true),
+                    Weight = table.Column<long>(nullable: false),
+                    HeadShotUrl = table.Column<string>(nullable: true),
+                    ApiId = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PlayerInfo", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "RuleSets",
                 columns: table => new
                 {
@@ -230,28 +250,27 @@ namespace HockeyManager.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    Name = table.Column<string>(nullable: true),
-                    Position = table.Column<string>(nullable: true),
-                    Country = table.Column<string>(nullable: true),
                     GamesPlayed = table.Column<int>(nullable: false),
                     Goals = table.Column<int>(nullable: false),
                     Assists = table.Column<int>(nullable: false),
                     Points = table.Column<int>(nullable: false),
                     Rank = table.Column<int>(nullable: false),
-                    DateOfBirth = table.Column<DateTimeOffset>(nullable: false),
                     PlusMinus = table.Column<int>(nullable: false),
-                    Height = table.Column<string>(nullable: true),
-                    Weight = table.Column<long>(nullable: false),
                     PenalityMinutes = table.Column<string>(nullable: true),
                     Saves = table.Column<int>(nullable: false),
                     Shutouts = table.Column<int>(nullable: false),
-                    HeadShotUrl = table.Column<string>(nullable: true),
-                    ApiId = table.Column<int>(nullable: false),
-                    TeamId = table.Column<int>(nullable: true)
+                    TeamId = table.Column<int>(nullable: true),
+                    PlayerInfoId = table.Column<int>(nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Players", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Players_PlayerInfo_PlayerInfoId",
+                        column: x => x.PlayerInfoId,
+                        principalTable: "PlayerInfo",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Players_Teams_TeamId",
                         column: x => x.TeamId,
@@ -362,6 +381,11 @@ namespace HockeyManager.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Players_PlayerInfoId",
+                table: "Players",
+                column: "PlayerInfoId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Players_TeamId",
                 table: "Players",
                 column: "TeamId");
@@ -418,6 +442,9 @@ namespace HockeyManager.Migrations
 
             migrationBuilder.DropTable(
                 name: "Pools");
+
+            migrationBuilder.DropTable(
+                name: "PlayerInfo");
 
             migrationBuilder.DropTable(
                 name: "Teams");
