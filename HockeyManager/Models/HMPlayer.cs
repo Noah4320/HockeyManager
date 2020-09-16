@@ -10,25 +10,22 @@ namespace HockeyManager.Models
     {
         [Key]
         public int Id { get; set; }
-        public string Name { get; set; }
-        public string Position { get; set; }
-        public string Country { get; set; }
         public int GamesPlayed { get; set; }
         public int Goals { get; set; }
         public int Assists { get; set; }
         public int Points { get; set; }
         public int Rank { get; set; }
-        public DateTimeOffset DateOfBirth { get; set; }
         public int PlusMinus { get; set; }
-        public string Height { get; set; }
-        public long Weight { get; set; }
         public string PenalityMinutes { get; set; }
         public int Saves { get; set; }
         public int Shutouts { get; set; }
-        public string HeadShotUrl { get; set; }
-        public int ApiId { get; set; }
+
         public int? TeamId { get; set; }
         public virtual HMTeam Team { get; set; }
+
+        public int? PlayerInfoId { get; set; }
+        public virtual HMPlayerInfo PlayerInfo { get; set; }
+
         public virtual ICollection<Favourites> Favourites { get; set; }
     }
 }

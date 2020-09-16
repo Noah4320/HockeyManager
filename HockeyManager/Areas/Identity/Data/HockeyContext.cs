@@ -18,7 +18,9 @@ namespace HockeyManager.Data
             
         }
 
+        public virtual DbSet<HMTeamInfo> TeamInfo { get; set; }
         public virtual DbSet<HMTeam> Teams { get; set; }
+        public virtual DbSet<HMPlayerInfo> PlayerInfo { get; set; }
         public virtual DbSet<HMPlayer> Players { get; set; }
         public virtual DbSet<Favourites> Favourites { get; set; }
         public virtual DbSet<RuleSet> RuleSets { get; set; }

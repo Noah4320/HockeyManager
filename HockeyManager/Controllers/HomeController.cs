@@ -50,39 +50,44 @@ namespace HockeyManager.Controllers
             var teams = JsonConvert.DeserializeObject<TeamRoot>(teamData);
 
             List<HMTeam> hMTeams = new List<HMTeam>();
-            List<HMPlayer> hMPlayers = new List<HMPlayer>();
 
             foreach (var team in teams.teams)
             {
+                HMTeamInfo hMTeamsInfo = new HMTeamInfo();
+                HMTeam hMTeam = new HMTeam();
+
                 var teamStatsUrl = $"https://statsapi.web.nhl.com/api/v1/teams/{team.id}/stats";
                 var teamStatsData = await httpClient.GetStringAsync(teamStatsUrl);
                 var teamStats = JsonConvert.DeserializeObject<TeamStatRoot>(teamStatsData);
 
+                hMTeamsInfo.Name = team.name;
+                hMTeamsInfo.Conference = team.conference.name;
+                hMTeamsInfo.Division = team.division.name;
+                hMTeamsInfo.Abbreviation = team.abbreviation;                   
+                hMTeamsInfo.logoUrl = $"https://www-league.nhlstatic.com/images/logos/teams-current-primary-light/{team.id}.svg";
+
+                await _context.TeamInfo.AddAsync(hMTeamsInfo);
+                await _context.SaveChangesAsync();
+
                 hMTeams.Add(new HMTeam
                 {
-                    ApiId = team.id,
-                    Name = team.name,
-                    Conference = team.conference.name,
-                    Division = team.division.name,
-                    Abbreviation = team.abbreviation,
                     GamesPlayed = teamStats.stats[0].splits[0].stat.gamesPlayed,
                     Wins = Convert.ToInt32(teamStats.stats[0].splits[0].stat.wins),
                     Loses = Convert.ToInt32(teamStats.stats[0].splits[0].stat.losses),
                     OvertimeLoses = Convert.ToInt32(teamStats.stats[0].splits[0].stat.ot),
                     Points = Convert.ToInt32(teamStats.stats[0].splits[0].stat.pts),
-                    logoUrl = $"https://www-league.nhlstatic.com/images/logos/teams-current-primary-light/{team.id}.svg"
-                });
+                    ApiId = team.id,
+                    TeamInfoId = hMTeamsInfo.Id
+            });
 
             }
 
-            if (_context.Teams.Count() == 0)
-            {
-                await _context.Teams.AddRangeAsync(hMTeams);
-                await _context.SaveChangesAsync();
-            }
+            await _context.Teams.AddRangeAsync(hMTeams);
+            await _context.SaveChangesAsync();
 
             //Fetch Players
 
+            List<HMPlayer> hMPlayers = new List<HMPlayer>();
 
             foreach (var team in hMTeams)
             {
@@ -92,8 +97,11 @@ namespace HockeyManager.Controllers
 
                 foreach (var player in roster.roster)
                 {
+                    HMPlayerInfo hMPlayerInfo = new HMPlayerInfo();
+                    HMPlayer hMPlayer = new HMPlayer();
                     try
                     {
+                        
                         var playerUrl = $"https://statsapi.web.nhl.com/api/v1/people/{player.person.id}";
                         var playerData = await httpClient.GetStringAsync(playerUrl);
                         var playerAbout = JsonConvert.DeserializeObject<PeopleRoot>(playerData);
@@ -102,14 +110,21 @@ namespace HockeyManager.Controllers
                         var playerStatsData = await httpClient.GetStringAsync(playerStatsUrl);
                         var playerStats = JsonConvert.DeserializeObject<StatsRoot>(playerStatsData);
 
+
+                        hMPlayerInfo.Name = player.person.fullName;
+                        hMPlayerInfo.Position = player.position.abbreviation;
+                        hMPlayerInfo.Country = playerAbout.People[0].BirthCountry;
+                        hMPlayerInfo.DateOfBirth = playerAbout.People[0].BirthDate;
+                        hMPlayerInfo.Height = playerAbout.People[0].Height;
+                        hMPlayerInfo.Weight = playerAbout.People[0].Weight;
+                        hMPlayerInfo.ApiId = player.person.id;
+                        hMPlayerInfo.HeadShotUrl = $"https://nhl.bamcontent.com/images/headshots/current/168x168/{player.person.id}.jpg";
+
+                        await _context.PlayerInfo.AddAsync(hMPlayerInfo);
+                        await _context.SaveChangesAsync();
+
                         hMPlayers.Add(new HMPlayer
                         {
-                            Name = player.person.fullName,
-                            Position = player.position.abbreviation,
-                            Country = playerAbout.People[0].BirthCountry,
-                            DateOfBirth = playerAbout.People[0].BirthDate,
-                            Height = playerAbout.People[0].Height,
-                            Weight = playerAbout.People[0].Weight,
                             GamesPlayed = playerStats.stats[0].splits[0].stat.games,
                             Goals = playerStats.stats[0].splits[0].stat.goals,
                             Assists = playerStats.stats[0].splits[0].stat.assists,
@@ -118,22 +133,19 @@ namespace HockeyManager.Controllers
                             Saves = playerStats.stats[0].splits[0].stat.saves,
                             Shutouts = playerStats.stats[0].splits[0].stat.shutouts,
                             PlusMinus = playerStats.stats[0].splits[0].stat.plusMinus,
-                            ApiId = player.person.id,
-                            HeadShotUrl = $"https://nhl.bamcontent.com/images/headshots/current/168x168/{player.person.id}.jpg",
-                            TeamId = team.Id
-                        });
+                            TeamId = team.Id,
+                            PlayerInfoId = hMPlayerInfo.Id
+                        });                      
                     }
                     catch (ArgumentOutOfRangeException ex)
                     {
                         string test = ex.Message;
                     }
-
-                }
+                }  
             }
 
             await _context.Players.AddRangeAsync(hMPlayers);
             await _context.SaveChangesAsync();
-
 
             //Populate Pool rulesets
 
