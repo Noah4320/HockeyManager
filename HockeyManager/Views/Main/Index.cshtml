@@ -45,9 +45,9 @@
                                         }
 
                                         <tr>
-                                            <th scope="row">@counter: <img src=@team.logoUrl alt="Logo" width="50" height="50"></th>
-                                            <td>@team.Name</td>
-                                            <td>@team.Division</td>
+                                            <th scope="row">@counter: <img src=@team.TeamInfo.logoUrl alt="Logo" width="50" height="50"></th>
+                                            <td>@team.TeamInfo.Name</td>
+                                            <td>@team.TeamInfo.Division</td>
                                             <td>@team.GamesPlayed</td>
                                             <td>@team.Points</td>
                                         </tr>
@@ -81,12 +81,12 @@
                                             break;
                                         }
 
-                                        @if (team.Conference == "Eastern")
+                                        @if (team.TeamInfo.Conference == "Eastern")
                                         {
                                             <tr>
-                                                <th scope="row">@counter: <img src=@team.logoUrl alt="Logo" width="50" height="50"></th>
-                                                <td>@team.Name</td>
-                                                <td>@team.Division</td>
+                                                <th scope="row">@counter: <img src=@team.TeamInfo.logoUrl alt="Logo" width="50" height="50"></th>
+                                                <td>@team.TeamInfo.Name</td>
+                                                <td>@team.TeamInfo.Division</td>
                                                 <td>@team.GamesPlayed</td>
                                                 <td>@team.Points</td>
                                             </tr>
@@ -120,12 +120,12 @@
                                             break;
                                         }
 
-                                        @if (team.Conference == "Western")
+                                        @if (team.TeamInfo.Conference == "Western")
                                         {
                                             <tr>
-                                                <th scope="row">@counter: <img src=@team.logoUrl alt="Logo" width="50" height="50"></th>
-                                                <td>@team.Name</td>
-                                                <td>@team.Division</td>
+                                                <th scope="row">@counter: <img src=@team.TeamInfo.logoUrl alt="Logo" width="50" height="50"></th>
+                                                <td>@team.TeamInfo.Name</td>
+                                                <td>@team.TeamInfo.Division</td>
                                                 <td>@team.GamesPlayed</td>
                                                 <td>@team.Points</td>
                                             </tr>
@@ -184,7 +184,7 @@
                                         <tr>
                                             <th scope="row">@counter: <img src=@player.PlayerInfo.HeadShotUrl class="rounded-circle" alt="Logo" width="50" height="50"></th>
                                             <td>@player.PlayerInfo.Name</td>
-                                            <td>@player.Team.Abbreviation</td>
+                                            <td>@player.Team.TeamInfo.Abbreviation</td>
                                             <td>@player.GamesPlayed</td>
                                             <td>@player.Goals</td>
                                             <td>@player.Assists</td>
@@ -223,7 +223,7 @@
                                     <tr>
                                         <th scope="row">@counter: <img src=@player.PlayerInfo.HeadShotUrl class="rounded-circle" alt="Logo" width="50" height="50"></th>
                                         <td>@player.PlayerInfo.Name</td>
-                                        <td>@player.Team.Abbreviation</td>
+                                        <td>@player.Team.TeamInfo.Abbreviation</td>
                                         <td>@player.GamesPlayed</td>
                                         <td>@player.Goals</td>
                                     </tr>
@@ -260,7 +260,7 @@
                                         <tr>
                                             <th scope="row">@counter: <img src=@player.PlayerInfo.HeadShotUrl class="rounded-circle" alt="Logo" width="50" height="50"></th>
                                             <td>@player.PlayerInfo.Name</td>
-                                            <td>@player.Team.Abbreviation</td>
+                                            <td>@player.Team.TeamInfo.Abbreviation</td>
                                             <td>@player.GamesPlayed</td>
                                             <td>@player.Assists</td>
                                         </tr>

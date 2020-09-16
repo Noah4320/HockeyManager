@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HockeyManager.Migrations
 {
     [DbContext(typeof(HockeyContext))]
-    [Migration("20200914161342_init")]
+    [Migration("20200916155056_init")]
     partial class init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -167,19 +167,11 @@ namespace HockeyManager.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("Abbreviation");
-
                     b.Property<int>("ApiId");
-
-                    b.Property<string>("Conference");
-
-                    b.Property<string>("Division");
 
                     b.Property<int>("GamesPlayed");
 
                     b.Property<int>("Loses");
-
-                    b.Property<string>("Name");
 
                     b.Property<int>("OvertimeLoses");
 
@@ -189,13 +181,36 @@ namespace HockeyManager.Migrations
 
                     b.Property<int>("RegulationWins");
 
+                    b.Property<int?>("TeamInfoId");
+
                     b.Property<int>("Wins");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TeamInfoId");
+
+                    b.ToTable("Teams");
+                });
+
+            modelBuilder.Entity("HockeyManager.Models.HMTeamInfo", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Abbreviation");
+
+                    b.Property<string>("Conference");
+
+                    b.Property<string>("Division");
+
+                    b.Property<string>("Name");
 
                     b.Property<string>("logoUrl");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Teams");
+                    b.ToTable("TeamInfo");
                 });
 
             modelBuilder.Entity("HockeyManager.Models.Pool", b =>
@@ -395,6 +410,13 @@ namespace HockeyManager.Migrations
                     b.HasOne("HockeyManager.Models.HMTeam", "Team")
                         .WithMany("Players")
                         .HasForeignKey("TeamId");
+                });
+
+            modelBuilder.Entity("HockeyManager.Models.HMTeam", b =>
+                {
+                    b.HasOne("HockeyManager.Models.HMTeamInfo", "TeamInfo")
+                        .WithMany("TeamStats")
+                        .HasForeignKey("TeamInfoId");
                 });
 
             modelBuilder.Entity("HockeyManager.Models.Pool", b =>

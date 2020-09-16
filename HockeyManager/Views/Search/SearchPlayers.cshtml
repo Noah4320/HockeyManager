@@ -74,7 +74,7 @@
                 @foreach (var item in Model.Teams)
                 {
                     <label class="checkbox-inline">
-                        <input type="checkbox" name=@item.Abbreviation id="team" checked> @item.Name
+                        <input type="checkbox" name=@item.TeamInfo.Abbreviation id="team" checked> @item.TeamInfo.Name
                     </label>
 
                 }
@@ -182,7 +182,7 @@
                         @Html.DisplayFor(modelItem => item.PlayerInfo.Name)
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.Team.Abbreviation)
+                        @Html.DisplayFor(modelItem => item.Team.TeamInfo.Abbreviation)
                     </td>
                     <td>
                         @Html.DisplayFor(modelItem => item.PlayerInfo.Position)

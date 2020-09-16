@@ -49,39 +49,45 @@ namespace HockeyManager.Controllers
 
             var teams = JsonConvert.DeserializeObject<TeamRoot>(teamData);
 
-            List<HMTeam> hMTeams = new List<HMTeam>();       
+            List<HMTeam> hMTeams = new List<HMTeam>();
 
             foreach (var team in teams.teams)
             {
+                HMTeamInfo hMTeamsInfo = new HMTeamInfo();
+                HMTeam hMTeam = new HMTeam();
+
                 var teamStatsUrl = $"https://statsapi.web.nhl.com/api/v1/teams/{team.id}/stats";
                 var teamStatsData = await httpClient.GetStringAsync(teamStatsUrl);
                 var teamStats = JsonConvert.DeserializeObject<TeamStatRoot>(teamStatsData);
 
+                hMTeamsInfo.Name = team.name;
+                hMTeamsInfo.Conference = team.conference.name;
+                hMTeamsInfo.Division = team.division.name;
+                hMTeamsInfo.Abbreviation = team.abbreviation;                   
+                hMTeamsInfo.logoUrl = $"https://www-league.nhlstatic.com/images/logos/teams-current-primary-light/{team.id}.svg";
+
+                await _context.TeamInfo.AddAsync(hMTeamsInfo);
+                await _context.SaveChangesAsync();
+
                 hMTeams.Add(new HMTeam
                 {
-                    ApiId = team.id,
-                    Name = team.name,
-                    Conference = team.conference.name,
-                    Division = team.division.name,
-                    Abbreviation = team.abbreviation,
                     GamesPlayed = teamStats.stats[0].splits[0].stat.gamesPlayed,
                     Wins = Convert.ToInt32(teamStats.stats[0].splits[0].stat.wins),
                     Loses = Convert.ToInt32(teamStats.stats[0].splits[0].stat.losses),
                     OvertimeLoses = Convert.ToInt32(teamStats.stats[0].splits[0].stat.ot),
                     Points = Convert.ToInt32(teamStats.stats[0].splits[0].stat.pts),
-                    logoUrl = $"https://www-league.nhlstatic.com/images/logos/teams-current-primary-light/{team.id}.svg"
-                });
+                    ApiId = team.id,
+                    TeamInfoId = hMTeamsInfo.Id
+            });
 
             }
 
-            if (_context.Teams.Count() == 0)
-            {
-                await _context.Teams.AddRangeAsync(hMTeams);
-                await _context.SaveChangesAsync();
-            }
+            await _context.Teams.AddRangeAsync(hMTeams);
+            await _context.SaveChangesAsync();
 
             //Fetch Players
-           
+
+            List<HMPlayer> hMPlayers = new List<HMPlayer>();
 
             foreach (var team in hMTeams)
             {
@@ -117,26 +123,29 @@ namespace HockeyManager.Controllers
                         await _context.PlayerInfo.AddAsync(hMPlayerInfo);
                         await _context.SaveChangesAsync();
 
-                        hMPlayer.GamesPlayed = playerStats.stats[0].splits[0].stat.games;
-                        hMPlayer.Goals = playerStats.stats[0].splits[0].stat.goals;
-                        hMPlayer.Assists = playerStats.stats[0].splits[0].stat.assists;
-                        hMPlayer.Points = playerStats.stats[0].splits[0].stat.points;
-                        hMPlayer.PenalityMinutes = playerStats.stats[0].splits[0].stat.penaltyMinutes;
-                        hMPlayer.Saves = playerStats.stats[0].splits[0].stat.saves;
-                        hMPlayer.Shutouts = playerStats.stats[0].splits[0].stat.shutouts;
-                        hMPlayer.PlusMinus = playerStats.stats[0].splits[0].stat.plusMinus;
-                        hMPlayer.TeamId = team.Id;
-                        hMPlayer.PlayerInfoId = hMPlayerInfo.Id;
-
-                        await _context.Players.AddAsync(hMPlayer);
-                        await _context.SaveChangesAsync();
+                        hMPlayers.Add(new HMPlayer
+                        {
+                            GamesPlayed = playerStats.stats[0].splits[0].stat.games,
+                            Goals = playerStats.stats[0].splits[0].stat.goals,
+                            Assists = playerStats.stats[0].splits[0].stat.assists,
+                            Points = playerStats.stats[0].splits[0].stat.points,
+                            PenalityMinutes = playerStats.stats[0].splits[0].stat.penaltyMinutes,
+                            Saves = playerStats.stats[0].splits[0].stat.saves,
+                            Shutouts = playerStats.stats[0].splits[0].stat.shutouts,
+                            PlusMinus = playerStats.stats[0].splits[0].stat.plusMinus,
+                            TeamId = team.Id,
+                            PlayerInfoId = hMPlayerInfo.Id
+                        });                      
                     }
                     catch (ArgumentOutOfRangeException ex)
                     {
                         string test = ex.Message;
                     }
-                }
-            }         
+                }  
+            }
+
+            await _context.Players.AddRangeAsync(hMPlayers);
+            await _context.SaveChangesAsync();
 
             //Populate Pool rulesets
 

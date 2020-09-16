@@ -10,10 +10,6 @@ namespace HockeyManager.Models
     {
         [Key]
         public int Id { get; set; }
-        public string Name { get; set; }
-        public string Abbreviation { get; set; }
-        public string Division { get; set; }
-        public string Conference { get; set; }
         public string Place { get; set; }
         public int GamesPlayed { get; set; }
         public int Wins { get; set; }
@@ -21,8 +17,12 @@ namespace HockeyManager.Models
         public int OvertimeLoses { get; set; }
         public int Points { get; set; }
         public int RegulationWins { get; set; }
-        public string logoUrl { get; set; }
+
         public int ApiId { get; set; }
+
+        public int? TeamInfoId { get; set; }
+        public virtual HMTeamInfo TeamInfo { get; set; }
+
         public virtual ICollection<HMPlayer> Players { get; set; }
     }
 }

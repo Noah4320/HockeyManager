@@ -8,13 +8,13 @@
                 Logo
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Name)
+                @Html.DisplayNameFor(model => model.TeamInfo.Name)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Division)
+                @Html.DisplayNameFor(model => model.TeamInfo.Division)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Conference)
+                @Html.DisplayNameFor(model => model.TeamInfo.Conference)
             </th>
             <th></th>
         </tr>
@@ -23,16 +23,16 @@
 @foreach (var item in Model) {
         <tr>
             <td>
-                <img src=@Html.DisplayFor(modelItem => item.logoUrl) alt="Logo" width="200" height="75">
+                <img src=@Html.DisplayFor(modelItem => item.TeamInfo.logoUrl) alt="Logo" width="200" height="75">
             </td>
             <td>
-                @Html.ActionLink(item.Name, "Players", new {  id=item.Id  })
+                @Html.ActionLink(item.TeamInfo.Name, "Players", new {  id=item.Id  })
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Division)
+                @Html.DisplayFor(modelItem => item.TeamInfo.Division)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Conference)
+                @Html.DisplayFor(modelItem => item.TeamInfo.Conference)
             </td>
         </tr>
 }
