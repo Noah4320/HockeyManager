@@ -22,9 +22,6 @@
             });
 
         $(".myChk").click(function () {
-            @if (SignInManager.IsSignedIn(User))
-            {
-                <text>
             var favorite = [];
             var nonFavourite = [];
             $.each($("input[id='player']:checked"), function () {
@@ -49,17 +46,7 @@
                 error: function (jqXHR, textStatus, errorThrown) {
                 }
             });
-            </text>
-            } else
-            {
-                <text>
-            alert("Please sign in to access favourites!");
-            this.checked = false;
-            </text>
-            }
             });
-
-
     });
 </script>
 
@@ -95,11 +82,23 @@
 
         <div class="form-group">
             <label for="Favourite">Favourite</label>
-            <select class="form-control" name="Favourite" id="Favourite">
-                <option value=""></option>
-                <option value="No">No</option>
-                <option value="Yes">Yes</option>
-            </select>
+            @if (SignInManager.IsSignedIn(User))
+            {
+                <select class="form-control" name="Favourite" id="Favourite">
+                    <option value=""></option>
+                    <option value="No">No</option>
+                    <option value="Yes">Yes</option>
+                </select>
+            }
+            else
+            {
+                <select class="form-control" name="Favourite" id="Favourite" disabled>
+                    <option value=""></option>
+                    <option value="No">No</option>
+                    <option value="Yes">Yes</option>
+                </select>
+            }
+
         </div>
 
         <input type="submit" />
@@ -172,7 +171,14 @@
                 {
                 <tr>
                     <td>
-                        <input type="checkbox" class="myChk" name="isChecked" id="player" value=@item.Id />
+                        @if (SignInManager.IsSignedIn(User))
+                        {
+                            <input type="checkbox" class="myChk" name="isChecked" id="player" value=@item.Id />
+                        }
+                        else
+                        {
+                            <input type="checkbox" class="myChk" name="isChecked" id="player" value=@item.Id  disabled/>
+                        }
 
                     </td>
                     <td>
