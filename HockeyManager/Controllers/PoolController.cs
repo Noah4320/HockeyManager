@@ -36,6 +36,8 @@ namespace HockeyManager.Controllers
             PoolsViewModel poolsViewModel = new PoolsViewModel();
             poolsViewModel.poolList = pools;
 
+            ViewBag.Message = TempData["Message"];
+
             return View(poolsViewModel);
         }
 
@@ -84,6 +86,7 @@ namespace HockeyManager.Controllers
         public async Task<ActionResult> JoinPool(Pool pool)
         {
             var user = await _userManager.GetUserAsync(User);
+
             try
             {
                 PoolList joinPool = new PoolList();
@@ -95,11 +98,14 @@ namespace HockeyManager.Controllers
                 await _context.PoolList.AddAsync(joinPool);
                 await _context.SaveChangesAsync();
 
+                TempData["Message"] = "Pool joined successfully!";
+
                 return RedirectToAction(nameof(Index));
             }
             catch
             {
-                return View();
+                TempData["Message"] = "Unable to join pool";
+                return RedirectToAction(nameof(Index));
             }
            
         }

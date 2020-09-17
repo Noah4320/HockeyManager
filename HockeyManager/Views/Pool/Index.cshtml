@@ -69,7 +69,7 @@
                         <div class="ui-widget">
                             <label asp-for="Pool.Name" class="control-label" for="pools">Search Pool or enter code: </label>
                             <input asp-for="Pool.Name" class="form-control" id="pools">
-                            <span asp-validation-for="Pool.Name" class="text-danger"></span>
+                            <span asp-validation-for="Pool.Name" class="text-danger">@ViewBag.Message</span>
                         </div>
                     </div>
                     <div class="form-group">
