@@ -64,6 +64,13 @@ namespace HockeyManager.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> CreatePool(Pool pool)
         {
+
+            if (_context.Pools.Any(x => x.Name == pool.Name))
+            {
+                ViewBag.ErrorMessage = "This pool name already exists";
+                return View();
+            }
+
             var user = await _userManager.GetUserAsync(User);
             pool.Status = "Active";
             pool.OwnerId = user.Id;
