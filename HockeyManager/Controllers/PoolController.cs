@@ -48,9 +48,19 @@ namespace HockeyManager.Controllers
             return View(pool);
         }
 
-        public ActionResult CreateOrUpdateTeam()
+        // GET: Pool/ManagePoolTeam?Id=5
+        public ActionResult ManagePoolTeam(int id)
         {
-            return View();
+            SearchPlayer VMplayers = new SearchPlayer(_context.Teams.Include(x => x.TeamInfo).ToList(), _context.Players.Include(x => x.PlayerInfo).Where(x => x.Rank == 0).ToList());
+
+            return View(VMplayers);
+        }
+
+        //POST
+        public string GetSelectedTeam()
+        {
+            string team = Request.Form["team"];
+            return team;
         }
 
         // GET: Pool/Create

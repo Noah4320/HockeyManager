@@ -3,7 +3,7 @@
 <div class="container">
     <h4>Pool</h4>
     <hr />
-    <input type="button" value="Add or Update Team" onclick="location.href='@Url.Action("CreateOrUpdateTeam", "Pool")'" />
+    <input type="button" value="Add or Update Team" onclick="location.href='@Url.Action("ManagePoolTeam", "Pool")?id=' + @Model.Id" />
     <dl class="row">
         <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Id)
