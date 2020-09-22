@@ -56,11 +56,11 @@ namespace HockeyManager.Controllers
             return View(VMplayers);
         }
 
-        //POST
-        public string GetSelectedTeam()
+        //GET
+        public ActionResult GetSelectedTeam(string team)
         {
-            string team = Request.Form["team"];
-            return team;
+            var result = _context.Players.Include(x => x.PlayerInfo).Include(x => x.Team).Include(x => x.Team.TeamInfo).Where(x => x.Team.TeamInfo.Abbreviation == team).ToList();
+            return PartialView("_PlayerData", result);
         }
 
         // GET: Pool/Create

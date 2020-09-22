@@ -1,0 +1,12 @@
+﻿@model IEnumerable<HockeyManager.Models.HMPlayer>
+
+@foreach (var player in Model)
+{
+    <tr>
+        <td>@player.PlayerInfo.Name</td>
+        <td>@player.GamesPlayed</td>
+        <td>@player.Goals</td>
+        <td>@player.Assists</td>
+        <td>@player.Points</td>
+    </tr>
+}

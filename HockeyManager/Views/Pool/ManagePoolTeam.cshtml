@@ -9,65 +9,54 @@
             .change(function () {
                 var value = $(this).val();
 
-            $.ajax({
-                type: "POST",
-                url: "https://localhost:44375/Pool/GetSelectedTeam",
-                traditional: true,
-                dataType: 'application/json',
-                data: {
-                    team: value
-                },
-                success: function (data, textStatus, jqXHR) {
-                    //data - response from server
-                },
-                error: function (jqXHR, textStatus, errorThrown) {
-                }
+                $.ajax({
+                    type: "GET",
+                    url: "https://localhost:44375/Pool/GetSelectedTeam",
+                    data: {
+                        team: value
+                    }
+                }).done(function (ManagePoolTeam) {
+                    $("#refTable").html(ManagePoolTeam);
+                    }).fail(function (x) {
+                        alert(x.responseText);
+                });
             });
         });
-    });
 </script>
-
-<div class="container">
-    <label class="control-label">Team Name:</label>
-    <input class="form-control" />
-    <span class="text-danger"></span>
-</div>
-<div class="row">
-    <div class="col-md-6">
-        <label class="control-label">Team:</label>
-        <select class="form-control" name="Team" id="Team">
-            @foreach (var team in Model.Teams)
-            {
-                <option class="teamSelect" id="teamDropdown" value=@team.TeamInfo.Abbreviation>@team.TeamInfo.Name</option>
-            }
-
-        </select>
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th scope="col">Name</th>
-                    <th scope="col">Games Played</th>
-                    <th scope="col">Goals</th>
-                    <th scope="col">Assists</th>
-                    <th scope="col">Points</th>
-                </tr>
-            </thead>
-            <tbody>
-
-                @foreach (var player in Model.Players)
-                {
-                    <tr>
-                        <td>@player.PlayerInfo.Name</td>
-                        <td>@player.GamesPlayed</td>
-                        <td>@player.Goals</td>
-                        <td>@player.Assists</td>
-                        <td>@player.Points</td>
-                    </tr>
-                }
-            </tbody>
-        </table>
+<div>
+    <div class="container">
+        <label class="control-label">Team Name:</label>
+        <input class="form-control" />
+        <span class="text-danger"></span>
     </div>
-    <div class="col-md-6">
+    <div class="row">
+        <div class="col-md-6">
+            <label class="control-label">Team:</label>
+            <select class="form-control" name="Team" id="Team">
+                <option></option>
+                @foreach (var team in Model.Teams)
+                {
+                    <option class="teamSelect" id="teamDropdown" value=@team.TeamInfo.Abbreviation>@team.TeamInfo.Name</option>
+                }
 
+            </select>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th scope="col">Name</th>
+                        <th scope="col">Games Played</th>
+                        <th scope="col">Goals</th>
+                        <th scope="col">Assists</th>
+                        <th scope="col">Points</th>
+                    </tr>
+                </thead>
+                <tbody id="refTable">
+
+                </tbody>
+            </table>
+        </div>
+        <div class="col-md-6">
+
+        </div>
     </div>
 </div>
