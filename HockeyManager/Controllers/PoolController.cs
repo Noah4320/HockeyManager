@@ -57,10 +57,27 @@ namespace HockeyManager.Controllers
         }
 
         //GET
-        public ActionResult GetSelectedTeam(string team)
+        public ActionResult GetSelectedTeam(string team, string favourite)
         {
-            var result = _context.Players.Include(x => x.PlayerInfo).Include(x => x.Team).Include(x => x.Team.TeamInfo).Where(x => x.Team.TeamInfo.Abbreviation == team).ToList();
-            return PartialView("_PlayerData", result);
+            if (team == null) { team = ""; }
+
+          
+            if (favourite == "Yes")
+            {
+                var results = _context.Favourites.Where(x => x.UserId == _userManager.GetUserId(User)).Select(x => x.Player).Include(x => x.PlayerInfo).Include(x => x.Team.TeamInfo).Where(x => x.Team.TeamInfo.Abbreviation.Contains(team)).ToList();
+                return PartialView("_PlayerData", results);
+            }
+            else if (favourite == "No")
+            {
+                var results = _context.Players.Include(x => x.PlayerInfo).Include(x => x.Team.TeamInfo).Where(x => x.Team.TeamInfo.Abbreviation.Contains(team)).Include(x => x.Favourites).ToList();
+                results.RemoveAll(x => x.Favourites.Select(y => y.UserId).Contains(_userManager.GetUserId(User)));
+                return PartialView("_PlayerData", results);
+            }
+            else
+            {
+                var results = _context.Players.Include(x => x.PlayerInfo).Include(x => x.Team.TeamInfo).Where(x => x.Team.TeamInfo.Abbreviation.Contains(team)).ToList();
+                return PartialView("_PlayerData", results);
+            }
         }
 
         // GET: Pool/Create

@@ -5,15 +5,17 @@
 
 <script>
     $(document).ready(function () {
-        $("select")
+        $("[name='filterDropdown']")
             .change(function () {
-                var value = $(this).val();
+                var team = $("#Team").val();
+                var favourite = $("#Favourite").val();
 
                 $.ajax({
                     type: "GET",
                     url: "https://localhost:44375/Pool/GetSelectedTeam",
                     data: {
-                        team: value
+                        team: team,
+                        favourite: favourite
                     }
                 }).done(function (ManagePoolTeam) {
                     $("#refTable").html(ManagePoolTeam);
@@ -32,13 +34,20 @@
     <div class="row">
         <div class="col-md-6">
             <label class="control-label">Team:</label>
-            <select class="form-control" name="Team" id="Team">
-                <option></option>
+            <select class="form-control" name="filterDropdown" id="Team">
+                <option value=""></option>
                 @foreach (var team in Model.Teams)
                 {
-                    <option class="teamSelect" id="teamDropdown" value=@team.TeamInfo.Abbreviation>@team.TeamInfo.Name</option>
+                    <option id="teamDropdown" value=@team.TeamInfo.Abbreviation>@team.TeamInfo.Name</option>
                 }
 
+            </select>
+
+            <label class="control-label">Favourite:</label>
+            <select class="form-control" name="filterDropdown" id="Favourite">
+                <option value=""></option>
+                <option value="Yes">Yes</option>
+                <option value="No">No</option>
             </select>
             <table class="table table-striped">
                 <thead>
@@ -51,7 +60,7 @@
                     </tr>
                 </thead>
                 <tbody id="refTable">
-
+                    <partial name="_PlayerData" model="Model.Players" />
                 </tbody>
             </table>
         </div>
