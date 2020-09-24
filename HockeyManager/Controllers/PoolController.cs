@@ -80,6 +80,37 @@ namespace HockeyManager.Controllers
             }
         }
 
+        [HttpPost]
+        public async Task AddTeam(int id, string name, string[] players)
+        {
+            HMTeamInfo teamInfo = new HMTeamInfo();
+            teamInfo.Name = name;
+
+            await _context.TeamInfo.AddAsync(teamInfo);
+            await _context.SaveChangesAsync();
+
+            HMTeam team = new HMTeam();
+            team.TeamInfoId = teamInfo.Id;
+            team.PoolId = id;
+
+            await _context.Teams.AddAsync(team);
+            await _context.SaveChangesAsync();
+
+            var hMPlayersInfo = _context.PlayerInfo.Where(x => players.Contains(x.Id.ToString())).ToList();
+            List<HMPlayer> hMPlayers = new List<HMPlayer>();
+
+            foreach (var playerInfo in hMPlayersInfo)
+            {
+                hMPlayers.Add(new HMPlayer
+                {
+                    TeamId = team.Id,
+                    PlayerInfoId = playerInfo.Id
+                });
+            }
+
+            await _context.Players.AddRangeAsync(hMPlayers);
+            await _context.SaveChangesAsync();
+        }
         // GET: Pool/Create
         public ActionResult CreatePool()
         {

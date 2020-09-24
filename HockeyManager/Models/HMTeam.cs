@@ -23,6 +23,9 @@ namespace HockeyManager.Models
         public int? TeamInfoId { get; set; }
         public virtual HMTeamInfo TeamInfo { get; set; }
 
+        public int? PoolId { get; set; }
+        public virtual Pool Pool { get; set; }
+
         public virtual ICollection<HMPlayer> Players { get; set; }
     }
 }

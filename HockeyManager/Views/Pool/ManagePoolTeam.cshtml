@@ -21,6 +21,7 @@
                     $("#refTable").html(ManagePoolTeam);
                     }).fail(function (x) {
                         alert(x.responseText);
+
                 });
             });
 
@@ -30,13 +31,37 @@
                 cloneRow = p.clone();
                 copyTable.append(cloneRow)
                 p.remove();
-            }); 
         }); 
+
+        $(document).on('click', '#addTeam', function () {
+            var poolId = @Context.Request.Query["id"];
+            var teamName = $("#teamName").val();
+            var playerIds = [];
+            $('#drafted tr').each(function () {
+                playerIds.push(this.id)
+
+            })
+            $.ajax({
+                type: "POST",
+                url: "https://localhost:44375/Pool/AddTeam",
+                data: {
+                    id: poolId,
+                    name: teamName,
+                    players: playerIds
+                }
+            }).done(function () {
+
+            }).fail(function (x) {
+                alert(x.responseText);
+
+            });
+        }); 
+     }); 
 </script>
 <div>
     <div class="container">
         <label class="control-label">Team Name:</label>
-        <input class="form-control" />
+        <input class="form-control" id="teamName" />
         <span class="text-danger"></span>
     </div>
     <div class="row">
@@ -89,6 +114,7 @@
               
                 </tbody>
             </table>
+            <button id="addTeam" onclick="location.href='@Url.Action("Details", "Pool", new { id = @Context.Request.Query["id"]})'" >Add Team</button>
         </div>
     </div>
 </div>

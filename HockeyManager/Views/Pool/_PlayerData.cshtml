@@ -2,7 +2,7 @@
 
 @foreach (var player in Model)
 {
-    <tr class="playerData" id=@player.Id>
+    <tr class="playerData" id=@player.PlayerInfo.Id>
         <td>@player.PlayerInfo.Name</td>
         <td>@player.GamesPlayed</td>
         <td>@player.Goals</td>
