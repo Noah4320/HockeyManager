@@ -117,7 +117,6 @@ namespace HockeyManager.Controllers
                         hMPlayerInfo.DateOfBirth = playerAbout.People[0].BirthDate;
                         hMPlayerInfo.Height = playerAbout.People[0].Height;
                         hMPlayerInfo.Weight = playerAbout.People[0].Weight;
-                        hMPlayerInfo.ApiId = player.person.id;
                         hMPlayerInfo.HeadShotUrl = $"https://nhl.bamcontent.com/images/headshots/current/168x168/{player.person.id}.jpg";
 
                         await _context.PlayerInfo.AddAsync(hMPlayerInfo);
@@ -133,6 +132,7 @@ namespace HockeyManager.Controllers
                             Saves = playerStats.stats[0].splits[0].stat.saves,
                             Shutouts = playerStats.stats[0].splits[0].stat.shutouts,
                             PlusMinus = playerStats.stats[0].splits[0].stat.plusMinus,
+                            ApiId = player.person.id,
                             TeamId = team.Id,
                             PlayerInfoId = hMPlayerInfo.Id
                         });                      

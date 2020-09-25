@@ -101,6 +101,8 @@ namespace HockeyManager.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<int>("ApiId");
+
                     b.Property<int>("Assists");
 
                     b.Property<int>("GamesPlayed");
@@ -137,8 +139,6 @@ namespace HockeyManager.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("ApiId");
 
                     b.Property<string>("Country");
 

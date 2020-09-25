@@ -20,8 +20,11 @@ namespace HockeyManager.Models
         public int Saves { get; set; }
         public int Shutouts { get; set; }
 
+        public int ApiId { get; set; }
+
         public int? TeamId { get; set; }
         public virtual HMTeam Team { get; set; }
+
 
         public int? PlayerInfoId { get; set; }
         public virtual HMPlayerInfo PlayerInfo { get; set; }

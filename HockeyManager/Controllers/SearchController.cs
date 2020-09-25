@@ -31,7 +31,7 @@ namespace HockeyManager.Controllers
             List<HMTeam> teams = new List<HMTeam>();
 
 
-            teams = _context.Teams.Include(x => x.TeamInfo).ToList();
+            teams = _context.Teams.Include(x => x.TeamInfo).Where(x => x.ApiId != 0).ToList();
 
             return View(teams);
         }
@@ -42,16 +42,15 @@ namespace HockeyManager.Controllers
         {
             List<HMPlayer> roster = _context.Players
                 .Include(x => x.PlayerInfo)
-                .Include(y => y.Team)
-                .Include(s => s.Team.TeamInfo)
-                .Where(z => z.Team.Id == id).ToList();
+                .Include(x => x.Team.TeamInfo)
+                .Where(x => x.Team.Id == id).ToList();
 
             return View(roster);
         }
 
         public ActionResult SearchPlayers()
         {
-            SearchPlayer VMplayers = new SearchPlayer(_context.Teams.Include(x => x.TeamInfo).ToList(), _context.Players.Include(x => x.PlayerInfo).Where(x => x.Rank == 0).ToList());
+            SearchPlayer VMplayers = new SearchPlayer(_context.Teams.Include(x => x.TeamInfo).Where(x => x.ApiId != 0).ToList(), _context.Players.Include(x => x.PlayerInfo).Where(x => x.Rank == 0 && x.ApiId != 0).ToList());
 
             return View(VMplayers);
         }

@@ -61,8 +61,7 @@ namespace HockeyManager.Migrations
                     DateOfBirth = table.Column<DateTimeOffset>(nullable: false),
                     Height = table.Column<string>(nullable: true),
                     Weight = table.Column<long>(nullable: false),
-                    HeadShotUrl = table.Column<string>(nullable: true),
-                    ApiId = table.Column<int>(nullable: false)
+                    HeadShotUrl = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -311,6 +310,7 @@ namespace HockeyManager.Migrations
                     PenalityMinutes = table.Column<string>(nullable: true),
                     Saves = table.Column<int>(nullable: false),
                     Shutouts = table.Column<int>(nullable: false),
+                    ApiId = table.Column<int>(nullable: false),
                     TeamId = table.Column<int>(nullable: true),
                     PlayerInfoId = table.Column<int>(nullable: true)
                 },

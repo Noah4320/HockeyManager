@@ -17,7 +17,6 @@ namespace HockeyManager.Models
         public string Height { get; set; }
         public long Weight { get; set; }
         public string HeadShotUrl { get; set; }
-        public int ApiId { get; set; }
 
         public virtual ICollection<HMPlayer> PlayerStats { get; set; }
     }
