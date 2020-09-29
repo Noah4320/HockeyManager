@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -18,6 +19,7 @@ namespace HockeyManager.Models
         public long Weight { get; set; }
         public string HeadShotUrl { get; set; }
 
+        [JsonIgnore]
         public virtual ICollection<HMPlayer> PlayerStats { get; set; }
     }
 }

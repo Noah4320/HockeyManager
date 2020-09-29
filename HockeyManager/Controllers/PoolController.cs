@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 
 namespace HockeyManager.Controllers
 {
@@ -44,8 +45,18 @@ namespace HockeyManager.Controllers
         // GET: Pool/Details/5
         public ActionResult Details(int id)
         {
-            var pool = _context.Pools.Find(id);
+            var pool = _context.Pools.Where(x => x.Id == id).Include(x => x.Teams).ThenInclude(x => x.User)
+                .Include(x => x.Teams).ThenInclude(x => x.TeamInfo).FirstOrDefault();
             return View(pool);
+        }
+
+        [HttpGet]
+        public string GetTeamRoster(int id)
+        {
+            var players = _context.Players.Include(x => x.PlayerInfo).Include(x => x.Team.TeamInfo).Where(x => x.TeamId == id).ToList();
+
+            var test = JsonConvert.SerializeObject(players);
+            return test;
         }
 
         // GET: Pool/ManagePoolTeam?Id=5

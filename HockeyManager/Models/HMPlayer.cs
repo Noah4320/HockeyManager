@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -29,6 +30,7 @@ namespace HockeyManager.Models
         public int? PlayerInfoId { get; set; }
         public virtual HMPlayerInfo PlayerInfo { get; set; }
 
+        [JsonIgnore]
         public virtual ICollection<Favourites> Favourites { get; set; }
     }
 }

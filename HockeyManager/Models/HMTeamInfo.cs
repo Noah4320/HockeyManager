@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -15,6 +16,7 @@ namespace HockeyManager.Models
         public string Division { get; set; }
         public string Conference { get; set; }
         public string logoUrl { get; set; }
+        [JsonIgnore]
         public virtual ICollection<HMTeam> TeamStats { get; set; }
     }
 }

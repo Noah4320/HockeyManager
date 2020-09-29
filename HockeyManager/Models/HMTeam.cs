@@ -1,4 +1,5 @@
 ﻿using HockeyManager.Areas.Identity.Data;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -30,6 +31,7 @@ namespace HockeyManager.Models
         public string UserId { get; set; }
         public User User { get; set; }
 
+        [JsonIgnore]
         public virtual ICollection<HMPlayer> Players { get; set; }
     }
 }
