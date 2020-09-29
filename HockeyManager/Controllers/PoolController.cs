@@ -31,8 +31,8 @@ namespace HockeyManager.Controllers
         public async Task<ActionResult> Index()
         {
             var user = await _userManager.GetUserAsync(User);
-            var pools = _context.PoolList.Where(x => x.UserId == user.Id).Include(x => x.Pool);
-
+            var pools = _context.PoolList.Where(x => x.UserId == user.Id).Include(x => x.Pool).ThenInclude(x => x.Teams).ThenInclude(x => x.User);
+          
             PoolsViewModel poolsViewModel = new PoolsViewModel();
             poolsViewModel.poolList = pools;
 
@@ -92,6 +92,7 @@ namespace HockeyManager.Controllers
             HMTeam team = new HMTeam();
             team.TeamInfoId = teamInfo.Id;
             team.PoolId = id;
+            team.UserId = _userManager.GetUserId(User);
 
             await _context.Teams.AddAsync(team);
             await _context.SaveChangesAsync();

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using HockeyManager.Areas.Identity.Data;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -25,6 +26,9 @@ namespace HockeyManager.Models
 
         public int? PoolId { get; set; }
         public virtual Pool Pool { get; set; }
+
+        public string UserId { get; set; }
+        public User User { get; set; }
 
         public virtual ICollection<HMPlayer> Players { get; set; }
     }

@@ -276,7 +276,8 @@ namespace HockeyManager.Migrations
                     RegulationWins = table.Column<int>(nullable: false),
                     ApiId = table.Column<int>(nullable: false),
                     TeamInfoId = table.Column<int>(nullable: true),
-                    PoolId = table.Column<int>(nullable: true)
+                    PoolId = table.Column<int>(nullable: true),
+                    UserId = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -291,6 +292,12 @@ namespace HockeyManager.Migrations
                         name: "FK_Teams_TeamInfo_TeamInfoId",
                         column: x => x.TeamInfoId,
                         principalTable: "TeamInfo",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Teams_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -445,6 +452,11 @@ namespace HockeyManager.Migrations
                 name: "IX_Teams_TeamInfoId",
                 table: "Teams",
                 column: "TeamInfoId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Teams_UserId",
+                table: "Teams",
+                column: "UserId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

@@ -33,9 +33,9 @@
                 <h1>Pools</h1>
 
 
-                @foreach (var pools in Model.poolList)
+                @foreach (var pool in Model.poolList)
                 {
-                <h2>@Html.ActionLink(pools.Pool.Name, "Details", new { id = pools.Pool.Id })</h2>
+                <h2>@Html.ActionLink(pool.Pool.Name, "Details", new { id = pool.Pool.Id })</h2>
                     <table class="table table-striped">
                         <thead>
                             <tr>
@@ -48,17 +48,15 @@
 
                             @{ int counter = 1;}
 
-                            @if (counter >= 6)
+                            @foreach (var team in pool.Pool.Teams)
                             {
-                            break;
+                                <tr>
+                                    <td>@counter</td>
+                                    <td>@team.User.UserName</td>
+                                    <td>@team.Points</td>
+                                </tr>
+                                counter++;
                             }
-
-                            <tr>
-                                <td>@counter</td>
-                                <td>team.GamesPlayed</td>
-                                <td>team.Points</td>
-                            </tr>
-                            counter++;
                         </tbody>
                     </table>
                 }

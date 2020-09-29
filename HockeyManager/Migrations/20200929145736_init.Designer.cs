@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HockeyManager.Migrations
 {
     [DbContext(typeof(HockeyContext))]
-    [Migration("20200925215347_init")]
+    [Migration("20200929145736_init")]
     partial class init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -185,6 +185,8 @@ namespace HockeyManager.Migrations
 
                     b.Property<int?>("TeamInfoId");
 
+                    b.Property<string>("UserId");
+
                     b.Property<int>("Wins");
 
                     b.HasKey("Id");
@@ -192,6 +194,8 @@ namespace HockeyManager.Migrations
                     b.HasIndex("PoolId");
 
                     b.HasIndex("TeamInfoId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Teams");
                 });
@@ -425,6 +429,10 @@ namespace HockeyManager.Migrations
                     b.HasOne("HockeyManager.Models.HMTeamInfo", "TeamInfo")
                         .WithMany("TeamStats")
                         .HasForeignKey("TeamInfoId");
+
+                    b.HasOne("HockeyManager.Areas.Identity.Data.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("HockeyManager.Models.Pool", b =>

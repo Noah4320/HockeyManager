@@ -183,6 +183,8 @@ namespace HockeyManager.Migrations
 
                     b.Property<int?>("TeamInfoId");
 
+                    b.Property<string>("UserId");
+
                     b.Property<int>("Wins");
 
                     b.HasKey("Id");
@@ -190,6 +192,8 @@ namespace HockeyManager.Migrations
                     b.HasIndex("PoolId");
 
                     b.HasIndex("TeamInfoId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Teams");
                 });
@@ -423,6 +427,10 @@ namespace HockeyManager.Migrations
                     b.HasOne("HockeyManager.Models.HMTeamInfo", "TeamInfo")
                         .WithMany("TeamStats")
                         .HasForeignKey("TeamInfoId");
+
+                    b.HasOne("HockeyManager.Areas.Identity.Data.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("HockeyManager.Models.Pool", b =>
