@@ -49,7 +49,12 @@
                     name: teamName,
                     players: playerIds
                 }
-            }).done(function () {
+            }).done(function (x) {
+
+                if (x == "success") {
+                    location.href = 'https://localhost:44375/Pool/Details/'+@Context.Request.Query["id"];
+
+                }
 
             }).fail(function (x) {
                 alert(x.responseText);
@@ -114,7 +119,7 @@
               
                 </tbody>
             </table>
-            <button id="addTeam" onclick="location.href='@Url.Action("Details", "Pool", new { id = @Context.Request.Query["id"]})'" >Add Team</button>
+            <button id="addTeam">Add Team</button>
         </div>
     </div>
 </div>

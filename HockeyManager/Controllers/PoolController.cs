@@ -55,14 +55,14 @@ namespace HockeyManager.Controllers
         {
             var players = _context.Players.Include(x => x.PlayerInfo).Include(x => x.Team.TeamInfo).Where(x => x.TeamId == id).ToList();
 
-            var test = JsonConvert.SerializeObject(players);
-            return test;
+            var result = JsonConvert.SerializeObject(players);
+            return result;
         }
 
         // GET: Pool/ManagePoolTeam?Id=5
         public ActionResult ManagePoolTeam(int id)
         {
-            SearchPlayer VMplayers = new SearchPlayer(_context.Teams.Include(x => x.TeamInfo).ToList(), _context.Players.Include(x => x.PlayerInfo).Where(x => x.Rank == 0).ToList());
+            SearchPlayer VMplayers = new SearchPlayer(_context.Teams.Include(x => x.TeamInfo).Where(x => x.PoolId == null).ToList(), _context.Players.Include(x => x.PlayerInfo).Where(x => x.Rank == 0 && x.ApiId != 0).ToList());
 
             return View(VMplayers);
         }
@@ -80,19 +80,19 @@ namespace HockeyManager.Controllers
             }
             else if (favourite == "No")
             {
-                var results = _context.Players.Include(x => x.PlayerInfo).Include(x => x.Team.TeamInfo).Where(x => x.Team.TeamInfo.Abbreviation.Contains(team)).Include(x => x.Favourites).ToList();
+                var results = _context.Players.Include(x => x.PlayerInfo).Include(x => x.Team.TeamInfo).Where(x => x.Team.TeamInfo.Abbreviation.Contains(team) && x.ApiId != 0).Include(x => x.Favourites).ToList();
                 results.RemoveAll(x => x.Favourites.Select(y => y.UserId).Contains(_userManager.GetUserId(User)));
                 return PartialView("_PlayerData", results);
             }
             else
             {
-                var results = _context.Players.Include(x => x.PlayerInfo).Include(x => x.Team.TeamInfo).Where(x => x.Team.TeamInfo.Abbreviation.Contains(team)).ToList();
+                var results = _context.Players.Include(x => x.PlayerInfo).Include(x => x.Team.TeamInfo).Where(x => x.Team.TeamInfo.Abbreviation.Contains(team) && x.ApiId != 0).ToList();
                 return PartialView("_PlayerData", results);
             }
         }
 
         [HttpPost]
-        public async Task AddTeam(int id, string name, string[] players)
+        public async Task<string> AddTeam(int id, string name, string[] players)
         {
             HMTeamInfo teamInfo = new HMTeamInfo();
             teamInfo.Name = name;
@@ -122,6 +122,7 @@ namespace HockeyManager.Controllers
 
             await _context.Players.AddRangeAsync(hMPlayers);
             await _context.SaveChangesAsync();
+            return "success";
         }
         // GET: Pool/Create
         public ActionResult CreatePool()
