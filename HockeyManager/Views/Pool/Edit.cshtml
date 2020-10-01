@@ -1,0 +1,104 @@
+﻿@model HockeyManager.ViewModel.PoolsViewModel
+@inject HockeyManager.Data.HockeyContext _context
+
+<script src="~/lib/jquery/dist/jquery.js"></script>
+
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+<link href="~/css/site.css" rel="stylesheet" />
+
+<script>
+    $(document).ready(function () {
+        $(".my-tooltip").tooltip();
+
+        $(document).on('click', '.playerData', function () {
+            var poolName = $(this).closest('tr').find('td:eq(0)')[0].innerText;
+            var poolRule = $(this).closest('tr').find('td:eq(1)')[0].innerText;
+            var isPrivate = $(this).closest('tr').find('td:eq(2)')[0].innerText;
+            isPrivate = (isPrivate == "True");
+            var poolSize = $(this).closest('tr').find('td:eq(3)')[0].innerText;
+            poolSize = poolSize.split("/")[1];
+            var poolStatus = $(this).closest('tr').find('td:eq(4)')[0].innerText;
+
+            $('#private')[0].checked = isPrivate;
+            $('#private').val("1");
+            $('#size').val(poolSize);
+
+            $("input:radio").each(function () {
+
+                if (this.id == poolRule) {
+                    this.checked = true
+                }
+
+            })
+
+        }); 
+    });
+</script>
+
+<h4>Pool</h4>
+<hr />
+<div class="row">
+    <div class="col-md-6">
+                <table class="table table-striped" id="InteractiveTable">
+                    <thead>
+                        <tr>
+                            <th>Pool Name</th>
+                            <th>Rule</th>
+                            <th>Private</th>
+                            <th>Party</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var pool in Model.Pools)
+                        {
+                        <tr class="playerData" id=@pool.Id>
+                            <td>@pool.Name</td>
+                            <td>@pool.RuleSet.Name</td>
+                            <td>@pool.Private</td>
+                            <td>@_context.Teams.Where(x => x.PoolId == pool.Id).Count()/@pool.Size</td>
+                            <td>@pool.Status</td>
+                        </tr>
+                        }
+                    </tbody>
+               </table>
+    </div>
+    <div class="col-md-6">
+        <div class="text-center">
+            <form asp-action="Edit">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                <div class="form-group form-check">
+                    <label class="form-check-label">
+                        <input class="form-check-input" id="private" asp-for="Pool.Private" /> @Html.DisplayNameFor(model => model.Pool.Private)
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Pool.Size" class="control-label"></label>
+                    <input asp-for="Pool.Size" id="size" class="form-control" />
+                    <span asp-validation-for="Pool.Size" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    @foreach (var rule in Model.RuleSet)
+                    {
+                        <input type="radio" asp-for="Pool.RuleSetId" class="ruleset" id=@rule.Name value=@rule.Id>
+                        <label for="rule">@rule.Name</label>
+                        <i class="fas fa-question-circle" title="@rule.Description"></i><br>
+                    }
+                    <span asp-validation-for="Pool.RuleSetId" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <input type="submit" value="Update" class="btn btn-success" />
+                    <button type="button" class="btn btn-warning">Archive</button>
+                    <button type="button" class="btn btn-danger">Delete</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+

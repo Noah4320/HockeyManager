@@ -10,5 +10,7 @@ namespace HockeyManager.ViewModel
     {
         public IEnumerable<PoolList> poolList { get; set; }
         public Pool Pool { get; set; }
+        public IEnumerable<RuleSet> RuleSet { get; set; }
+        public IEnumerable<Pool> Pools { get; set; }
     }
 }

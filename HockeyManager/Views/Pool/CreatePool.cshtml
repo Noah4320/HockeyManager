@@ -1,5 +1,4 @@
-﻿@model HockeyManager.Models.Pool
-@inject HockeyManager.Data.HockeyContext _context
+﻿@model HockeyManager.ViewModel.PoolsViewModel
 
 <script src="~/lib/jquery/dist/jquery.js"></script>
 <script src="~/lib/jquery-validation/dist/additional-methods.js"></script>
@@ -35,28 +34,28 @@
         <div class="col-md-6">
             <form asp-action="CreatePool">
                 <div class="form-group">
-                    <label asp-for="Name" class="control-label"></label>
-                    <input asp-for="Name" class="form-control" />
-                    <span asp-validation-for="Name" class="text-danger">@ViewBag.ErrorMessage</span>
+                    <label asp-for="Pool.Name" class="control-label"></label>
+                    <input asp-for="Pool.Name" class="form-control" />
+                    <span asp-validation-for="Pool.Name" class="text-danger">@ViewBag.ErrorMessage</span>
                 </div>
                 <div class="form-group">
-                    @foreach (var rule in _context.RuleSets.ToList())
+                    @foreach (var rule in Model.RuleSet)
                     {
-                        <input type="radio" asp-for="RuleSetId" class="ruleset" id="rules" value=@rule.Id>
+                        <input type="radio" asp-for="Pool.RuleSetId" class="ruleset" id="rules" value=@rule.Id>
                         <label for="rule">@rule.Name</label><br>
                     }
-                    <span asp-validation-for="RuleSetId" class="text-danger"></span>
+                    <span asp-validation-for="Pool.RuleSetId" class="text-danger"></span>
                 </div>
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                 <div class="form-group form-check">
                     <label class="form-check-label">
-                        <input class="form-check-input" asp-for="Private" /> @Html.DisplayNameFor(model => model.Private)
+                        <input class="form-check-input" asp-for="Pool.Private" /> @Html.DisplayNameFor(model => model.Pool.Private)
                     </label>
                 </div>
                 <div class="form-group">
-                    <label asp-for="Size" class="control-label"></label>
-                    <input asp-for="Size" class="form-control" />
-                    <span asp-validation-for="Size" class="text-danger"></span>
+                    <label asp-for="Pool.Size" class="control-label"></label>
+                    <input asp-for="Pool.Size" class="form-control" />
+                    <span asp-validation-for="Pool.Size" class="text-danger"></span>
                 </div>
                 <div class="form-group">
                     <input type="submit" value="Create" class="btn btn-primary" />

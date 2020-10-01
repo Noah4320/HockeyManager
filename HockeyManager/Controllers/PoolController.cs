@@ -133,7 +133,8 @@ namespace HockeyManager.Controllers
         // GET: Pool/Create
         public ActionResult CreatePool()
         {
-            return View();
+            var ruleSets = _context.RuleSets.ToList();
+            return View(new PoolsViewModel { RuleSet = ruleSets});
         }
 
         // POST: Pool/CreatePool
@@ -198,11 +199,16 @@ namespace HockeyManager.Controllers
         }
 
 
-            // GET: Pool/Edit/5
-            public ActionResult Edit(int id)
-        {
-            return View();
-        }
+            // GET: Pool/Edit/
+            public ActionResult Edit()
+            {
+            var ruleSets = _context.RuleSets.ToList();
+            var pools = _context.Pools.Where(x => x.OwnerId == _userManager.GetUserId(User)).Include(x => x.RuleSet).ToList();
+
+            //var count = _context.Teams.Where(x => x.)
+
+            return View(new PoolsViewModel { RuleSet = ruleSets, Pools = pools });
+            }
 
         // POST: Pool/Edit/5
         [HttpPost]
