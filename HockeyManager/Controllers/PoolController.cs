@@ -92,8 +92,14 @@ namespace HockeyManager.Controllers
         }
 
         [HttpPost]
-        public async Task<string> AddTeam(int id, string name, string[] players)
+        public async Task<string> AddTeam(int poolId, string name, string[] players)
         {
+            var anyTeam = _context.Teams.Where(x => x.PoolId == poolId && x.UserId == _userManager.GetUserId(User));
+            if (anyTeam.Any())
+            {
+                return "Team already exists";
+            }
+
             HMTeamInfo teamInfo = new HMTeamInfo();
             teamInfo.Name = name;
 
@@ -102,7 +108,7 @@ namespace HockeyManager.Controllers
 
             HMTeam team = new HMTeam();
             team.TeamInfoId = teamInfo.Id;
-            team.PoolId = id;
+            team.PoolId = poolId;
             team.UserId = _userManager.GetUserId(User);
 
             await _context.Teams.AddAsync(team);
@@ -160,33 +166,37 @@ namespace HockeyManager.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<ActionResult> JoinPool(Pool pool)
+        public async Task<string> JoinPool(string poolName)
         {
-            var user = await _userManager.GetUserAsync(User);
+            PoolList joinPool = new PoolList();
+            var pool = _context.Pools.FirstOrDefault(x => x.Name == poolName);
 
-            try
+            if (pool == null)
             {
-                PoolList joinPool = new PoolList();
-                var pools = _context.Pools.First(x => x.Name == pool.Name);
-
-                joinPool.PoolId = pools.Id;
-                joinPool.UserId = user.Id;
-
-                await _context.PoolList.AddAsync(joinPool);
-                await _context.SaveChangesAsync();
-
-                TempData["Message"] = "Pool joined successfully!";
-
-                return RedirectToAction(nameof(Index));
+                return "Pool doesn't exist";
             }
-            catch
+
+            var isEnrolled = _context.PoolList.Where(x => x.PoolId == pool.Id && x.UserId == _userManager.GetUserId(User)).Any();
+            if (isEnrolled)
             {
-                TempData["Message"] = "Unable to join pool";
-                return RedirectToAction(nameof(Index));
+                return "You have already joined this pool!";
             }
-           
+
+            joinPool.PoolId = pool.Id;
+            joinPool.UserId = _userManager.GetUserId(User);
+
+            await _context.PoolList.AddAsync(joinPool);
+            await _context.SaveChangesAsync();
+
+            var poolTeams = _context.Teams.Where(x => x.PoolId == pool.Id);
+            if (poolTeams.Count() >= pool.Size)
+            {
+                return "Pool is full!";
+            }
+
+            return "Pool joined successfully!";
         }
+
 
             // GET: Pool/Edit/5
             public ActionResult Edit(int id)

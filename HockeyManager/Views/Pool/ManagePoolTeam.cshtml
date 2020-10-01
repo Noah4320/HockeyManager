@@ -34,7 +34,7 @@
         }); 
 
         $(document).on('click', '#addTeam', function () {
-            var poolId = @Context.Request.Query["id"];
+            var id = @Context.Request.Query["id"];
             var teamName = $("#teamName").val();
             var playerIds = [];
             $('#drafted tr').each(function () {
@@ -45,7 +45,7 @@
                 type: "POST",
                 url: "https://localhost:44375/Pool/AddTeam",
                 data: {
-                    id: poolId,
+                    poolId: id,
                     name: teamName,
                     players: playerIds
                 }
@@ -54,6 +54,8 @@
                 if (x == "success") {
                     location.href = 'https://localhost:44375/Pool/Details/'+@Context.Request.Query["id"];
 
+                } else {
+                    alert(x);
                 }
 
             }).fail(function (x) {
