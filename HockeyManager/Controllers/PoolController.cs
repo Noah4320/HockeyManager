@@ -250,26 +250,36 @@ namespace HockeyManager.Controllers
             await _context.SaveChangesAsync();
         }
 
-        // GET: Pool/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
-
         // POST: Pool/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+        [HttpDelete]
+        public async Task Delete(int poolId)
         {
             try
             {
-                // TODO: Add delete logic here
+                var allPlayers = _context.Teams.Where(x => x.PoolId == poolId).SelectMany(x => x.Players).ToList();
+                _context.Players.RemoveRange(allPlayers);
+                await _context.SaveChangesAsync();
 
-                return RedirectToAction(nameof(Index));
+                var allTeams = _context.Teams.Where(x => x.PoolId == poolId).ToList();
+                _context.Teams.RemoveRange(allTeams);
+                await _context.SaveChangesAsync();
+
+                var allTeamInfos = _context.Teams.Where(x => x.PoolId == poolId).Select(x => x.TeamInfo).ToList();
+                _context.TeamInfo.RemoveRange(allTeamInfos);
+                await _context.SaveChangesAsync();
+
+                var allUsers = _context.PoolList.Where(x => x.PoolId == poolId).ToList();
+                _context.PoolList.RemoveRange(allUsers);
+                await _context.SaveChangesAsync();
+
+                var pool = _context.Pools.Find(poolId);
+                _context.Pools.Remove(pool);
+                await _context.SaveChangesAsync();
+
             }
-            catch
+            catch(Exception ex)
             {
-                return View();
+                var test = ex;
             }
         }
 

@@ -9,9 +9,10 @@
 <script>
     $(document).ready(function () {
         $(".my-tooltip").tooltip();
-
+        var poolName = "";
         $(document).on('click', '.playerData', function () {
             var poolId = this.id;
+            poolName = $(this).closest('tr').find('td:eq(0)')[0].innerText;
             var poolRule = $(this).closest('tr').find('td:eq(1)')[0].innerText;
             var isPrivate = $(this).closest('tr').find('td:eq(2)')[0].innerText;
             isPrivate = (isPrivate == "True");
@@ -19,8 +20,9 @@
             poolSize = poolSize.split("/")[1];
             var poolStatus = $(this).closest('tr').find('td:eq(4)')[0].innerText;
 
+            $('#poolId').val(poolId);
             if (poolStatus == "Active") {
-                $('#poolId').val(poolId);
+
                 $('#poolId').prop("disabled", false);
                 $('#private')[0].checked = isPrivate;
                 $('#private').prop("disabled", false);
@@ -39,7 +41,9 @@
                 $('#update').prop("disabled", false);
                 $('#archive').prop("disabled", false);
                 $('#delete').prop("disabled", false);
+
             } else {
+
                 $('#poolId').prop("disabled", true);
                 $('#private')[0].checked = isPrivate;
                 $('#private').prop("disabled", true);
@@ -57,6 +61,7 @@
 
                 $('#update').prop("disabled", true);
                 $('#archive').prop("disabled", true);
+                $('#delete').prop("disabled", false);
             }
            
 
@@ -70,11 +75,32 @@
                     poolId: id
                 }
             }).done(function (x) {
-
+                location.reload();
             }).fail(function (x) {
                 alert(x.responseText);
 
             });
+        }); 
+
+        $(document).on('click', '#delete', function () {
+            var confirmDelete = confirm("Are you sure you want to delete " + poolName + "?");
+
+            if (confirmDelete) {
+                var id = $('#poolId').val();
+                $.ajax({
+                    type: "DELETE",
+                    url: "https://localhost:44375/Pool/Delete",
+                    data: {
+                        poolId: id
+                    }
+                }).done(function (x) {
+                    location.reload();
+                }).fail(function (x) {
+                    alert(x.responseText);
+
+                });
+            }
+
         }); 
     });
 </script>
