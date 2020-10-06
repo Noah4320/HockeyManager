@@ -213,11 +213,16 @@ namespace HockeyManager.Controllers
         // POST: Pool/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        public async Task<ActionResult> Edit(Pool pool)
         {
             try
             {
-                // TODO: Add update logic here
+                _context.Pools.Attach(pool);
+                _context.Entry(pool).Property(x => x.Private).IsModified = true;
+                _context.Entry(pool).Property(x => x.RuleSetId).IsModified = true;
+                _context.Entry(pool).Property(x => x.Size).IsModified = true;
+
+                await _context.SaveChangesAsync();
 
                 return RedirectToAction(nameof(Index));
             }
