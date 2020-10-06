@@ -19,26 +19,62 @@
             poolSize = poolSize.split("/")[1];
             var poolStatus = $(this).closest('tr').find('td:eq(4)')[0].innerText;
 
-            $('#poolId').val(poolId);
-            $('#poolId').prop("disabled", false);
-            $('#private')[0].checked = isPrivate;
-            $('#private').prop("disabled", false);
-            $('#private').val("true");
-            $('#size').val(poolSize);
-            $('#size').prop("disabled", false);
+            if (poolStatus == "Active") {
+                $('#poolId').val(poolId);
+                $('#poolId').prop("disabled", false);
+                $('#private')[0].checked = isPrivate;
+                $('#private').prop("disabled", false);
+                $('#private').val("true");
+                $('#size').val(poolSize);
+                $('#size').prop("disabled", false);
 
-            $("input:radio").each(function () {
-                $(this).prop("disabled", false);
-                if (this.id == poolRule) {
-                    this.checked = true
+                $("input:radio").each(function () {
+                    $(this).prop("disabled", false);
+                    if (this.id == poolRule) {
+                        this.checked = true
+                    }
+
+                })
+
+                $('#update').prop("disabled", false);
+                $('#archive').prop("disabled", false);
+                $('#delete').prop("disabled", false);
+            } else {
+                $('#poolId').prop("disabled", true);
+                $('#private')[0].checked = isPrivate;
+                $('#private').prop("disabled", true);
+                $('#private').val("true");
+                $('#size').val(poolSize);
+                $('#size').prop("disabled", true);
+
+                $("input:radio").each(function () {
+                    $(this).prop("disabled", true);
+                    if (this.id == poolRule) {
+                        this.checked = true
+                    }
+
+                })
+
+                $('#update').prop("disabled", true);
+                $('#archive').prop("disabled", true);
+            }
+           
+
+        }); 
+        $(document).on('click', '#archive', function () {
+            var id = $('#poolId').val();
+            $.ajax({
+                type: "POST",
+                url: "https://localhost:44375/Pool/Archive",
+                data: {
+                    poolId: id
                 }
+            }).done(function (x) {
 
-            })
+            }).fail(function (x) {
+                alert(x.responseText);
 
-            $('#update').prop("disabled", false);
-            $('#archive').prop("disabled", false);
-            $('#delete').prop("disabled", false);
-
+            });
         }); 
     });
 </script>
@@ -88,7 +124,7 @@
                 <div class="form-group">
                     <label asp-for="Pool.Size" class="control-label"></label>
                     <input asp-for="Pool.Size" id="size" class="form-control" disabled />
-                    <span asp-validation-for="Pool.Size" class="text-danger"></span>
+                    <span asp-validation-for="Pool.Size" class="text-danger">@ViewBag.SizeError</span>
                 </div>
 
                 <div class="form-group">

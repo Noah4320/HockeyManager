@@ -5,14 +5,21 @@
 
 <script>
     $(document).ready(function () {
-       
+
+        @if (Model.Status == "Archived")
+        {
+            <Text>
+        $("#manageTeam").prop("disabled", true);
+            </Text>
+        }
+
         $(document).on('click', '.playerData', function () {
             var test = (this.id);
             $.ajax({
-                type: "GET",
+            type: "GET",
                 url: "https://localhost:44375/Pool/GetTeamRoster",
                 data: {
-                    id: test
+                id: test
                 }
             }).done(function (roster) {
                 var result = "";
@@ -32,7 +39,7 @@
                 });
                 $("#refTable").html(result);
                 $("#teamName").html(teamName);
-             })
+            })
 
             .fail(function (x) {
                 alert(x.responseText);
@@ -93,5 +100,5 @@
             </table>
         </div>
     </div>
-            <input type="button" value="Add or Update Team" onclick="location.href='@Url.Action("ManagePoolTeam", "Pool")?id=' + @Model.Id" />
+            <input type="button" id="manageTeam" value="Add or Update Team" onclick="location.href='@Url.Action("ManagePoolTeam", "Pool")?id=' + @Model.Id" />
         </div>

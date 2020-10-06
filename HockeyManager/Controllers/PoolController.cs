@@ -215,6 +215,13 @@ namespace HockeyManager.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Edit(Pool pool)
         {
+            var currentSize = _context.Teams.Where(x => x.PoolId == pool.Id).Count();
+            if (pool.Size < currentSize)
+            {
+                //ViewBag.SizeError = "Size is too small.";
+                return RedirectToAction(nameof(Edit));
+            }
+
             try
             {
                 _context.Pools.Attach(pool);
@@ -230,6 +237,17 @@ namespace HockeyManager.Controllers
             {
                 return View();
             }
+        }
+
+        [HttpPost]
+        public async Task Archive(int poolId)
+        {
+            var pool = await _context.Pools.FindAsync(poolId);
+
+            pool.Status = "Archived";
+
+            _context.Pools.Update(pool);
+            await _context.SaveChangesAsync();
         }
 
         // GET: Pool/Delete/5
@@ -268,7 +286,7 @@ namespace HockeyManager.Controllers
         [HttpGet]
         public string[] GetPools()
         {
-            var pools = _context.Pools.Where(x => x.Private == false).Select(x => x.Name).ToArray();
+            var pools = _context.Pools.Where(x => x.Private == false && x.Status == "Active").Select(x => x.Name).ToArray();
 
             return pools;
         }
