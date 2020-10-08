@@ -154,19 +154,31 @@ namespace HockeyManager.Controllers
             ruleSets.Add(new RuleSet
             {
                 Name = "Top Scorers",
-                Description = "Do you believe that you have what it takes to pick the top goal scorers in the league? Pick your top 5 skaters from any team."
+                Description = "Do you believe that you have what it takes to pick the top goal scorers in the league? Pick your top 5 skaters from any team.",
+                maxForwards = 5,
+                maxDefensemen = 5,
+                maxGoalies = 0,
+                maxPlayers = 5
             });
 
             ruleSets.Add(new RuleSet
             {
                 Name = "Point Producers",
-                Description = "Pick your top point producers from around the league. Pick 7 forwards and 3 defenceman."
+                Description = "Pick your top point producers from around the league. Pick 7 forwards and 3 defenceman.",
+                maxForwards = 7,
+                maxDefensemen = 3,
+                maxGoalies = 0,
+                maxPlayers = 10
             });
 
             ruleSets.Add(new RuleSet
             {
                 Name = "Assist Machine",
-                Description = "Nothing but assists! Pick your top 5 assist getters."
+                Description = "Nothing but assists! Pick your top 5 assist getters.",
+                maxForwards = 5,
+                maxDefensemen = 5,
+                maxGoalies = 0,
+                maxPlayers = 5
             });
 
             await _context.RuleSets.AddRangeAsync(ruleSets);

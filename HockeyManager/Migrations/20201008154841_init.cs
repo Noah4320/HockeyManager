@@ -74,8 +74,12 @@ namespace HockeyManager.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    Name = table.Column<string>(nullable: true),
-                    Description = table.Column<string>(nullable: true)
+                    Name = table.Column<string>(nullable: false),
+                    Description = table.Column<string>(nullable: false),
+                    maxForwards = table.Column<int>(nullable: false),
+                    maxDefensemen = table.Column<int>(nullable: false),
+                    maxGoalies = table.Column<int>(nullable: false),
+                    maxPlayers = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {

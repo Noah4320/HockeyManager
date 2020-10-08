@@ -273,9 +273,19 @@ namespace HockeyManager.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("Description");
+                    b.Property<string>("Description")
+                        .IsRequired();
 
-                    b.Property<string>("Name");
+                    b.Property<string>("Name")
+                        .IsRequired();
+
+                    b.Property<int>("maxDefensemen");
+
+                    b.Property<int>("maxForwards");
+
+                    b.Property<int>("maxGoalies");
+
+                    b.Property<int>("maxPlayers");
 
                     b.HasKey("Id");
 

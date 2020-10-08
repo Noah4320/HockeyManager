@@ -68,25 +68,38 @@ namespace HockeyManager.Controllers
         }
 
         //GET
-        public ActionResult GetSelectedTeam(string team, string favourite)
+        public ActionResult GetSelectedPlayers(string team, string position, string favourite, string selectedPlayerIds)
         {
             if (team == null) { team = ""; }
+            if (position == null) { position = ""; }
+            int[] parsedPlayerIds;
+            if (selectedPlayerIds == null)
+            {
+                parsedPlayerIds = new int[1];
+                parsedPlayerIds[0] = -1;
+            }
+            else
+            {
+                var playerIds = selectedPlayerIds.Split(",");
+                playerIds = playerIds.Skip(1).ToArray();
+                parsedPlayerIds = Array.ConvertAll(playerIds, s => int.Parse(s));
+            }
+           
 
-          
             if (favourite == "Yes")
             {
-                var results = _context.Favourites.Where(x => x.UserId == _userManager.GetUserId(User)).Select(x => x.Player).Include(x => x.PlayerInfo).Include(x => x.Team.TeamInfo).Where(x => x.Team.TeamInfo.Abbreviation.Contains(team)).ToList();
+                var results = _context.Favourites.Where(x => x.UserId == _userManager.GetUserId(User)).Select(x => x.Player).Include(x => x.PlayerInfo).Include(x => x.Team.TeamInfo).Where(x => x.Team.TeamInfo.Abbreviation.Contains(team) && x.PlayerInfo.Position.Contains(position) && !parsedPlayerIds.Contains(x.PlayerInfo.Id)).ToList();
                 return PartialView("_PlayerData", results);
             }
             else if (favourite == "No")
             {
-                var results = _context.Players.Include(x => x.PlayerInfo).Include(x => x.Team.TeamInfo).Where(x => x.Team.TeamInfo.Abbreviation.Contains(team) && x.ApiId != 0).Include(x => x.Favourites).ToList();
+                var results = _context.Players.Include(x => x.PlayerInfo).Include(x => x.Team.TeamInfo).Where(x => x.Team.TeamInfo.Abbreviation.Contains(team) && x.ApiId != 0 && x.PlayerInfo.Position.Contains(position) && !parsedPlayerIds.Contains(x.PlayerInfo.Id)).Include(x => x.Favourites).ToList();
                 results.RemoveAll(x => x.Favourites.Select(y => y.UserId).Contains(_userManager.GetUserId(User)));
                 return PartialView("_PlayerData", results);
             }
             else
             {
-                var results = _context.Players.Include(x => x.PlayerInfo).Include(x => x.Team.TeamInfo).Where(x => x.Team.TeamInfo.Abbreviation.Contains(team) && x.ApiId != 0).ToList();
+                var results = _context.Players.Include(x => x.PlayerInfo).Include(x => x.Team.TeamInfo).Where(x => x.Team.TeamInfo.Abbreviation.Contains(team) && x.ApiId != 0 && x.PlayerInfo.Position.Contains(position) && !parsedPlayerIds.Contains(x.PlayerInfo.Id)).ToList();
                 return PartialView("_PlayerData", results);
             }
         }
@@ -98,6 +111,55 @@ namespace HockeyManager.Controllers
             if (anyTeam.Any())
             {
                 return "Team already exists";
+            }
+
+            var ruleId = _context.Pools.Find(poolId).RuleSetId;
+            var rule = _context.RuleSets.Find(ruleId);
+            var hMPlayersInfo = _context.PlayerInfo.Where(x => players.Contains(x.Id.ToString())).ToList();
+
+            var forwards = 0;
+            var defencemen = 0;
+            var goalies = 0;
+
+            foreach (var player in hMPlayersInfo)
+            {
+                //Count every position
+                if (player.Position == "C" || player.Position == "LW" || player.Position == "RW")
+                {
+                    forwards++;
+                }
+                else if (player.Position == "D")
+                {
+                    defencemen++;
+                }
+                else if (player.Position == "G")
+                {
+                    goalies++;
+                }
+
+                //Check to make sure the user hasn't exceeded the player position limit
+                if (forwards > rule.maxForwards)
+                {
+                    return "Too many forwards!";
+                }
+                else if (defencemen > rule.maxDefensemen)
+                {
+                    return "Too many defencemen!";
+                }
+                else if (goalies > rule.maxGoalies)
+                {
+                    return "Too many goalies!";
+                }
+
+            }
+            //Check if team is too big or too small
+            if ((forwards + defencemen + goalies) > rule.maxPlayers)
+            {
+                return "Too many players!";
+            }
+            else if ((forwards + defencemen + goalies) < rule.maxPlayers)
+            {
+                return $"{rule.maxPlayers - (forwards + defencemen + goalies)} more players are required.";
             }
 
             HMTeamInfo teamInfo = new HMTeamInfo();
@@ -114,7 +176,7 @@ namespace HockeyManager.Controllers
             await _context.Teams.AddAsync(team);
             await _context.SaveChangesAsync();
 
-            var hMPlayersInfo = _context.PlayerInfo.Where(x => players.Contains(x.Id.ToString())).ToList();
+           
             List<HMPlayer> hMPlayers = new List<HMPlayer>();
 
             foreach (var playerInfo in hMPlayersInfo)
