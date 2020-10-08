@@ -45,8 +45,15 @@ namespace HockeyManager.Controllers
         // GET: Pool/Details/5
         public ActionResult Details(int id)
         {
+            var enrolledPool = _context.PoolList.Where(x => x.PoolId == id && _userManager.GetUserId(User) == x.UserId).FirstOrDefault();
+
             var pool = _context.Pools.Where(x => x.Id == id).Include(x => x.Teams).ThenInclude(x => x.User)
                 .Include(x => x.Teams).ThenInclude(x => x.TeamInfo).FirstOrDefault();
+
+            if (pool == null || enrolledPool == null)
+            {
+                return RedirectToAction(nameof(Index));
+            }
             return View(pool);
         }
 
@@ -112,9 +119,22 @@ namespace HockeyManager.Controllers
             {
                 return "Team already exists";
             }
+            var enrolledPool = _context.PoolList.Where(x => x.PoolId == poolId && _userManager.GetUserId(User) == x.UserId).FirstOrDefault();
 
-            var ruleId = _context.Pools.Find(poolId).RuleSetId;
-            var rule = _context.RuleSets.Find(ruleId);
+            if (enrolledPool == null)
+            {
+                return "You're not enrolled in this pool!!";
+            }
+
+            var ruleId = _context.Pools.Where(x => x.Id == poolId).FirstOrDefault().RuleSetId;
+
+            if (ruleId == null)
+            {
+                return "Something went wrong..";
+            }
+
+            var rule = _context.RuleSets.Where(x => x.Id == ruleId).FirstOrDefault();
+
             var hMPlayersInfo = _context.PlayerInfo.Where(x => players.Contains(x.Id.ToString())).ToList();
 
             var forwards = 0;

@@ -72,12 +72,12 @@
                     @{ int counter = 1;}
                     @foreach (var team in Model.Teams)
                     {
-                    <tr class="playerData" id=@team.Id>
-                        <td>@counter</td>
-                        <td>@team.User.UserName</td>
-                        <td>@team.Points</td>
-                        <td>@team.TeamInfo.Name</td>
-                    </tr>
+                        <tr class="playerData" id=@team.Id>
+                            <td>@counter</td>
+                            <td>@team.User.UserName</td>
+                            <td>@team.Points</td>
+                            <td>@team.TeamInfo.Name</td>
+                        </tr>
                     }
                 </tbody>
             </table>
@@ -94,11 +94,10 @@
                         <th scope="col">Points</th>
                     </tr>
                 </thead>
-                <tbody id="refTable">
-                
-                </tbody>
+                <tbody id="refTable"></tbody>
             </table>
         </div>
     </div>
-            <input type="button" id="manageTeam" value="Add or Update Team" onclick="location.href='@Url.Action("ManagePoolTeam", "Pool")?id=' + @Model.Id" />
-        </div>
+    <input type="button" class="btn btn-success" id="manageTeam" value="Add or Update Team" onclick="location.href='@Url.Action("ManagePoolTeam", "Pool")?id=' + @Model.Id" />
+    <button id="delete" type="button" class="btn btn-danger" disabled>Delete</button>
+</div>
