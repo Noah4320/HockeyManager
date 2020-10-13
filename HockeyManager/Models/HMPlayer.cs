@@ -17,7 +17,7 @@ namespace HockeyManager.Models
         public int Points { get; set; }
         public int Rank { get; set; }
         public int PlusMinus { get; set; }
-        public string PenalityMinutes { get; set; }
+        public int PenalityMinutes { get; set; }
         public int Saves { get; set; }
         public int Shutouts { get; set; }
 

@@ -318,7 +318,7 @@ namespace HockeyManager.Migrations
                     Points = table.Column<int>(nullable: false),
                     Rank = table.Column<int>(nullable: false),
                     PlusMinus = table.Column<int>(nullable: false),
-                    PenalityMinutes = table.Column<string>(nullable: true),
+                    PenalityMinutes = table.Column<int>(nullable: false),
                     Saves = table.Column<int>(nullable: false),
                     Shutouts = table.Column<int>(nullable: false),
                     ApiId = table.Column<int>(nullable: false),

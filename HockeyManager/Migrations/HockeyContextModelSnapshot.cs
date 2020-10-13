@@ -109,7 +109,7 @@ namespace HockeyManager.Migrations
 
                     b.Property<int>("Goals");
 
-                    b.Property<string>("PenalityMinutes");
+                    b.Property<int>("PenalityMinutes");
 
                     b.Property<int?>("PlayerInfoId");
 

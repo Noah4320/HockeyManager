@@ -11,6 +11,7 @@ using Newtonsoft.Json;
 using HockeyManager.Data;
 using HockeyManager.Areas.Identity.Data;
 using Microsoft.EntityFrameworkCore;
+using HockeyManager.Models.ApiModels;
 
 namespace HockeyManager.Controllers
 {
@@ -43,6 +44,14 @@ namespace HockeyManager.Controllers
 
         public async Task<IActionResult> FetchApiData()
         {
+
+            var anyTeams = _context.TeamInfo.Any();
+
+            if (anyTeams)
+            {
+                return View("Index");
+            }
+
             var TeamUrl = "https://statsapi.web.nhl.com/api/v1/teams";
             var httpClient = HttpClientFactory.Create();
             var teamData = await httpClient.GetStringAsync(TeamUrl);
@@ -98,7 +107,6 @@ namespace HockeyManager.Controllers
                 foreach (var player in roster.roster)
                 {
                     HMPlayerInfo hMPlayerInfo = new HMPlayerInfo();
-                    HMPlayer hMPlayer = new HMPlayer();
                     try
                     {
                         
@@ -122,13 +130,14 @@ namespace HockeyManager.Controllers
                         await _context.PlayerInfo.AddAsync(hMPlayerInfo);
                         await _context.SaveChangesAsync();
 
+                        int.TryParse(playerStats.stats[0].splits[0].stat.penaltyMinutes, out int parsedPM);
                         hMPlayers.Add(new HMPlayer
                         {
                             GamesPlayed = playerStats.stats[0].splits[0].stat.games,
                             Goals = playerStats.stats[0].splits[0].stat.goals,
                             Assists = playerStats.stats[0].splits[0].stat.assists,
                             Points = playerStats.stats[0].splits[0].stat.points,
-                            PenalityMinutes = playerStats.stats[0].splits[0].stat.penaltyMinutes,
+                            PenalityMinutes = parsedPM,
                             Saves = playerStats.stats[0].splits[0].stat.saves,
                             Shutouts = playerStats.stats[0].splits[0].stat.shutouts,
                             PlusMinus = playerStats.stats[0].splits[0].stat.plusMinus,
@@ -184,6 +193,137 @@ namespace HockeyManager.Controllers
             await _context.RuleSets.AddRangeAsync(ruleSets);
             await _context.SaveChangesAsync();
 
+            return View("Index");
+        }
+
+        public async Task<IActionResult> FetchUpdatedStats()
+        {
+            var gamesUrl = "https://statsapi.web.nhl.com/api/v1/schedule?startDate=2018-01-02&endDate=2018-01-02";
+            var httpClient = HttpClientFactory.Create();
+            var gamesData = await httpClient.GetStringAsync(gamesUrl);
+            var games = JsonConvert.DeserializeObject<GameRoot>(gamesData);
+
+           
+
+            foreach (var game in games.dates[0].games)
+            {
+                var awayTeam = _context.Teams.Where(x => x.ApiId == game.teams.away.team.id).Include(x => x.Players).ThenInclude(x => x.PlayerInfo).FirstOrDefault();
+
+                
+                foreach (var player in awayTeam.Players)
+                {
+                    var playerStatsUrl = $"https://statsapi.web.nhl.com/api/v1/people/{player.ApiId}/stats?stats=statsSingleSeason&season=20192020";
+                    var playerStatsData = await httpClient.GetStringAsync(playerStatsUrl);
+                    var playerStats = JsonConvert.DeserializeObject<StatsRoot>(playerStatsData);
+
+                    var poolRecords = _context.Players.Include(x => x.Team).Include(x => x.PlayerInfo).Where(x => x.Team.PoolId != null && x.PlayerInfo.Name == player.PlayerInfo.Name).ToList();
+
+                    if (poolRecords != null)
+                    {
+                        foreach (var record in poolRecords)
+                        {
+                            try
+                            {
+                                int.TryParse(playerStats.stats[0].splits[0].stat.penaltyMinutes, out int parsedPM);
+
+                                record.GamesPlayed = (playerStats.stats[0].splits[0].stat.games - player.GamesPlayed) + record.GamesPlayed;
+                                record.Goals = ((playerStats.stats[0].splits[0].stat.goals + 1) - player.Goals) + record.Goals;
+                                record.Assists = (playerStats.stats[0].splits[0].stat.assists - player.Assists) + record.Assists;
+                                record.Points = (playerStats.stats[0].splits[0].stat.points - player.Points) + record.Points;
+                                record.PenalityMinutes = (parsedPM - player.PenalityMinutes) + record.PenalityMinutes;
+                                record.Saves = (playerStats.stats[0].splits[0].stat.saves - player.Saves) + record.Saves;
+                                record.Shutouts = (playerStats.stats[0].splits[0].stat.shutouts - player.Shutouts) + record.Shutouts;
+                                record.PlusMinus = (playerStats.stats[0].splits[0].stat.plusMinus - player.PlusMinus) + record.PlusMinus;
+
+                                _context.Players.Update(record);
+                            } 
+                            catch (ArgumentOutOfRangeException ex)
+                            {
+                                var test = ex.Message;
+                            }
+                        }
+                    }
+                    try
+                    {
+                        int.TryParse(playerStats.stats[0].splits[0].stat.penaltyMinutes, out int parsedPM);
+
+                        player.GamesPlayed = playerStats.stats[0].splits[0].stat.games;
+                        player.Goals = playerStats.stats[0].splits[0].stat.goals + 1;
+                        player.Assists = playerStats.stats[0].splits[0].stat.assists;
+                        player.Points = playerStats.stats[0].splits[0].stat.points;
+                        player.PenalityMinutes = parsedPM;
+                        player.Saves = playerStats.stats[0].splits[0].stat.saves;
+                        player.Shutouts = playerStats.stats[0].splits[0].stat.shutouts;
+                        player.PlusMinus = playerStats.stats[0].splits[0].stat.plusMinus;
+
+                        _context.Players.Update(player);
+
+                    } 
+                    catch (ArgumentOutOfRangeException ex)
+                    {
+                        var test = ex.Message;
+                    }
+                }
+
+                var homeTeam = _context.Teams.Where(x => x.ApiId == game.teams.home.team.id).Include(x => x.Players).ThenInclude(x => x.PlayerInfo).FirstOrDefault();
+
+
+                foreach (var player in homeTeam.Players)
+                {
+                    var playerStatsUrl = $"https://statsapi.web.nhl.com/api/v1/people/{player.ApiId}/stats?stats=statsSingleSeason&season=20192020";
+                    var playerStatsData = await httpClient.GetStringAsync(playerStatsUrl);
+                    var playerStats = JsonConvert.DeserializeObject<StatsRoot>(playerStatsData);
+
+                    var poolRecords = _context.Players.Include(x => x.Team).Include(x => x.PlayerInfo).Where(x => x.Team.PoolId != null && x.PlayerInfo.Name == player.PlayerInfo.Name).ToList();
+
+                    if (poolRecords != null)
+                    {
+                        foreach (var record in poolRecords)
+                        {
+                            try
+                            {
+                                int.TryParse(playerStats.stats[0].splits[0].stat.penaltyMinutes, out int parsedPM);
+
+                                record.GamesPlayed = (playerStats.stats[0].splits[0].stat.games - player.GamesPlayed) + record.GamesPlayed;
+                                record.Goals = ((playerStats.stats[0].splits[0].stat.goals + 1) - player.Goals) + record.Goals;
+                                record.Assists = (playerStats.stats[0].splits[0].stat.assists - player.Assists) + record.Assists;
+                                record.Points = (playerStats.stats[0].splits[0].stat.points - player.Points) + record.Points;
+                                record.PenalityMinutes = (parsedPM - player.PenalityMinutes) + record.PenalityMinutes;
+                                record.Saves = (playerStats.stats[0].splits[0].stat.saves - player.Saves) + record.Saves;
+                                record.Shutouts = (playerStats.stats[0].splits[0].stat.shutouts - player.Shutouts) + record.Shutouts;
+                                record.PlusMinus = (playerStats.stats[0].splits[0].stat.plusMinus - player.PlusMinus) + record.PlusMinus;
+
+                                _context.Players.Update(record);
+                            } 
+                            catch (ArgumentOutOfRangeException ex)
+                            {
+                                var test = ex.Message;
+                            }
+                        }
+                    }
+                    try
+                    {
+                        int.TryParse(playerStats.stats[0].splits[0].stat.penaltyMinutes, out int parsedPM);
+
+                        player.GamesPlayed = playerStats.stats[0].splits[0].stat.games;
+                        player.Goals = playerStats.stats[0].splits[0].stat.goals + 1;
+                        player.Assists = playerStats.stats[0].splits[0].stat.assists;
+                        player.Points = playerStats.stats[0].splits[0].stat.points;
+                        player.PenalityMinutes = parsedPM;
+                        player.Saves = playerStats.stats[0].splits[0].stat.saves;
+                        player.Shutouts = playerStats.stats[0].splits[0].stat.shutouts;
+                        player.PlusMinus = playerStats.stats[0].splits[0].stat.plusMinus;
+
+                        _context.Players.Update(player);
+                    }
+                    catch (ArgumentOutOfRangeException ex)
+                    {
+                        var test = ex.Message;
+                    }
+                }
+            }
+
+            await _context.SaveChangesAsync();
             return View("Index");
         }
     }

@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HockeyManager.Migrations
 {
     [DbContext(typeof(HockeyContext))]
-    [Migration("20201008154841_init")]
+    [Migration("20201013203734_init")]
     partial class init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -111,7 +111,7 @@ namespace HockeyManager.Migrations
 
                     b.Property<int>("Goals");
 
-                    b.Property<string>("PenalityMinutes");
+                    b.Property<int>("PenalityMinutes");
 
                     b.Property<int?>("PlayerInfoId");
 
