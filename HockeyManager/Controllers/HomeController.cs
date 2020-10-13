@@ -12,6 +12,7 @@ using HockeyManager.Data;
 using HockeyManager.Areas.Identity.Data;
 using Microsoft.EntityFrameworkCore;
 using HockeyManager.Models.ApiModels;
+using Hangfire;
 
 namespace HockeyManager.Controllers
 {
@@ -27,7 +28,7 @@ namespace HockeyManager.Controllers
         }
 
         public IActionResult Index()
-        {
+        { 
             return View();
         }
 
@@ -196,7 +197,7 @@ namespace HockeyManager.Controllers
             return View("Index");
         }
 
-        public async Task<IActionResult> FetchUpdatedStats()
+        public async Task FetchUpdatedStats()
         {
             var gamesUrl = "https://statsapi.web.nhl.com/api/v1/schedule?startDate=2018-01-02&endDate=2018-01-02";
             var httpClient = HttpClientFactory.Create();
@@ -227,7 +228,7 @@ namespace HockeyManager.Controllers
                                 int.TryParse(playerStats.stats[0].splits[0].stat.penaltyMinutes, out int parsedPM);
 
                                 record.GamesPlayed = (playerStats.stats[0].splits[0].stat.games - player.GamesPlayed) + record.GamesPlayed;
-                                record.Goals = ((playerStats.stats[0].splits[0].stat.goals + 1) - player.Goals) + record.Goals;
+                                record.Goals = (playerStats.stats[0].splits[0].stat.goals - player.Goals) + record.Goals;
                                 record.Assists = (playerStats.stats[0].splits[0].stat.assists - player.Assists) + record.Assists;
                                 record.Points = (playerStats.stats[0].splits[0].stat.points - player.Points) + record.Points;
                                 record.PenalityMinutes = (parsedPM - player.PenalityMinutes) + record.PenalityMinutes;
@@ -236,6 +237,7 @@ namespace HockeyManager.Controllers
                                 record.PlusMinus = (playerStats.stats[0].splits[0].stat.plusMinus - player.PlusMinus) + record.PlusMinus;
 
                                 _context.Players.Update(record);
+                                await _context.SaveChangesAsync();
                             } 
                             catch (ArgumentOutOfRangeException ex)
                             {
@@ -248,7 +250,7 @@ namespace HockeyManager.Controllers
                         int.TryParse(playerStats.stats[0].splits[0].stat.penaltyMinutes, out int parsedPM);
 
                         player.GamesPlayed = playerStats.stats[0].splits[0].stat.games;
-                        player.Goals = playerStats.stats[0].splits[0].stat.goals + 1;
+                        player.Goals = playerStats.stats[0].splits[0].stat.goals;
                         player.Assists = playerStats.stats[0].splits[0].stat.assists;
                         player.Points = playerStats.stats[0].splits[0].stat.points;
                         player.PenalityMinutes = parsedPM;
@@ -257,6 +259,7 @@ namespace HockeyManager.Controllers
                         player.PlusMinus = playerStats.stats[0].splits[0].stat.plusMinus;
 
                         _context.Players.Update(player);
+                        await _context.SaveChangesAsync();
 
                     } 
                     catch (ArgumentOutOfRangeException ex)
@@ -285,7 +288,7 @@ namespace HockeyManager.Controllers
                                 int.TryParse(playerStats.stats[0].splits[0].stat.penaltyMinutes, out int parsedPM);
 
                                 record.GamesPlayed = (playerStats.stats[0].splits[0].stat.games - player.GamesPlayed) + record.GamesPlayed;
-                                record.Goals = ((playerStats.stats[0].splits[0].stat.goals + 1) - player.Goals) + record.Goals;
+                                record.Goals = (playerStats.stats[0].splits[0].stat.goals - player.Goals) + record.Goals;
                                 record.Assists = (playerStats.stats[0].splits[0].stat.assists - player.Assists) + record.Assists;
                                 record.Points = (playerStats.stats[0].splits[0].stat.points - player.Points) + record.Points;
                                 record.PenalityMinutes = (parsedPM - player.PenalityMinutes) + record.PenalityMinutes;
@@ -294,6 +297,7 @@ namespace HockeyManager.Controllers
                                 record.PlusMinus = (playerStats.stats[0].splits[0].stat.plusMinus - player.PlusMinus) + record.PlusMinus;
 
                                 _context.Players.Update(record);
+                                await _context.SaveChangesAsync();
                             } 
                             catch (ArgumentOutOfRangeException ex)
                             {
@@ -306,7 +310,7 @@ namespace HockeyManager.Controllers
                         int.TryParse(playerStats.stats[0].splits[0].stat.penaltyMinutes, out int parsedPM);
 
                         player.GamesPlayed = playerStats.stats[0].splits[0].stat.games;
-                        player.Goals = playerStats.stats[0].splits[0].stat.goals + 1;
+                        player.Goals = playerStats.stats[0].splits[0].stat.goals;
                         player.Assists = playerStats.stats[0].splits[0].stat.assists;
                         player.Points = playerStats.stats[0].splits[0].stat.points;
                         player.PenalityMinutes = parsedPM;
@@ -315,6 +319,7 @@ namespace HockeyManager.Controllers
                         player.PlusMinus = playerStats.stats[0].splits[0].stat.plusMinus;
 
                         _context.Players.Update(player);
+                        await _context.SaveChangesAsync();
                     }
                     catch (ArgumentOutOfRangeException ex)
                     {
@@ -323,8 +328,7 @@ namespace HockeyManager.Controllers
                 }
             }
 
-            await _context.SaveChangesAsync();
-            return View("Index");
+
         }
     }
 }
