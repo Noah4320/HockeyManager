@@ -85,6 +85,9 @@ namespace HockeyManager.Controllers
             ViewBag.maxGoalies = pool.RuleSet.maxGoalies;
             ViewBag.maxPlayers = pool.RuleSet.maxPlayers;
 
+            var teamName = _context.Teams.Include(x => x.TeamInfo).Where(x => x.PoolId == id && x.UserId == _userManager.GetUserId(User)).Select(x => x.TeamInfo.Name).FirstOrDefault();
+            ViewBag.teamName = teamName;
+
             return View(VMplayers);
         }
 
@@ -125,16 +128,20 @@ namespace HockeyManager.Controllers
             }
         }
 
-        [HttpPost]
-        public async Task<string> AddTeam(int poolId, string name, string[] players)
+        [HttpGet]
+        public ActionResult GetPoolTeam(int id)
         {
-            var anyTeam = _context.Teams.Where(x => x.PoolId == poolId && x.UserId == _userManager.GetUserId(User));
-            if (anyTeam.Any())
-            {
-                return "Team already exists";
-            }
+            var result = _context.Players.Include(x => x.Team).Include(x => x.PlayerInfo).Where(x => x.Team.UserId == _userManager.GetUserId(User) && x.Team.PoolId == id).ToList();
+            return PartialView("_RosterData", result);
+        }
 
-            var enrolledPool = _context.PoolList.Where(x => x.PoolId == poolId && _userManager.GetUserId(User) == x.UserId).FirstOrDefault();
+
+        [HttpPost]
+        public async Task<string> AddOrUpdateTeam(int id, string name, string[] players)
+        {
+            var anyTeam = _context.Teams.Include(x => x.TeamInfo).Where(x => x.PoolId == id && x.UserId == _userManager.GetUserId(User));
+           
+            var enrolledPool = _context.PoolList.Where(x => x.PoolId == id && _userManager.GetUserId(User) == x.UserId).FirstOrDefault();
             if (enrolledPool == null)
             {
                 return "You're not enrolled in this pool!!";
@@ -145,7 +152,7 @@ namespace HockeyManager.Controllers
                 return "Please enter a team name.";
             }
 
-            var ruleId = _context.Pools.Where(x => x.Id == poolId).FirstOrDefault().RuleSetId;
+            var ruleId = _context.Pools.Where(x => x.Id == id).FirstOrDefault().RuleSetId;
             if (ruleId == null)
             {
                 return "Something went wrong..";
@@ -200,21 +207,56 @@ namespace HockeyManager.Controllers
                 return $"{rule.maxPlayers - (forwards + defencemen + goalies)} more players are required.";
             }
 
-            HMTeamInfo teamInfo = new HMTeamInfo();
-            teamInfo.Name = name;
-
-            await _context.TeamInfo.AddAsync(teamInfo);
-            await _context.SaveChangesAsync();
+            //All validation succeeded
 
             HMTeam team = new HMTeam();
-            team.TeamInfoId = teamInfo.Id;
-            team.PoolId = poolId;
-            team.UserId = _userManager.GetUserId(User);
 
-            await _context.Teams.AddAsync(team);
-            await _context.SaveChangesAsync();
+            if (anyTeam.Any())
+            {
+                //Update
+                team = anyTeam.FirstOrDefault();
 
-           
+                if (team.TeamInfo.Name != name)
+                {
+                    team.TeamInfo.Name = name;
+                    _context.TeamInfo.Attach(team.TeamInfo);
+                    _context.Entry(team.TeamInfo).Property(x => x.Name).IsModified = true;
+                    await _context.SaveChangesAsync();
+                }
+
+                players = players.Skip(1).ToArray();
+                int[] newPlayers = Array.ConvertAll(players, s => int.Parse(s));
+                var oldPlayers = _context.Players.Include(x => x.Team).Include(x => x.PlayerInfo).Where(x => x.Team.PoolId == id && x.Team.UserId == _userManager.GetUserId(User)).Select(x => x.PlayerInfo.Id).ToArray();
+                var sameTeam = Enumerable.SequenceEqual(oldPlayers, newPlayers);
+
+                if (sameTeam)
+                {
+                    return "name updated";
+                }
+
+                var existingPlayers = _context.Players.Include(x => x.Team).Where(x => x.Team.Id == anyTeam.FirstOrDefault().Id).ToList();
+                _context.Players.RemoveRange(existingPlayers);
+                await _context.SaveChangesAsync();
+
+            } 
+            else
+            {
+                //Add
+                HMTeamInfo teamInfo = new HMTeamInfo();
+                teamInfo.Name = name;
+
+                await _context.TeamInfo.AddAsync(teamInfo);
+                await _context.SaveChangesAsync();
+
+                
+                team.TeamInfoId = teamInfo.Id;
+                team.PoolId = id;
+                team.UserId = _userManager.GetUserId(User);
+
+                await _context.Teams.AddAsync(team);
+                await _context.SaveChangesAsync();
+            }
+     
             List<HMPlayer> hMPlayers = new List<HMPlayer>();
 
             foreach (var playerInfo in hMPlayersInfo)
@@ -230,6 +272,8 @@ namespace HockeyManager.Controllers
             await _context.SaveChangesAsync();
             return "success";
         }
+
+
         // GET: Pool/Create
         public ActionResult CreatePool()
         {
