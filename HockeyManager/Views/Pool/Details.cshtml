@@ -13,41 +13,70 @@
             </Text>
         }
 
+        @if (ViewBag.hasTeam != null) {
+
+            @if (ViewBag.hasTeam && Model.Status == "Active")
+            {
+                <Text>
+                $("#leavePool").prop("disabled", false);
+                </Text>
+            }
+         }
+
         $(document).on('click', '.playerData', function () {
-            var test = (this.id);
+                var teamId = (this.id);
             $.ajax({
-            type: "GET",
+                type: "GET",
                 url: "https://localhost:44375/Pool/GetTeamRoster",
                 data: {
-                id: test
+                    id: teamId
                 }
-            }).done(function (roster) {
-                var result = "";
-                var players = JSON.parse(roster);
-                var teamName = players[0].Team.TeamInfo.Name;
+                }).done(function (roster) {
+                    var result = "";
+                    var players = JSON.parse(roster);
+                    var teamName = players[0].Team.TeamInfo.Name;
                 $.each(players, function (id, player) {
 
-                    result += '<tr> <td>' + player.PlayerInfo.Position + '</td>' +
+                        result += '<tr> <td>' + player.PlayerInfo.Position + '</td>' +
 
-                        '<td>' + player.PlayerInfo.Name + '</td>' +
+                            '<td>' + player.PlayerInfo.Name + '</td>' +
 
-                        '<td>' + player.Goals + '</td>' +
+                            '<td>' + player.Goals + '</td>' +
 
-                        '<td>' + player.Assists + '</td>' +
+                            '<td>' + player.Assists + '</td>' +
 
-                        '<td>' + player.Points + '</td> </tr>';
-                });
+                            '<td>' + player.Points + '</td> </tr>';
+                    });
                 $("#refTable").html(result);
                 $("#teamName").html(teamName);
-            })
+                })
 
             .fail(function (x) {
+                    alert(x.responseText);
+
+                });
+            });
+        });
+    $(document).on('click', '#leavePool', function () {
+        var confirmDropout = confirm("Are you sure you want to leave @Model.Name? (your team will be removed)");
+
+        if (confirmDropout) {
+            var poolId = @Model.Id;
+            $.ajax({
+                type: "DELETE",
+                url: "https://localhost:44375/Pool/LeavePool",
+                data: {
+                    id: poolId
+                }
+            }).done(function (x) {
+                location.reload();
+            }).fail(function (x) {
                 alert(x.responseText);
 
             });
-        });    
-    });
+        }
 
+    }); 
 </script>
 
 
@@ -98,6 +127,6 @@
             </table>
         </div>
     </div>
-    <input type="button" class="btn btn-success" id="manageTeam" value="Add or Update Team" onclick="location.href='@Url.Action("ManagePoolTeam", "Pool")?id=' + @Model.Id" />
-    <button id="delete" type="button" class="btn btn-danger" disabled>Delete</button>
+    <input type="button" class="btn btn-success" id="manageTeam" value="Add or Update Team" onclick="location.href='@Url.Action("ManagePoolTeam", "Pool", new { id = Model.Id})?id=' + @Model.Id" />
+    <button id="leavePool" type="button" class="btn btn-danger" disabled>Leave Pool</button>
 </div>

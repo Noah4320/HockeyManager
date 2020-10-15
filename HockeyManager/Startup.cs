@@ -62,7 +62,7 @@ namespace HockeyManager
 
             app.UseHangfireDashboard();
             var ctr = new HomeController(context);
-            RecurringJob.AddOrUpdate(() => ctr.FetchUpdatedStats(), "0 1 * * *");
+            RecurringJob.AddOrUpdate(() => ctr.FetchUpdatedStats(), "0 1 * * *", TimeZoneInfo.Local);
 
             if (env.IsDevelopment())
             {

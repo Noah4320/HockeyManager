@@ -54,6 +54,14 @@ namespace HockeyManager.Controllers
             {
                 return RedirectToAction(nameof(Index));
             }
+
+            var hasTeam = _context.Teams.Where(x => x.UserId == _userManager.GetUserId(User) && x.PoolId == pool.Id).Any();
+
+            if (hasTeam)
+            {
+                ViewBag.hasTeam = true;
+            }
+
             return View(pool);
         }
 
@@ -70,6 +78,12 @@ namespace HockeyManager.Controllers
         public ActionResult ManagePoolTeam(int id)
         {
             SearchPlayer VMplayers = new SearchPlayer(_context.Teams.Include(x => x.TeamInfo).Where(x => x.PoolId == null).ToList(), _context.Players.Include(x => x.PlayerInfo).Where(x => x.Rank == 0 && x.ApiId != 0).ToList());
+
+            var pool = _context.Pools.Include(x => x.RuleSet).Where(x => x.Id == id).FirstOrDefault();
+            ViewBag.maxForwards = pool.RuleSet.maxForwards;
+            ViewBag.maxDefencemen = pool.RuleSet.maxDefensemen;
+            ViewBag.maxGoalies = pool.RuleSet.maxGoalies;
+            ViewBag.maxPlayers = pool.RuleSet.maxPlayers;
 
             return View(VMplayers);
         }
@@ -119,15 +133,19 @@ namespace HockeyManager.Controllers
             {
                 return "Team already exists";
             }
-            var enrolledPool = _context.PoolList.Where(x => x.PoolId == poolId && _userManager.GetUserId(User) == x.UserId).FirstOrDefault();
 
+            var enrolledPool = _context.PoolList.Where(x => x.PoolId == poolId && _userManager.GetUserId(User) == x.UserId).FirstOrDefault();
             if (enrolledPool == null)
             {
                 return "You're not enrolled in this pool!!";
             }
 
-            var ruleId = _context.Pools.Where(x => x.Id == poolId).FirstOrDefault().RuleSetId;
+            if (name == null)
+            {
+                return "Please enter a team name.";
+            }
 
+            var ruleId = _context.Pools.Where(x => x.Id == poolId).FirstOrDefault().RuleSetId;
             if (ruleId == null)
             {
                 return "Something went wrong..";
@@ -319,6 +337,26 @@ namespace HockeyManager.Controllers
             {
                 return View();
             }
+        }
+
+        [HttpDelete]
+        public async Task LeavePool(int id)
+        {
+            var players = _context.Players.Include(x => x.Team.Pool).Where(x => x.Team.Pool.Id == id && x.Team.UserId == _userManager.GetUserId(User)).ToList();
+            _context.Players.RemoveRange(players);
+            await _context.SaveChangesAsync();
+
+            var team = _context.Teams.Include(x => x.Pool).Where(x => x.Pool.Id == id && x.UserId == _userManager.GetUserId(User)).FirstOrDefault();
+            _context.Teams.Remove(team);
+            await _context.SaveChangesAsync();
+
+            var teamInfo = _context.TeamInfo.Where(x => x.Id == team.TeamInfoId).FirstOrDefault();
+            _context.TeamInfo.Remove(teamInfo);
+            await _context.SaveChangesAsync();
+
+            var poolReference = _context.PoolList.Where(x => x.PoolId == id && x.UserId == _userManager.GetUserId(User)).FirstOrDefault();
+            _context.PoolList.Remove(poolReference);
+            await _context.SaveChangesAsync();
         }
 
         [HttpPost]

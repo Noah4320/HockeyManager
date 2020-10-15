@@ -149,7 +149,16 @@
               
                 </tbody>
             </table>
-            <button id="addTeam">Add Team</button>
+            <button class="btn btn-success" id="addTeam">Add Team</button>
+            <div>
+                <h4>Pick Rules:</h4>
+                <ul>
+                    <li>Max players: @ViewBag.maxPlayers</li>
+                    <li>Max Forwards: @ViewBag.maxForwards</li>
+                    <li>Max Defencemen: @ViewBag.maxDefencemen</li>
+                    <li>Max Goalies:  @ViewBag.maxGoalies</li>
+                </ul>
+            </div>
         </div>
     </div>
 </div>
