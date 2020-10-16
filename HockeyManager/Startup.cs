@@ -13,6 +13,7 @@ using Hangfire;
 using Hangfire.SqlServer;
 using HockeyManager.Controllers;
 using HockeyManager.Data;
+using HockeyManager.Areas.Identity.Data;
 
 namespace HockeyManager
 {
@@ -59,10 +60,11 @@ namespace HockeyManager
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, HockeyContext context, IBackgroundJobClient backgroundJobs, IHostingEnvironment env)
         {
+            DbInitializer dbInitializer = new DbInitializer(context);
+            dbInitializer.FetchApiData().Wait();
 
-            app.UseHangfireDashboard();
-            var ctr = new HomeController(context);
-            RecurringJob.AddOrUpdate(() => ctr.FetchUpdatedStats(), "0 1 * * *", TimeZoneInfo.Local);
+            //app.UseHangfireDashboard();
+            RecurringJob.AddOrUpdate(() => dbInitializer.FetchUpdatedStats(), "0 23 * * *", TimeZoneInfo.Local);
 
             if (env.IsDevelopment())
             {
