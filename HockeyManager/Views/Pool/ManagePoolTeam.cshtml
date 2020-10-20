@@ -16,7 +16,7 @@
 
         $.ajax({
         type: "GET",
-            url: "https://localhost:44375/Pool/GetPoolTeam",
+            url: "https://hockeymanager.azurewebsites.net/Pool/GetPoolTeam",
             contentType: "application/json",
             data: {
             id: poolId
@@ -40,7 +40,7 @@
                 })
                 $.ajax({
                     type: "GET",
-                    url: "https://localhost:44375/Pool/GetSelectedPlayers",
+                    url: "https://hockeymanager.azurewebsites.net/Pool/GetSelectedPlayers",
                     contentType: "application/json",
                     data: {
                         team: team,
@@ -81,7 +81,7 @@
             })
             $.ajax({
                 type: "POST",
-                url: "https://localhost:44375/Pool/AddOrUpdateTeam",
+                url: "https://hockeymanager.azurewebsites.net/Pool/AddOrUpdateTeam",
                 data: {
                     id: poolId,
                     name: teamName,
@@ -90,7 +90,7 @@
             }).done(function (resultMessage) {
 
                 if (resultMessage == "success" || resultMessage == "name updated") {
-                    location.href = 'https://localhost:44375/Pool/Details/'+@Context.Request.Query["id"];
+                    location.href = 'https://hockeymanager.azurewebsites.net/Pool/Details/'+@Context.Request.Query["id"];
 
                 } else {
                     alert(resultMessage);

@@ -70,7 +70,7 @@
             var id = $('#poolId').val();
             $.ajax({
                 type: "POST",
-                url: "https://localhost:44375/Pool/Archive",
+                url: "https://hockeymanager.azurewebsites.net/Pool/Archive",
                 data: {
                     poolId: id
                 }
@@ -89,7 +89,7 @@
                 var id = $('#poolId').val();
                 $.ajax({
                     type: "DELETE",
-                    url: "https://localhost:44375/Pool/Delete",
+                    url: "https://hockeymanager.azurewebsites.net/Pool/Delete",
                     data: {
                         poolId: id
                     }
