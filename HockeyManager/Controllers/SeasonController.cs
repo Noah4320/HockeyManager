@@ -7,6 +7,7 @@ using HockeyManager.Data;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace HockeyManager.Controllers
 {
@@ -36,7 +37,8 @@ namespace HockeyManager.Controllers
         // GET: SeasonController/NewSeason
         public ActionResult NewSeason()
         {
-            return View();
+            var teams = _context.Teams.Include(x => x.TeamInfo).Where(x => x.ApiId != 0).Select(x => x.TeamInfo).ToList();
+            return View(teams);
         }
 
         // POST: SeasonController/CreateSeason

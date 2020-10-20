@@ -1,56 +1,129 @@
-﻿<div class="container text-center">
-    <h2>Select a division</h2>
-    <div class="row">
-        <div class="col">
-            <h3>Western Conference</h3>
-            <div>
-                <table class="table table-striped" id="InteractiveTable">
-                    <thead>
-                        <tr>
-                            <th>Pacific</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>@Context.Request.Query["teamName"]</td>
-                        </tr>
-                    </tbody>
-                </table>
+﻿@model IEnumerable<HockeyManager.Models.HMTeamInfo>
+
+    <script src="~/lib/jquery/dist/jquery.js"></script>
+    <script>
+    $(document).ready(function () {
+        var teamsSelected = 0;
+        var team1;
+        var team2;
+        var originalTable;
+        var moveToTable;
+        $("tr").click(function () {
+            teamsSelected++;  
+            if (teamsSelected == 2) {
+                team2 = $(this)
+                moveToTable = team2.closest('table');
+                moveToTable.append(team1);
+                originalTable.append(team2);
+                team1.css("background-color", "");
+                teamsSelected = 0;
+            } else {
+                team1 = $(this)
+                originalTable = team1.closest('table');
+                team1.css("background-color", "yellow");
+            }
+        });
+
+    });
+    </script>
+
+    <div class="container text-center">
+        <h2>Select a division</h2>
+        <div class="row">
+            <div class="col">
+                <h3>Western Conference</h3>
+                <div>
+                    <table class="table table-striped" id="InteractiveTable" name="pacific">
+                        <thead>
+                            <tr>
+                                <th>Pacific</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var team in Model)
+                            {
+                                if (team.Division == "Pacific")
+                                {
+                                    <tr>
+                                        <td id="@team.Id">@team.Name</td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                <br />
+                <hr />
+                <br />
+                <div>
+                    <table class="table table-striped" id="InteractiveTable" name="central">
+                        <thead>
+                            <tr>
+                                <th>Central</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td id="myTeam">@Context.Request.Query["teamName"]</td>
+                            </tr>
+                            @foreach (var team in Model)
+                            {
+                                if (team.Division == "Central")
+                                {
+                                    <tr>
+                                        <td id="@team.Id">@team.Name</td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
             </div>
-            <div>
-                <table class="table table-striped" id="InteractiveTable">
-                    <thead>
-                        <tr>
-                            <th>Central</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    </tbody>
-                </table>
+            <div class="col">
+                <h3>Eastern Conference</h3>
+                <div>
+                    <table class="table table-striped" id="InteractiveTable" name="atlantic">
+                        <thead>
+                            <tr>
+                                <th>Atlantic</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var team in Model)
+                            {
+                                if (team.Division == "Atlantic")
+                                {
+                                    <tr>
+                                        <td id="@team.Id">@team.Name</td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                <br />
+                <hr />
+                <br />
+                <div>
+                    <table class="table table-striped" id="InteractiveTable" name="metropolitan">
+                        <thead>
+                            <tr>
+                                <th>Metropolitan</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var team in Model)
+                            {
+                                if (team.Division == "Metropolitan")
+                                {
+                                    <tr>
+                                        <td id="@team.Id">@team.Name</td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
             </div>
-        </div>
-        <div class="col">
-            <h3>Eastern Conference</h3>
-            <div>
-                <table class="table table-striped" id="InteractiveTable">
-                    <thead>
-                        <tr>
-                            <th>Eastern</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    </tbody>
-                </table>
-            </div>
-            <table class="table table-striped" id="InteractiveTable">
-                <thead>
-                    <tr>
-                        <th>Metropolitan</th>
-                    </tr>
-                </thead>
-                <tbody>
-                </tbody>
-            </table>
         </div>
     </div>
-</div>
