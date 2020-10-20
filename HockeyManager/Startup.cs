@@ -63,7 +63,7 @@ namespace HockeyManager
             DbInitializer dbInitializer = new DbInitializer(context);
             dbInitializer.FetchApiData().Wait();
 
-            //app.UseHangfireDashboard();
+            app.UseHangfireDashboard();
             RecurringJob.AddOrUpdate(() => dbInitializer.FetchUpdatedStats(), "0 23 * * *", TimeZoneInfo.Local);
 
             if (env.IsDevelopment())

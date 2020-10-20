@@ -145,7 +145,7 @@
                     <span class="carousel-control-next-icon" aria-hidden="true"></span>
                     <span class="sr-only">Next</span>
                 </a>
-                <input type="button" value="My Hockey Pools" onclick="location.href='@Url.Action("Index", "Pool")'" />
+                <input type="button" class="btn btn-primary" value="My Hockey Pools" onclick="location.href='@Url.Action("Index", "Pool")'" />
             </div>
             <div class="col-md-6">
                 <div id="carouselPlayerStandings" class="carousel slide" data-ride="carousel">
@@ -220,13 +220,13 @@
                                         {
                                             break;
                                         }
-                                    <tr>
-                                        <th scope="row">@counter: <img src=@player.PlayerInfo.HeadShotUrl class="rounded-circle" alt="Logo" width="50" height="50"></th>
-                                        <td>@player.PlayerInfo.Name</td>
-                                        <td>@player.Team.TeamInfo.Abbreviation</td>
-                                        <td>@player.GamesPlayed</td>
-                                        <td>@player.Goals</td>
-                                    </tr>
+                                        <tr>
+                                            <th scope="row">@counter: <img src=@player.PlayerInfo.HeadShotUrl class="rounded-circle" alt="Logo" width="50" height="50"></th>
+                                            <td>@player.PlayerInfo.Name</td>
+                                            <td>@player.Team.TeamInfo.Abbreviation</td>
+                                            <td>@player.GamesPlayed</td>
+                                            <td>@player.Goals</td>
+                                        </tr>
                                         counter++;
 
                                     }
@@ -280,6 +280,7 @@
                         <span class="sr-only">Next</span>
                     </a>
                 </div>
+                <input type="button" class="btn btn-primary" value="Season Mode" onclick="location.href='@Url.Action("Index", "Season")'" />
             </div>
 
         </div>

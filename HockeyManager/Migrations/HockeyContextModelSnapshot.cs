@@ -181,6 +181,8 @@ namespace HockeyManager.Migrations
 
                     b.Property<int>("RegulationWins");
 
+                    b.Property<int?>("SeasonId");
+
                     b.Property<int?>("TeamInfoId");
 
                     b.Property<string>("UserId");
@@ -190,6 +192,8 @@ namespace HockeyManager.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("PoolId");
+
+                    b.HasIndex("SeasonId");
 
                     b.HasIndex("TeamInfoId");
 
@@ -290,6 +294,21 @@ namespace HockeyManager.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("RuleSets");
+                });
+
+            modelBuilder.Entity("HockeyManager.Models.Season", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("UserId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Seasons");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -434,6 +453,10 @@ namespace HockeyManager.Migrations
                         .WithMany("Teams")
                         .HasForeignKey("PoolId");
 
+                    b.HasOne("HockeyManager.Models.Season", "Season")
+                        .WithMany("Teams")
+                        .HasForeignKey("SeasonId");
+
                     b.HasOne("HockeyManager.Models.HMTeamInfo", "TeamInfo")
                         .WithMany("TeamStats")
                         .HasForeignKey("TeamInfoId");
@@ -461,6 +484,13 @@ namespace HockeyManager.Migrations
                         .WithMany("PoolList")
                         .HasForeignKey("PoolId");
 
+                    b.HasOne("HockeyManager.Areas.Identity.Data.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+                });
+
+            modelBuilder.Entity("HockeyManager.Models.Season", b =>
+                {
                     b.HasOne("HockeyManager.Areas.Identity.Data.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId");

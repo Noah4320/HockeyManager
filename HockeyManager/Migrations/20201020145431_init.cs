@@ -210,6 +210,25 @@ namespace HockeyManager.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Seasons",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    UserId = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Seasons", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Seasons_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Pools",
                 columns: table => new
                 {
@@ -281,7 +300,8 @@ namespace HockeyManager.Migrations
                     ApiId = table.Column<int>(nullable: false),
                     TeamInfoId = table.Column<int>(nullable: true),
                     PoolId = table.Column<int>(nullable: true),
-                    UserId = table.Column<string>(nullable: true)
+                    UserId = table.Column<string>(nullable: true),
+                    SeasonId = table.Column<int>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -290,6 +310,12 @@ namespace HockeyManager.Migrations
                         name: "FK_Teams_Pools_PoolId",
                         column: x => x.PoolId,
                         principalTable: "Pools",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Teams_Seasons_SeasonId",
+                        column: x => x.SeasonId,
+                        principalTable: "Seasons",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
@@ -448,9 +474,19 @@ namespace HockeyManager.Migrations
                 column: "RuleSetId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Seasons_UserId",
+                table: "Seasons",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Teams_PoolId",
                 table: "Teams",
                 column: "PoolId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Teams_SeasonId",
+                table: "Teams",
+                column: "SeasonId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Teams_TeamInfoId",
@@ -502,13 +538,16 @@ namespace HockeyManager.Migrations
                 name: "Pools");
 
             migrationBuilder.DropTable(
+                name: "Seasons");
+
+            migrationBuilder.DropTable(
                 name: "TeamInfo");
 
             migrationBuilder.DropTable(
-                name: "AspNetUsers");
+                name: "RuleSets");
 
             migrationBuilder.DropTable(
-                name: "RuleSets");
+                name: "AspNetUsers");
         }
     }
 }

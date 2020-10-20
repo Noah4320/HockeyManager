@@ -31,6 +31,10 @@ namespace HockeyManager.Models
         public string UserId { get; set; }
         public User User { get; set; }
 
+        public int? SeasonId { get; set; }
+
+        public virtual Season Season { get; set; }
+
         [JsonIgnore]
         public virtual ICollection<HMPlayer> Players { get; set; }
     }
