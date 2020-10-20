@@ -33,16 +33,16 @@ namespace HockeyManager.Controllers
             return View();
         }
 
-        // GET: SeasonController/Create
-        public ActionResult Create()
+        // GET: SeasonController/NewSeason
+        public ActionResult NewSeason()
         {
             return View();
         }
 
-        // POST: SeasonController/Create
+        // POST: SeasonController/CreateSeason
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        public ActionResult CreateSeason(IFormCollection collection)
         {
             try
             {

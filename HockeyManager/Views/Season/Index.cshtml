@@ -1,15 +1,38 @@
-﻿<div class="container text-center">
+﻿
+<script src="~/lib/jquery/dist/jquery.js"></script>
+<script>
+    $(document).ready(function () {
+
+        $(document).on('input', '#team', function () {
+
+            if ($("#team").val() != "") {
+                $('#newButton').prop("disabled", false);
+            } else {
+                $('#newButton').prop("disabled", true);
+            }
+
+        });
+
+    });
+</script>
+
+<div class="container text-center">
     <div class="row">
         <div class="col-6 col-md-4">
             <p>Seasons description here.</p>
         </div>
 
         <div class="col-6 col-md-4">
-
-            <button class="btn btn-success">New</button>
+            <form asp-action="NewSeason" method="GET">
+                <label>Team Name:</label>
+                <input type="text" class="form-control" name="teamName" id="team" />
+                <br />
+                <br />
+                <input type="submit" class="btn btn-success" id="newButton" value="New" disabled/>
+            </form>
             <br />
             <br />
-            <button class="btn btn-warning">Load</button>
+            <button class="btn btn-warning" disabled>Load</button>
         </div>
 
         <div class="col-6 col-md-4">
