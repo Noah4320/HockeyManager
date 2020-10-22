@@ -8,6 +8,7 @@
         var team2;
         var originalTable;
         var moveToTable;
+
         $("tr").click(function () {
             teamsSelected++;  
             if (teamsSelected == 2) {
@@ -24,106 +25,129 @@
             }
         });
 
+        $(document).on('click', '#back', function () {
+            isDivisionHidden = $("#divisionSelection").is(":hidden");
+            if (!isDivisionHidden) {
+                javascript: history.go(-1)
+            } else {
+                $("#divisionSelection").show();
+            }
+        });
+       
+
+        $(document).on('click', '#toRoster', function () {
+            $("#divisionSelection").hide();
+        });
+
     });
     </script>
-
-    <div class="container text-center">
-        <h2>Select a division</h2>
+    <div class="container">
         <div class="row">
-            <div class="col">
-                <h3>Western Conference</h3>
-                <div>
-                    <table class="table table-striped" id="InteractiveTable" name="pacific">
-                        <thead>
-                            <tr>
-                                <th>Pacific</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var team in Model)
-                            {
-                                if (team.Division == "Pacific")
-                                {
-                                    <tr>
-                                        <td id="@team.Id">@team.Name</td>
-                                    </tr>
-                                }
-                            }
-                        </tbody>
-                    </table>
-                </div>
-                <br />
-                <hr />
-                <br />
-                <div>
-                    <table class="table table-striped" id="InteractiveTable" name="central">
-                        <thead>
-                            <tr>
-                                <th>Central</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td id="myTeam">@Context.Request.Query["teamName"]</td>
-                            </tr>
-                            @foreach (var team in Model)
-                            {
-                                if (team.Division == "Central")
-                                {
-                                    <tr>
-                                        <td id="@team.Id">@team.Name</td>
-                                    </tr>
-                                }
-                            }
-                        </tbody>
-                    </table>
-                </div>
+            <div class="col text-left">
+                <button class="btn btn-primary" id="back">Back</button>
             </div>
-            <div class="col">
-                <h3>Eastern Conference</h3>
-                <div>
-                    <table class="table table-striped" id="InteractiveTable" name="atlantic">
-                        <thead>
-                            <tr>
-                                <th>Atlantic</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var team in Model)
-                            {
-                                if (team.Division == "Atlantic")
-                                {
-                                    <tr>
-                                        <td id="@team.Id">@team.Name</td>
-                                    </tr>
-                                }
-                            }
-                        </tbody>
-                    </table>
-                </div>
-                <br />
-                <hr />
-                <br />
-                <div>
-                    <table class="table table-striped" id="InteractiveTable" name="metropolitan">
-                        <thead>
-                            <tr>
-                                <th>Metropolitan</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var team in Model)
-                            {
-                                if (team.Division == "Metropolitan")
-                                {
-                                    <tr>
-                                        <td id="@team.Id">@team.Name</td>
-                                    </tr>
-                                }
-                            }
-                        </tbody>
-                    </table>
-                </div>
+            <div class="col text-right">
+                <button class="btn btn-primary" id="toRoster" >Next</button>
             </div>
         </div>
     </div>
+            <div class="container text-center" id="divisionSelection">
+                <h2>Select a division</h2>
+                <div class="row">
+                    <div class="col">
+                        <h3>Western Conference</h3>
+                        <div>
+                            <table class="table table-striped" id="InteractiveTable" name="pacific">
+                                <thead>
+                                    <tr>
+                                        <th>Pacific</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var team in Model)
+                                    {
+                                        if (team.Division == "Pacific")
+                                        {
+                                            <tr>
+                                                <td id="@team.Id">@team.Name</td>
+                                            </tr>
+                                        }
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                        <br />
+                        <hr />
+                        <br />
+                        <div>
+                            <table class="table table-striped" id="InteractiveTable" name="central">
+                                <thead>
+                                    <tr>
+                                        <th>Central</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td id="myTeam">@Context.Request.Query["teamName"]</td>
+                                    </tr>
+                                    @foreach (var team in Model)
+                                    {
+                                        if (team.Division == "Central")
+                                        {
+                                            <tr>
+                                                <td id="@team.Id">@team.Name</td>
+                                            </tr>
+                                        }
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <h3>Eastern Conference</h3>
+                        <div>
+                            <table class="table table-striped" id="InteractiveTable" name="atlantic">
+                                <thead>
+                                    <tr>
+                                        <th>Atlantic</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var team in Model)
+                                    {
+                                        if (team.Division == "Atlantic")
+                                        {
+                                            <tr>
+                                                <td id="@team.Id">@team.Name</td>
+                                            </tr>
+                                        }
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                        <br />
+                        <hr />
+                        <br />
+                        <div>
+                            <table class="table table-striped" id="InteractiveTable" name="metropolitan">
+                                <thead>
+                                    <tr>
+                                        <th>Metropolitan</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var team in Model)
+                                    {
+                                        if (team.Division == "Metropolitan")
+                                        {
+                                            <tr>
+                                                <td id="@team.Id">@team.Name</td>
+                                            </tr>
+                                        }
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>

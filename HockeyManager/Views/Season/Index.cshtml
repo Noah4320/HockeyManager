@@ -3,6 +3,10 @@
 <script>
     $(document).ready(function () {
 
+        if ($("#team").val().length > 0) {
+            $('#newButton').prop("disabled", false);
+        }
+
         $(document).on('input', '#team', function () {
 
             if ($("#team").val() != "") {

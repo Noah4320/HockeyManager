@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using HockeyManager.Areas.Identity.Data;
 using HockeyManager.Data;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -11,6 +12,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HockeyManager.Controllers
 {
+    [Authorize]
     public class SeasonController : Controller
     {
         private readonly HockeyContext _context;
