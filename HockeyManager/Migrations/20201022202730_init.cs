@@ -56,7 +56,6 @@ namespace HockeyManager.Migrations
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     Name = table.Column<string>(nullable: true),
-                    Position = table.Column<string>(nullable: true),
                     Country = table.Column<string>(nullable: true),
                     DateOfBirth = table.Column<DateTimeOffset>(nullable: false),
                     Height = table.Column<string>(nullable: true),
@@ -94,8 +93,6 @@ namespace HockeyManager.Migrations
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     Name = table.Column<string>(nullable: true),
                     Abbreviation = table.Column<string>(nullable: true),
-                    Division = table.Column<string>(nullable: true),
-                    Conference = table.Column<string>(nullable: true),
                     logoUrl = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
@@ -290,6 +287,8 @@ namespace HockeyManager.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Division = table.Column<string>(nullable: true),
+                    Conference = table.Column<string>(nullable: true),
                     Place = table.Column<string>(nullable: true),
                     GamesPlayed = table.Column<int>(nullable: false),
                     Wins = table.Column<int>(nullable: false),
@@ -338,6 +337,7 @@ namespace HockeyManager.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Position = table.Column<string>(nullable: true),
                     GamesPlayed = table.Column<int>(nullable: false),
                     Goals = table.Column<int>(nullable: false),
                     Assists = table.Column<int>(nullable: false),

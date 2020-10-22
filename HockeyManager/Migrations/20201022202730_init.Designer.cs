@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HockeyManager.Migrations
 {
     [DbContext(typeof(HockeyContext))]
-    [Migration("20201020145431_init")]
+    [Migration("20201022202730_init")]
     partial class init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -119,6 +119,8 @@ namespace HockeyManager.Migrations
 
                     b.Property<int>("Points");
 
+                    b.Property<string>("Position");
+
                     b.Property<int>("Rank");
 
                     b.Property<int>("Saves");
@@ -152,8 +154,6 @@ namespace HockeyManager.Migrations
 
                     b.Property<string>("Name");
 
-                    b.Property<string>("Position");
-
                     b.Property<long>("Weight");
 
                     b.HasKey("Id");
@@ -168,6 +168,10 @@ namespace HockeyManager.Migrations
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<int>("ApiId");
+
+                    b.Property<string>("Conference");
+
+                    b.Property<string>("Division");
 
                     b.Property<int>("GamesPlayed");
 
@@ -211,10 +215,6 @@ namespace HockeyManager.Migrations
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("Abbreviation");
-
-                    b.Property<string>("Conference");
-
-                    b.Property<string>("Division");
 
                     b.Property<string>("Name");
 

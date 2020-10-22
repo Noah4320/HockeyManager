@@ -41,7 +41,7 @@ namespace HockeyManager.Controllers
         // GET: SeasonController/NewSeason
         public ActionResult NewSeason()
         {
-            SearchPlayer VMplayers = new SearchPlayer(_context.Teams.Include(x => x.TeamInfo).Where(x => x.PoolId == null).ToList(), _context.Players.Include(x => x.PlayerInfo).Where(x => x.Rank == 0 && x.ApiId != 0).ToList());
+            SearchPlayer VMplayers = new SearchPlayer(_context.Teams.Include(x => x.TeamInfo).Where(x => x.ApiId != 0).ToList(), _context.Players.Include(x => x.PlayerInfo).Where(x => x.Rank == 0 && x.ApiId != 0).ToList());
 
             //The player limits are hardcoded smh
             ViewBag.maxForwards = 12;
@@ -53,7 +53,7 @@ namespace HockeyManager.Controllers
 
         // POST: SeasonController/CreateSeason
         [HttpPost]
-        public string CreateSeason(string name, string abbreviation, string[] players, string[] pacific, string[] central, string[] atlantic, string[] metropolitan)
+        public async Task<string> CreateSeason(string name, string abbreviation, string[] players, string[] pacific, string[] central, string[] atlantic, string[] metropolitan)
         {
 
             if (name == null)
@@ -66,13 +66,13 @@ namespace HockeyManager.Controllers
                 return "abbreviation must be 3 characters!";
             }
 
-            var hMPlayersInfo = _context.PlayerInfo.Where(x => players.Contains(x.Id.ToString())).ToList();
+            var hMPlayers = await _context.Players.Include(x => x.PlayerInfo).Where(x => players.Contains(x.PlayerInfoId.ToString()) && x.ApiId != 0).ToListAsync();
 
             var forwards = 0;
             var defencemen = 0;
             var goalies = 0;
 
-            foreach (var player in hMPlayersInfo)
+            foreach (var player in hMPlayers)
             {
                 //Count every position
                 if (player.Position == "C" || player.Position == "LW" || player.Position == "RW")
@@ -115,42 +115,143 @@ namespace HockeyManager.Controllers
 
             //All validation succeeded
 
-            /**
+            //Create users team and players
+            var season = new Season();
+            season.UserId = _userManager.GetUserId(User);
 
-             HMTeamInfo teamInfo = new HMTeamInfo();
+            await _context.Seasons.AddAsync(season);
+            await _context.SaveChangesAsync();
 
-             teamInfo.Name = name;
-             teamInfo.Abbreviation = abbreviation;
-             teamInfo.Division = "";
+            HMTeamInfo teamInfo = new HMTeamInfo();
 
-             await _context.TeamInfo.AddAsync(teamInfo);
-             await _context.SaveChangesAsync();
+            teamInfo.Name = name;
+            teamInfo.Abbreviation = abbreviation;
+
+            await _context.TeamInfo.AddAsync(teamInfo);
+            await _context.SaveChangesAsync();
 
 
-             HMTeam team = new HMTeam();
+            HMTeam myTeam = new HMTeam();
 
-             team.TeamInfoId = teamInfo.Id;
-             //team.SeasonId = "create id";
-             team.UserId = _userManager.GetUserId(User);
+            myTeam.TeamInfoId = teamInfo.Id;
+            myTeam.SeasonId = season.Id;
+            myTeam.UserId = _userManager.GetUserId(User);
 
-             await _context.Teams.AddAsync(team);
-             await _context.SaveChangesAsync();
-             
+            var inPacific = pacific.Contains("myTeam");
+            var inCentral = central.Contains("myTeam");
+            var inAtlantic = atlantic.Contains("myTeam");
+            var inMetro = metropolitan.Contains("myTeam");
 
-             List<HMPlayer> hMPlayers = new List<HMPlayer>();
+            if (inPacific)
+            {
+                myTeam.Division = "Pacific";
+                myTeam.Conference = "Western";
+            }
+            else if (inCentral)
+            {
+                myTeam.Division = "Central";
+                myTeam.Conference = "Western";
+            }
+            else if (inAtlantic)
+            {
+                myTeam.Division = "Atlantic";
+                myTeam.Conference = "Eastern";
+            }
+            else if (inMetro)
+            {
+                myTeam.Division = "Metropolitan";
+                myTeam.Conference = "Eastern";
+            }
 
-             foreach (var playerInfo in hMPlayersInfo)
-             {
-                 hMPlayers.Add(new HMPlayer
-                 {
-                     TeamId = team.Id,
-                     PlayerInfoId = playerInfo.Id
-                 });
-             }
+            await _context.Teams.AddAsync(myTeam);
+            await _context.SaveChangesAsync();
 
-             await _context.Players.AddRangeAsync(hMPlayers);
-             await _context.SaveChangesAsync();
-            **/
+            List<HMPlayer> newlyGeneratedRoster = new List<HMPlayer>();
+
+            foreach (var player in hMPlayers)
+            {
+                newlyGeneratedRoster.Add(new HMPlayer
+                {
+                    Position = player.Position,
+                    TeamId = myTeam.Id,
+                    PlayerInfoId = player.PlayerInfoId
+                });
+            }
+
+            await _context.Players.AddRangeAsync(newlyGeneratedRoster);
+            await _context.SaveChangesAsync();
+
+            //Create league teams and players
+
+            var leagueTeams = _context.Teams.Include(x => x.TeamInfo).Where(x => x.ApiId != 0).ToList();
+            List<HMTeam> newlyGeneratedTeams = new List<HMTeam>();
+
+            foreach (var team in leagueTeams)
+            {
+                var teamInPacific = pacific.Contains(team.TeamInfoId.ToString());
+                var teamInCentral = central.Contains(team.TeamInfoId.ToString());
+                var teamInAtlantic = atlantic.Contains(team.TeamInfoId.ToString());
+                var teamInMetro = metropolitan.Contains(team.TeamInfoId.ToString());
+
+                string division = "N/A";
+                string conference = "N/A";
+
+                if (teamInPacific)
+                {
+                    division = "Pacific";
+                    conference = "Western";
+                } 
+                else if (teamInCentral)
+                {
+                    division = "Central";
+                    conference = "Western";
+                }
+                else if (teamInAtlantic)
+                {
+                    division = "Atlantic";
+                    conference = "Eastern";
+                }
+                else if (teamInMetro)
+                {
+                    division = "Metropolitan";
+                    conference = "Eastern";
+                }
+
+                newlyGeneratedTeams.Add(new HMTeam
+                {
+                    Division = division,
+                    Conference = conference,
+                    //ToDo: This property might not be necessary
+                    Place = "1",
+                    TeamInfoId = team.TeamInfoId,
+                    SeasonId = season.Id
+                });
+            }
+
+            await _context.Teams.AddRangeAsync(newlyGeneratedTeams);
+            await _context.SaveChangesAsync();
+
+
+            List<HMPlayer> newGeneratedPlayers = new List<HMPlayer>();
+            var leaguePlayers = _context.Players.Include(x => x.Team.TeamInfo);
+            foreach (var team in newlyGeneratedTeams)
+            {
+                var teamPlayers = leaguePlayers.Where(x => x.Team.TeamInfoId == team.TeamInfoId).ToList();
+
+                foreach (var player in teamPlayers)
+                {
+                    newGeneratedPlayers.Add(new HMPlayer
+                    {
+                        Position = player.Position,
+                        TeamId = team.Id,
+                        PlayerInfoId = player.PlayerInfoId
+                    });
+                }
+            }
+
+            await _context.Players.AddRangeAsync(newGeneratedPlayers);
+            await _context.SaveChangesAsync();
+
             return "success";
         }
 

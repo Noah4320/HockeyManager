@@ -135,7 +135,7 @@
                     <tbody>
                         @foreach (var team in Model.Teams)
                         {
-                            if (team.TeamInfo.Division == "Pacific")
+                            if (team.Division == "Pacific")
                             {
                                 <tr id="divisionTeam">
                                     <td id="@team.TeamInfo.Id">@team.TeamInfo.Name</td>
@@ -161,7 +161,7 @@
                         </tr>
                         @foreach (var team in Model.Teams)
                         {
-                            if (team.TeamInfo.Division == "Central")
+                            if (team.Division == "Central")
                             {
                                 <tr id="divisionTeam">
                                     <td id="@team.TeamInfo.Id">@team.TeamInfo.Name</td>
@@ -184,7 +184,7 @@
                     <tbody>
                         @foreach (var team in Model.Teams)
                         {
-                            if (team.TeamInfo.Division == "Atlantic")
+                            if (team.Division == "Atlantic")
                             {
                                 <tr id="divisionTeam">
                                     <td id="@team.TeamInfo.Id">@team.TeamInfo.Name</td>
@@ -207,7 +207,7 @@
                     <tbody>
                         @foreach (var team in Model.Teams)
                         {
-                            if (team.TeamInfo.Division == "Metropolitan")
+                            if (team.Division == "Metropolitan")
                             {
                                 <tr id="divisionTeam">
                                     <td id="@team.TeamInfo.Id">@team.TeamInfo.Name</td>

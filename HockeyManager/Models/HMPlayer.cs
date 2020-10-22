@@ -11,6 +11,7 @@ namespace HockeyManager.Models
     {
         [Key]
         public int Id { get; set; }
+        public string Position { get; set; }
         public int GamesPlayed { get; set; }
         public int Goals { get; set; }
         public int Assists { get; set; }

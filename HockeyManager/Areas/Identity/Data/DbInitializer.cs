@@ -48,8 +48,6 @@ namespace HockeyManager.Areas.Identity.Data
                 var teamStats = JsonConvert.DeserializeObject<TeamStatRoot>(teamStatsData);
 
                 hMTeamsInfo.Name = team.name;
-                hMTeamsInfo.Conference = team.conference.name;
-                hMTeamsInfo.Division = team.division.name;
                 hMTeamsInfo.Abbreviation = team.abbreviation;
                 hMTeamsInfo.logoUrl = $"https://www-league.nhlstatic.com/images/logos/teams-current-primary-light/{team.id}.svg";
 
@@ -58,6 +56,8 @@ namespace HockeyManager.Areas.Identity.Data
 
                 hMTeams.Add(new HMTeam
                 {
+                    Division = team.division.name,
+                    Conference = team.conference.name,
                     GamesPlayed = teamStats.stats[0].splits[0].stat.gamesPlayed,
                     Wins = Convert.ToInt32(teamStats.stats[0].splits[0].stat.wins),
                     Loses = Convert.ToInt32(teamStats.stats[0].splits[0].stat.losses),
@@ -98,7 +98,6 @@ namespace HockeyManager.Areas.Identity.Data
 
 
                         hMPlayerInfo.Name = player.person.fullName;
-                        hMPlayerInfo.Position = player.position.abbreviation;
                         hMPlayerInfo.Country = playerAbout.People[0].BirthCountry;
                         hMPlayerInfo.DateOfBirth = playerAbout.People[0].BirthDate;
                         hMPlayerInfo.Height = playerAbout.People[0].Height;
@@ -111,6 +110,7 @@ namespace HockeyManager.Areas.Identity.Data
                         int.TryParse(playerStats.stats[0].splits[0].stat.penaltyMinutes, out int parsedPM);
                         hMPlayers.Add(new HMPlayer
                         {
+                            Position = player.position.abbreviation,
                             GamesPlayed = playerStats.stats[0].splits[0].stat.games,
                             Goals = playerStats.stats[0].splits[0].stat.goals,
                             Assists = playerStats.stats[0].splits[0].stat.assists,

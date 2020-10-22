@@ -11,10 +11,10 @@
                 @Html.DisplayNameFor(model => model.TeamInfo.Name)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.TeamInfo.Division)
+                @Html.DisplayNameFor(model => model.Division)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.TeamInfo.Conference)
+                @Html.DisplayNameFor(model => model.Conference)
             </th>
             <th></th>
         </tr>
@@ -29,10 +29,10 @@
                 @Html.ActionLink(item.TeamInfo.Name, "Players", new {  id=item.Id  })
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.TeamInfo.Division)
+                @Html.DisplayFor(modelItem => item.Division)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.TeamInfo.Conference)
+                @Html.DisplayFor(modelItem => item.Conference)
             </td>
         </tr>
 }

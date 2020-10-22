@@ -47,7 +47,7 @@
                                         <tr>
                                             <th scope="row">@counter: <img src=@team.TeamInfo.logoUrl alt="Logo" width="50" height="50"></th>
                                             <td>@team.TeamInfo.Name</td>
-                                            <td>@team.TeamInfo.Division</td>
+                                            <td>@team.Division</td>
                                             <td>@team.GamesPlayed</td>
                                             <td>@team.Points</td>
                                         </tr>
@@ -81,12 +81,12 @@
                                             break;
                                         }
 
-                                        @if (team.TeamInfo.Conference == "Eastern")
+                                        @if (team.Conference == "Eastern")
                                         {
                                             <tr>
                                                 <th scope="row">@counter: <img src=@team.TeamInfo.logoUrl alt="Logo" width="50" height="50"></th>
                                                 <td>@team.TeamInfo.Name</td>
-                                                <td>@team.TeamInfo.Division</td>
+                                                <td>@team.Division</td>
                                                 <td>@team.GamesPlayed</td>
                                                 <td>@team.Points</td>
                                             </tr>
@@ -120,12 +120,12 @@
                                             break;
                                         }
 
-                                        @if (team.TeamInfo.Conference == "Western")
+                                        @if (team.Conference == "Western")
                                         {
                                             <tr>
                                                 <th scope="row">@counter: <img src=@team.TeamInfo.logoUrl alt="Logo" width="50" height="50"></th>
                                                 <td>@team.TeamInfo.Name</td>
-                                                <td>@team.TeamInfo.Division</td>
+                                                <td>@team.Division</td>
                                                 <td>@team.GamesPlayed</td>
                                                 <td>@team.Points</td>
                                             </tr>

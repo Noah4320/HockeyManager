@@ -125,13 +125,13 @@ namespace HockeyManager.Controllers
 
             var rule = _context.RuleSets.Where(x => x.Id == ruleId).FirstOrDefault();
 
-            var hMPlayersInfo = _context.PlayerInfo.Where(x => players.Contains(x.Id.ToString())).ToList();
+            var hMPlayers = _context.Players.Where(x => players.Contains(x.PlayerInfoId.ToString())).ToList();
 
             var forwards = 0;
             var defencemen = 0;
             var goalies = 0;
 
-            foreach (var player in hMPlayersInfo)
+            foreach (var player in hMPlayers)
             {
                 //Count every position
                 if (player.Position == "C" || player.Position == "LW" || player.Position == "RW")
@@ -221,19 +221,20 @@ namespace HockeyManager.Controllers
                 await _context.Teams.AddAsync(team);
                 await _context.SaveChangesAsync();
             }
-     
-            List<HMPlayer> hMPlayers = new List<HMPlayer>();
 
-            foreach (var playerInfo in hMPlayersInfo)
+            List<HMPlayer> newlyGeneratedPlayers = new List<HMPlayer>();
+
+            foreach (var player in hMPlayers)
             {
-                hMPlayers.Add(new HMPlayer
+                newlyGeneratedPlayers.Add(new HMPlayer
                 {
+                    Position = player.Position,
                     TeamId = team.Id,
-                    PlayerInfoId = playerInfo.Id
+                    PlayerInfoId = player.PlayerInfoId
                 });
             }
 
-            await _context.Players.AddRangeAsync(hMPlayers);
+            await _context.Players.AddRangeAsync(newlyGeneratedPlayers);
             await _context.SaveChangesAsync();
             return "success";
         }
