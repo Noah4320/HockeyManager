@@ -44,6 +44,69 @@
             $("#teamBuilder").show()
         });
 
+        $(document).on('click', '#addTeam', function () {
+
+            var teamName = "@Context.Request.Query["teamName"]";
+            var teamAbbreviation = $("#abbreviation").val();
+    
+            var pacificIds = [];
+            var centralIds = [];
+            var atlanticIds = [];
+            var metroIds = [];
+            var playerIds = [];
+
+            $('[name=pacific] td').each(function () {
+                pacificIds.push(this.id)
+
+            })
+
+            $('[name=central] td').each(function () {
+                centralIds.push(this.id)
+
+            })
+
+            $('[name=atlantic] td').each(function () {
+                atlanticIds.push(this.id)
+
+            })
+
+            $('[name=metropolitan] td').each(function () {
+                metroIds.push(this.id)
+
+            })
+
+            $('#drafted tr').each(function () {
+                playerIds.push(this.id)
+
+            })
+
+            $.ajax({
+                type: "POST",
+                url: "https://localhost:44375/Season/CreateSeason",
+                data: {
+                    name: teamName,
+                    abbreviation: teamAbbreviation,
+                    players: playerIds,
+                    pacific: pacificIds,
+                    central: centralIds,
+                    atlantic: atlanticIds,
+                    metropolitan: metroIds
+                }
+            }).done(function (resultMessage) {
+
+                 if (resultMessage == "success") {
+                     location.href = 'https://localhost:44375/Season/Index/';
+
+                } else {
+                    alert(resultMessage);
+                }
+
+            }).fail(function (x) {
+                alert(x.responseText);
+
+            });
+        });
+
     });
 </script>
 <div class="container">
@@ -159,5 +222,10 @@
 </div>
 
 <div id="teamBuilder">
-    <partial name="~/Views/Shared/_ManageTeam.cshtml" model="Model" />
-</div>
+        <div class="container">
+            <label class="control-label">Team Abbreviation:</label>
+            <input class="form-control" id="abbreviation" maxlength="3"/>
+            <span class="text-danger"></span>
+        </div>
+        <partial name="~/Views/Shared/_ManageTeam.cshtml" model="Model" />
+    </div>
