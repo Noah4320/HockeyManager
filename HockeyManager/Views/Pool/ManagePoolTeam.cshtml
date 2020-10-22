@@ -5,7 +5,7 @@
 
 <script>
     $(document).ready(function () {
-        var poolId = @Context.Request.Query["id"];
+
 
         @if (ViewBag.teamName != null)
         {
@@ -14,61 +14,7 @@
             </text>
         }
 
-        $.ajax({
-        type: "GET",
-            url: "https://localhost:44375/Pool/GetPoolTeam",
-            contentType: "application/json",
-            data: {
-            id: poolId
-            }
-        }).done(function (poolTeam) {
-            $("#refRosterTable").html(poolTeam);
-        }).fail(function (x) {
-            alert(x.responseText);
 
-        });
-
-        $("[name='filterDropdown']")
-            .change(function () {
-                var team = $("#Team").val();
-                var position = $("#Position").val();
-                var favourite = $("#Favourite").val();
-                var selectedPlayerIds = [];
-                $('#drafted tr').each(function () {
-                    selectedPlayerIds.push(this.id)
-
-                })
-                $.ajax({
-                    type: "GET",
-                    url: "https://localhost:44375/Pool/GetSelectedPlayers",
-                    contentType: "application/json",
-                    data: {
-                        team: team,
-                        position: position,
-                        favourite: favourite,
-                        selectedPlayerIds: selectedPlayerIds.toString()
-                    }
-                }).done(function (ManagePoolTeam) {
-                    $("#refTable").html(ManagePoolTeam);
-                    }).fail(function (x) {
-                        alert(x.responseText);
-
-                });
-            });
-
-        $(document).on('click', '.playerData', function () {
-            var p = $(this).closest('tr');
-            var copyTable = $('#drafted tbody');
-            var cloneRow = p.clone();
-            cloneRow.attr("class", "rosterData");
-            copyTable.append(cloneRow)
-            p.remove();
-        });
-
-        $(document).on('click', '.rosterData', function () {
-            var p = $(this).closest('tr');
-            p.remove();
-        });
 
         $(document).on('click', '#addTeam', function () {
             //ToDo: Check and see if we should care about user changing the url to a string and crashing this line
@@ -103,85 +49,22 @@
         });
      });
 </script>
+
 <div>
     <div class="container">
         <label class="control-label">Team Name:</label>
         <input class="form-control" id="teamName" />
         <span class="text-danger"></span>
     </div>
-    <div class="row">
-        <div class="col-md-6">
-            <h3>Free Agents</h3>
-            <label class="control-label">Team:</label>
-            <select class="form-control" name="filterDropdown" id="Team">
-                <option value=""></option>
-                @foreach (var team in Model.Teams)
-                {
-                    <option id="teamDropdown" value=@team.TeamInfo.Abbreviation>@team.TeamInfo.Name</option>
-                }
+    <partial name="~/Views/Shared/_ManageTeam.cshtml" model="Model" />
+</div>
 
-            </select>
-
-            <label class="control-label">Position:</label>
-            <select class="form-control" name="filterDropdown" id="Position">
-                <option value=""></option>
-                <option value="C">Center</option>
-                <option value="LW">Left Wing</option>
-                <option value="RW">Right Wing</option>
-                <option value="D">Defenceman</option>
-                <option value="G">Goalie</option>
-            </select>
-
-            <label class="control-label">Favourite:</label>
-            <select class="form-control" name="filterDropdown" id="Favourite">
-                <option value=""></option>
-                <option value="Yes">Yes</option>
-                <option value="No">No</option>
-            </select>
-
-            <table class="table table-striped" id="InteractiveTable">
-                <thead>
-                    <tr>
-                        <th scope="col">Name</th>
-                        <th scope="col">Position</th>
-                        <th scope="col">Games Played</th>
-                        <th scope="col">Goals</th>
-                        <th scope="col">Assists</th>
-                        <th scope="col">Points</th>
-                    </tr>
-                </thead>
-                <tbody id="refTable">
-                    <partial name="_PlayerData" model="Model.Players" />
-                </tbody>
-            </table>
-        </div>
-        <div class="col-md-6">
-            <h3>My Roster</h3>
-            <table id="drafted" class="table table-striped">
-                <thead>
-                    <tr>
-                        <th scope="col">Name</th>
-                        <th scope="col">Position</th>
-                        <th scope="col">Games Played</th>
-                        <th scope="col">Goals</th>
-                        <th scope="col">Assists</th>
-                        <th scope="col">Points</th>
-                    </tr>
-                </thead>
-                <tbody id="refRosterTable">
-              
-                </tbody>
-            </table>
-            <button class="btn btn-success" id="addTeam">Add Team</button>
-            <div>
-                <h4>Pick Rules:</h4>
-                <ul>
-                    <li>Max players: @ViewBag.maxPlayers</li>
-                    <li>Max Forwards: @ViewBag.maxForwards</li>
-                    <li>Max Defencemen: @ViewBag.maxDefencemen</li>
-                    <li>Max Goalies:  @ViewBag.maxGoalies</li>
-                </ul>
-            </div>
-        </div>
-    </div>
+<div>
+    <h4>Pick Rules:</h4>
+    <ul>
+        <li>Max players: @ViewBag.maxPlayers</li>
+        <li>Max Forwards: @ViewBag.maxForwards</li>
+        <li>Max Defencemen: @ViewBag.maxDefencemen</li>
+        <li>Max Goalies:  @ViewBag.maxGoalies</li>
+    </ul>
 </div>

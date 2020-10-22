@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using HockeyManager.Areas.Identity.Data;
 using HockeyManager.Data;
+using HockeyManager.ViewModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -39,8 +40,8 @@ namespace HockeyManager.Controllers
         // GET: SeasonController/NewSeason
         public ActionResult NewSeason()
         {
-            var teams = _context.Teams.Include(x => x.TeamInfo).Where(x => x.ApiId != 0).Select(x => x.TeamInfo).ToList();
-            return View(teams);
+            SearchPlayer VMplayers = new SearchPlayer(_context.Teams.Include(x => x.TeamInfo).Where(x => x.PoolId == null).ToList(), _context.Players.Include(x => x.PlayerInfo).Where(x => x.Rank == 0 && x.ApiId != 0).ToList());
+            return View(VMplayers);
         }
 
         // POST: SeasonController/CreateSeason
