@@ -4,27 +4,6 @@
 
 <script>
 
-    @if (Context.Request.Query["id"].Count > 0) {
-         <text>
-        var poolId = @Context.Request.Query["id"];
-
-        $.ajax({
-            type: "GET",
-            url: "https://localhost:44375/Pool/GetPoolTeam",
-            contentType: "application/json",
-            data: {
-                id: poolId
-            }
-        }).done(function (roster) {
-            $("#refRosterTable").html(roster);
-        }).fail(function (x) {
-            alert(x.responseText);
-
-        });
-    </text>
-    }
-
-
     $(document).on("[name='filterDropdown']")
         .change(function () {
             var team = $("#Team").val();
@@ -37,7 +16,7 @@
             })
             $.ajax({
                 type: "GET",
-                url: "https://localhost:44375/Pool/GetSelectedPlayers",
+                url: "https://localhost:44375/Search/GetSelectedPlayers",
                 contentType: "application/json",
                 data: {
                     team: team,

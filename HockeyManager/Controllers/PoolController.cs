@@ -91,42 +91,7 @@ namespace HockeyManager.Controllers
             return View(VMplayers);
         }
 
-        //GET
-        public ActionResult GetSelectedPlayers(string team, string position, string favourite, string selectedPlayerIds)
-        {
-            if (team == null) { team = ""; }
-            if (position == null) { position = ""; }
-            int[] parsedPlayerIds;
-            if (selectedPlayerIds == null)
-            {
-                parsedPlayerIds = new int[1];
-                parsedPlayerIds[0] = -1;
-            }
-            else
-            {
-                var playerIds = selectedPlayerIds.Split(",");
-                playerIds = playerIds.Skip(1).ToArray();
-                parsedPlayerIds = Array.ConvertAll(playerIds, s => int.Parse(s));
-            }
-           
-
-            if (favourite == "Yes")
-            {
-                var results = _context.Favourites.Where(x => x.UserId == _userManager.GetUserId(User)).Select(x => x.Player).Include(x => x.PlayerInfo).Include(x => x.Team.TeamInfo).Where(x => x.Team.TeamInfo.Abbreviation.Contains(team) && x.PlayerInfo.Position.Contains(position) && !parsedPlayerIds.Contains(x.PlayerInfo.Id)).ToList();
-                return PartialView("_PlayerData", results);
-            }
-            else if (favourite == "No")
-            {
-                var results = _context.Players.Include(x => x.PlayerInfo).Include(x => x.Team.TeamInfo).Where(x => x.Team.TeamInfo.Abbreviation.Contains(team) && x.ApiId != 0 && x.PlayerInfo.Position.Contains(position) && !parsedPlayerIds.Contains(x.PlayerInfo.Id)).Include(x => x.Favourites).ToList();
-                results.RemoveAll(x => x.Favourites.Select(y => y.UserId).Contains(_userManager.GetUserId(User)));
-                return PartialView("_PlayerData", results);
-            }
-            else
-            {
-                var results = _context.Players.Include(x => x.PlayerInfo).Include(x => x.Team.TeamInfo).Where(x => x.Team.TeamInfo.Abbreviation.Contains(team) && x.ApiId != 0 && x.PlayerInfo.Position.Contains(position) && !parsedPlayerIds.Contains(x.PlayerInfo.Id)).ToList();
-                return PartialView("_PlayerData", results);
-            }
-        }
+        
 
         [HttpGet]
         public ActionResult GetPoolTeam(int id)

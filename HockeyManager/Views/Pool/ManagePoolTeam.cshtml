@@ -6,6 +6,22 @@
 <script>
     $(document).ready(function () {
 
+         var poolId = @Context.Request.Query["id"];
+
+        $.ajax({
+            type: "GET",
+            url: "https://localhost:44375/Pool/GetPoolTeam",
+            contentType: "application/json",
+            data: {
+                id: poolId
+            }
+        }).done(function (roster) {
+            $("#refRosterTable").html(roster);
+        }).fail(function (x) {
+            alert(x.responseText);
+
+        });
+
 
         @if (ViewBag.teamName != null)
         {
