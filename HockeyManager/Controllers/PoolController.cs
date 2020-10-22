@@ -77,7 +77,7 @@ namespace HockeyManager.Controllers
         // GET: Pool/ManagePoolTeam?Id=5
         public ActionResult ManagePoolTeam(int id)
         {
-            SearchPlayer VMplayers = new SearchPlayer(_context.Teams.Include(x => x.TeamInfo).Where(x => x.PoolId == null).ToList(), _context.Players.Include(x => x.PlayerInfo).Where(x => x.Rank == 0 && x.ApiId != 0).ToList());
+            SearchPlayer VMplayers = new SearchPlayer(_context.Teams.Include(x => x.TeamInfo).Where(x => x.ApiId != 0).ToList(), _context.Players.Include(x => x.PlayerInfo).Where(x => x.Rank == 0 && x.ApiId != 0).ToList());
 
             var pool = _context.Pools.Include(x => x.RuleSet).Where(x => x.Id == id).FirstOrDefault();
             ViewBag.maxForwards = pool.RuleSet.maxForwards;
@@ -125,7 +125,7 @@ namespace HockeyManager.Controllers
 
             var rule = _context.RuleSets.Where(x => x.Id == ruleId).FirstOrDefault();
 
-            var hMPlayers = _context.Players.Where(x => players.Contains(x.PlayerInfoId.ToString())).ToList();
+            var hMPlayers = _context.Players.Where(x => players.Contains(x.PlayerInfoId.ToString()) && x.ApiId != 0).ToList();
 
             var forwards = 0;
             var defencemen = 0;
