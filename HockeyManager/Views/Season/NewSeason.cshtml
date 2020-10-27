@@ -94,8 +94,10 @@
                 }
             }).done(function (resultMessage) {
 
-                 if (resultMessage == "success") {
-                     location.href = 'https://localhost:44375/Season/Index/';
+                var seasonId = Number(resultMessage);
+
+                if (!isNaN(seasonId)) {
+                    location.href = 'https://localhost:44375/Season/Hub/' + seasonId;
 
                 } else {
                     alert(resultMessage);

@@ -29,13 +29,9 @@ namespace HockeyManager.Controllers
         // GET: SeasonController
         public ActionResult Index()
         {
-            return View();
-        }
+            var seasons = _context.Teams.Include(x => x.TeamInfo).Where(x => x.SeasonId != null && x.UserId == _userManager.GetUserId(User)).ToList();
 
-        // GET: SeasonController/Details/5
-        public ActionResult Details(int id)
-        {
-            return View();
+            return View(seasons);
         }
 
         // GET: SeasonController/NewSeason
@@ -252,8 +248,15 @@ namespace HockeyManager.Controllers
             await _context.Players.AddRangeAsync(newGeneratedPlayers);
             await _context.SaveChangesAsync();
 
-            return "success";
+            return season.Id.ToString();
         }
+
+        // GET: SeasonController/Hub/5
+        public ActionResult Hub(int id)
+        {
+            return View();
+        }
+
 
         // GET: SeasonController/Edit/5
         public ActionResult Edit(int id)
