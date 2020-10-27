@@ -80,24 +80,24 @@ namespace HockeyManager.Controllers
 
             if (favourite == "Yes")
             {
-                filterPlayers = _context.Favourites.Where(x => x.UserId == user.Id).Select(x => x.Player).Include(x => x.PlayerInfo).Where(x => x.Position.Contains(position) && x.PlayerInfo.Name.Contains(name) && teamFilter.Contains(x.Team.TeamInfo.Abbreviation)).ToList();
-                SearchPlayer VMFavouritePlayers = new SearchPlayer(_context.Teams.Include(x => x.TeamInfo).ToList(), filterPlayers);
+                filterPlayers = _context.Favourites.Where(x => x.UserId == user.Id).Select(x => x.Player).Include(x => x.PlayerInfo).Where(x => x.ApiId != 0 && x.Position.Contains(position) && x.PlayerInfo.Name.Contains(name) && teamFilter.Contains(x.Team.TeamInfo.Abbreviation)).ToList();
+                SearchPlayer VMFavouritePlayers = new SearchPlayer(_context.Teams.Include(x => x.TeamInfo).Where(x => x.ApiId != 0).ToList(), filterPlayers);
                 return View(VMFavouritePlayers);
             }
             else if (favourite == "No")
             {
-                filterPlayers = _context.Players.Include(x => x.PlayerInfo).Where(x => x.Position.Contains(position) && x.PlayerInfo.Name.Contains(name) && teamFilter.Contains(x.Team.TeamInfo.Abbreviation)).Include(x => x.Favourites).ToList();
+                filterPlayers = _context.Players.Include(x => x.PlayerInfo).Where(x => x.ApiId != 0 && x.Position.Contains(position) && x.PlayerInfo.Name.Contains(name) && teamFilter.Contains(x.Team.TeamInfo.Abbreviation)).Include(x => x.Favourites).ToList();
 
 
                 filterPlayers.RemoveAll(x => x.Favourites.Select(y => y.UserId).Contains(user.Id));
-                SearchPlayer VMFavouritePlayers = new SearchPlayer(_context.Teams.Include(x => x.TeamInfo).ToList(), filterPlayers);
+                SearchPlayer VMFavouritePlayers = new SearchPlayer(_context.Teams.Include(x => x.TeamInfo).Where(x => x.ApiId != 0).ToList(), filterPlayers);
                 return View(VMFavouritePlayers);
 
             }
             else
             {
-                filterPlayers = _context.Players.Include(x => x.PlayerInfo).Where(x => x.Position.Contains(position) && x.PlayerInfo.Name.Contains(name) && teamFilter.Contains(x.Team.TeamInfo.Abbreviation)).ToList();
-                SearchPlayer VMplayers = new SearchPlayer(_context.Teams.Include(x => x.TeamInfo).ToList(), filterPlayers);
+                filterPlayers = _context.Players.Include(x => x.PlayerInfo).Where(x => x.ApiId != 0 && x.Position.Contains(position) && x.PlayerInfo.Name.Contains(name) && teamFilter.Contains(x.Team.TeamInfo.Abbreviation)).ToList();
+                SearchPlayer VMplayers = new SearchPlayer(_context.Teams.Include(x => x.TeamInfo).Where(x => x.ApiId != 0).ToList(), filterPlayers);
                 return View(VMplayers);
             }
 
