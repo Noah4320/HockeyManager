@@ -1,4 +1,6 @@
-﻿<div class="text-center">
+﻿@model IEnumerable<HMTeam>
+
+<div class="text-center">
     <div class="row">
         <div class="col">
             <h3>Standings</h3>
@@ -21,6 +23,17 @@
                     </tr>
                 </thead>
                 <tbody>
+                    @foreach (var team in Model)
+                    {
+                        <tr>
+                            <td>@team.Place</td>
+                            <td>@team.TeamInfo.Name</td>
+                            <td>@team.Wins</td>
+                            <td>@team.Loses</td>
+                            <td>@team.OvertimeLoses</td>
+                            <td>@team.Points</td>
+                        </tr>
+                    }
                 </tbody>
             </table>
         </div>
@@ -44,8 +57,25 @@
                     </tr>
                 </thead>
                 <tbody>
-                </tbody>
-            </table>
+                    @foreach (var team in Model)
+                    {
+                        if (team.UserId != null)
+                        {
+                            foreach (var player in team.Players)
+                            {
+                                <tr>
+                                    <td>@player.Position</td>
+                                    <td>@player.PlayerInfo.Name</td>
+                                    <td>@player.Goals</td>
+                                    <td>@player.Assists</td>
+                                <td>@player.Rank</td>
+                                    <td>@player.PlusMinus</td>
+                                </tr>
+                             }
+                        }
+                     }
+                    </tbody>
+                </table>
         </div>
     </div>
 </div>

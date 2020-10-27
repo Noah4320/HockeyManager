@@ -254,7 +254,8 @@ namespace HockeyManager.Controllers
         // GET: SeasonController/Hub/5
         public ActionResult Hub(int id)
         {
-            return View();
+            var teams = _context.Teams.Include(x => x.TeamInfo).Include(x => x.Players).ThenInclude(x => x.PlayerInfo).Where(x => x.SeasonId == id).ToList();
+            return View(teams);
         }
 
         // GET: SeasonController/SimGame/
