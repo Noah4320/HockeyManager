@@ -257,6 +257,12 @@ namespace HockeyManager.Controllers
             return View();
         }
 
+        // GET: SeasonController/SimGame/
+        public ActionResult SimGame()
+        {
+            return View();
+        }
+
 
         // GET: SeasonController/Edit/5
         public ActionResult Edit(int id)
