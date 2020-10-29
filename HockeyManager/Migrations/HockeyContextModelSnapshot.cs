@@ -95,6 +95,48 @@ namespace HockeyManager.Migrations
                     b.ToTable("Favourites");
                 });
 
+            modelBuilder.Entity("HockeyManager.Models.Game", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int?>("AwayTeamId");
+
+                    b.Property<DateTime>("Date");
+
+                    b.Property<int?>("HomeTeamId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AwayTeamId");
+
+                    b.HasIndex("HomeTeamId");
+
+                    b.ToTable("Games");
+                });
+
+            modelBuilder.Entity("HockeyManager.Models.GameEvent", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Event");
+
+                    b.Property<int?>("GameId");
+
+                    b.Property<int?>("PlayerId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GameId");
+
+                    b.HasIndex("PlayerId");
+
+                    b.ToTable("GameEvents");
+                });
+
             modelBuilder.Entity("HockeyManager.Models.HMPlayer", b =>
                 {
                     b.Property<int>("Id")
@@ -442,6 +484,28 @@ namespace HockeyManager.Migrations
                     b.HasOne("HockeyManager.Areas.Identity.Data.User", "User")
                         .WithMany("Favourites")
                         .HasForeignKey("UserId");
+                });
+
+            modelBuilder.Entity("HockeyManager.Models.Game", b =>
+                {
+                    b.HasOne("HockeyManager.Models.HMTeam", "AwayTeam")
+                        .WithMany("AwaySchedule")
+                        .HasForeignKey("AwayTeamId");
+
+                    b.HasOne("HockeyManager.Models.HMTeam", "HomeTeam")
+                        .WithMany("HomeSchedule")
+                        .HasForeignKey("HomeTeamId");
+                });
+
+            modelBuilder.Entity("HockeyManager.Models.GameEvent", b =>
+                {
+                    b.HasOne("HockeyManager.Models.Game", "Game")
+                        .WithMany("GameEvents")
+                        .HasForeignKey("GameId");
+
+                    b.HasOne("HockeyManager.Models.HMPlayer", "Player")
+                        .WithMany()
+                        .HasForeignKey("PlayerId");
                 });
 
             modelBuilder.Entity("HockeyManager.Models.HMPlayer", b =>

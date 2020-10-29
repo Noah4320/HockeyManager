@@ -39,5 +39,10 @@ namespace HockeyManager.Models
 
         [JsonIgnore]
         public virtual ICollection<HMPlayer> Players { get; set; }
+
+        [JsonIgnore]
+        public virtual ICollection<Game> HomeSchedule { get; set; }
+        [JsonIgnore]
+        public virtual ICollection<Game> AwaySchedule { get; set; }
     }
 }

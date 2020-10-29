@@ -250,6 +250,17 @@ namespace HockeyManager.Controllers
             await _context.Players.AddRangeAsync(newGeneratedPlayers);
             await _context.SaveChangesAsync();
 
+            //Create Schedule
+
+            Game game = new Game();
+
+            game.Date = DateTime.Now;
+            game.HomeTeamId = myTeam.Id;
+            game.AwayTeamId = newlyGeneratedTeams[16].Id;
+
+            await _context.Games.AddAsync(game);
+            await _context.SaveChangesAsync();
+
             return season.Id.ToString();
         }
 
@@ -257,7 +268,12 @@ namespace HockeyManager.Controllers
         public ActionResult Hub(int id)
         {
             var teams = _context.Teams.Include(x => x.TeamInfo).Include(x => x.Players).ThenInclude(x => x.PlayerInfo).Where(x => x.SeasonId == id).ToList();
-            return View(teams);
+            var myTeam = _context.Teams.Include(x => x.HomeSchedule).Where(x => x.SeasonId == id && x.UserId == _userManager.GetUserId(User)).FirstOrDefault();
+
+            SeasonsViewModel VMteams = new SeasonsViewModel();
+            VMteams.Teams = teams;
+            VMteams.MyTeam = myTeam;
+            return View(VMteams);
         }
 
         // GET: SeasonController/SimGame/

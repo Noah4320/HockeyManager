@@ -332,6 +332,33 @@ namespace HockeyManager.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Games",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Date = table.Column<DateTime>(nullable: false),
+                    HomeTeamId = table.Column<int>(nullable: true),
+                    AwayTeamId = table.Column<int>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Games", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Games_Teams_AwayTeamId",
+                        column: x => x.AwayTeamId,
+                        principalTable: "Teams",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Games_Teams_HomeTeamId",
+                        column: x => x.HomeTeamId,
+                        principalTable: "Teams",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Players",
                 columns: table => new
                 {
@@ -398,6 +425,33 @@ namespace HockeyManager.Migrations
                         onDelete: ReferentialAction.Restrict);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "GameEvents",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Event = table.Column<string>(nullable: true),
+                    PlayerId = table.Column<int>(nullable: true),
+                    GameId = table.Column<int>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_GameEvents", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_GameEvents_Games_GameId",
+                        column: x => x.GameId,
+                        principalTable: "Games",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_GameEvents_Players_PlayerId",
+                        column: x => x.PlayerId,
+                        principalTable: "Players",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
@@ -446,6 +500,26 @@ namespace HockeyManager.Migrations
                 name: "IX_Favourites_UserId",
                 table: "Favourites",
                 column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_GameEvents_GameId",
+                table: "GameEvents",
+                column: "GameId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_GameEvents_PlayerId",
+                table: "GameEvents",
+                column: "PlayerId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Games_AwayTeamId",
+                table: "Games",
+                column: "AwayTeamId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Games_HomeTeamId",
+                table: "Games",
+                column: "HomeTeamId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Players_PlayerInfoId",
@@ -524,10 +598,16 @@ namespace HockeyManager.Migrations
                 name: "Favourites");
 
             migrationBuilder.DropTable(
+                name: "GameEvents");
+
+            migrationBuilder.DropTable(
                 name: "PoolList");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
+
+            migrationBuilder.DropTable(
+                name: "Games");
 
             migrationBuilder.DropTable(
                 name: "Players");
