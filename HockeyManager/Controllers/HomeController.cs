@@ -43,14 +43,14 @@ namespace HockeyManager.Controllers
             var allLeftWingers = await _context.Players.Where(x => x.ApiId != 0 && x.GamesPlayed > 10 && x.Position == "LW").ToListAsync();
             var allRightWingers = await _context.Players.Where(x => x.ApiId != 0 && x.GamesPlayed > 10 && x.Position == "RW").ToListAsync();
             var allDefencemen = await _context.Players.Where(x => x.ApiId != 0 && x.GamesPlayed > 10 && x.Position == "D").ToListAsync();
-            var allGoalies = await _context.Players.Where(x => x.ApiId != 0 && x.GamesPlayed > 20 && x.Position == "G").ToListAsync();
+            var allGoalies = await _context.Players.Where(x => x.ApiId != 0 && x.GamesPlayed > 25 && x.Position == "G").ToListAsync();
 
             //These Skaters have 10 or less games played and the goalies have 20 or less
             var allRookieCenters = await _context.Players.Where(x => x.ApiId != 0 && x.GamesPlayed <= 10 && x.Position == "C").ToListAsync();
             var allRookieLeftWingers = await _context.Players.Where(x => x.ApiId != 0 && x.GamesPlayed <= 10 && x.Position == "LW").ToListAsync();
             var allRookieRightWingers = await _context.Players.Where(x => x.ApiId != 0 && x.GamesPlayed <= 10 && x.Position == "RW").ToListAsync();
             var allRookieDefencemen = await _context.Players.Where(x => x.ApiId != 0 && x.GamesPlayed <= 10 && x.Position == "D").ToListAsync();
-            var allRookieGoalies = await _context.Players.Where(x => x.ApiId != 0 && x.GamesPlayed <= 20 && x.Position == "G").ToListAsync();
+            var allRookieGoalies = await _context.Players.Where(x => x.ApiId != 0 && x.GamesPlayed <= 25 && x.Position == "G").ToListAsync();
 
 
             await UpdateOveralls(allCenters, false);
@@ -69,6 +69,13 @@ namespace HockeyManager.Controllers
         }
 
         public async Task UpdateOveralls(List<HMPlayer> players, bool isRookie) {
+
+            bool isGoalie = false;
+
+            if (players.All(x => x.Position == "G"))
+            {
+                isGoalie = true;
+            }
 
             List<decimal> oldRanks = new List<decimal>();
 
@@ -104,7 +111,7 @@ namespace HockeyManager.Controllers
                 }
                 if (player.Position == "G")
                 {
-                    decimal rank = (-0.75m * (goalsAgainst / gamesPlayed) + 0.10m * (saves / gamesPlayed) + 0.20m * (shutouts / gamesPlayed));
+                    decimal rank = (-0.75m * (goalsAgainst) + 0.10m * (saves) + 0.20m * (shutouts));
                     oldRanks.Add(rank);
                 }
 
@@ -116,15 +123,25 @@ namespace HockeyManager.Controllers
             decimal newMax;
             decimal newMin;
 
-            if (isRookie)
+            if (isRookie && !isGoalie)
             {
                 newMax = 64;
                 newMin = 59;
             }
-            else
+            else if (!isRookie && !isGoalie)
             {
                 newMax = 95;
                 newMin = 65;
+            }
+            else if(isRookie && isGoalie)
+            {
+                newMax = 74;
+                newMin = 65;
+            } 
+            else 
+            {
+                newMax = 95;
+                newMin = 75;
             }
      
 
