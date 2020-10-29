@@ -62,6 +62,8 @@ namespace HockeyManager.Controllers
                 return "abbreviation must be 3 characters!";
             }
 
+            abbreviation = abbreviation.ToUpper();
+
             var hMPlayers = await _context.Players.Include(x => x.PlayerInfo).Where(x => players.Contains(x.PlayerInfoId.ToString()) && x.ApiId != 0).ToListAsync();
 
             var forwards = 0;
@@ -277,11 +279,63 @@ namespace HockeyManager.Controllers
         }
 
         // GET: SeasonController/SimGame/
-        public ActionResult SimGame()
+        public ActionResult SimGame(int gameId)
         {
-            return View();
+            var game = _context.Games.Include(x => x.HomeTeam.Players).ThenInclude(x => x.PlayerInfo)
+                .Include(x => x.AwayTeam.Players).ThenInclude(x => x.PlayerInfo)
+                .Include(x => x.HomeTeam.TeamInfo)
+                .Include(x => x.AwayTeam.TeamInfo)
+                .Where(x => x.Id == gameId).FirstOrDefault();
+            return View(game);
         }
 
+        [HttpGet]
+        public ActionResult HomeTeam(int gameId)
+        {
+            var homeRoster = _context.Games
+                .Where(x => x.Id == gameId).SelectMany(x => x.HomeTeam.Players)
+                .Include(x => x.PlayerInfo).ToList();
+
+            foreach (var player in homeRoster)
+            {
+                player.Goals = 0;
+                player.Assists = 0;
+                player.Points = 0;
+                player.TimeOnIce = 0;
+                player.Hits = 0;
+                player.PlusMinus = 0;
+                player.PowerPlayGoals = 0;
+                player.PenalityMinutes = 0;
+                player.GoalsAgainst = 0;
+                player.Saves = 0;
+                player.Shutouts = 0;
+            }
+            return PartialView("_GameRoster", homeRoster);
+        }
+
+        [HttpGet]
+        public ActionResult AwayTeam(int gameId)
+        {
+            var awayRoster = _context.Games
+                .Where(x => x.Id == gameId).SelectMany(x => x.AwayTeam.Players)
+                .Include(x => x.PlayerInfo).ToList();
+
+            foreach (var player in awayRoster)
+            {
+                player.Goals = 0;
+                player.Assists = 0;
+                player.Points = 0;
+                player.TimeOnIce = 0;
+                player.Hits = 0;
+                player.PlusMinus = 0;
+                player.PowerPlayGoals = 0;
+                player.PenalityMinutes = 0;
+                player.GoalsAgainst = 0;
+                player.Saves = 0;
+                player.Shutouts = 0;
+            }
+            return PartialView("_GameRoster", awayRoster);
+        }
 
         // GET: SeasonController/Edit/5
         public ActionResult Edit(int id)
