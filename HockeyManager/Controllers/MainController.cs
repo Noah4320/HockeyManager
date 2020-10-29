@@ -26,7 +26,7 @@ namespace HockeyManager.Controllers
         // GET: Main
         public ActionResult Index()
         {
-            SearchPlayer players = new SearchPlayer(_context.Teams.Include(x => x.TeamInfo).OrderByDescending(x => x.Points).ToList(), _context.Players.Include(x => x.PlayerInfo).Where(x => x.Overall == 0).ToList());
+            SearchPlayer players = new SearchPlayer(_context.Teams.Include(x => x.TeamInfo).Where(x => x.ApiId != 0).OrderByDescending(x => x.Points).ToList(), _context.Players.Include(x => x.PlayerInfo).Where(x => x.ApiId != 0).ToList());
             return View(players);
         }
 

@@ -37,7 +37,7 @@ namespace HockeyManager.Controllers
         // GET: SeasonController/NewSeason
         public ActionResult NewSeason()
         {
-            SearchPlayer VMplayers = new SearchPlayer(_context.Teams.Include(x => x.TeamInfo).Where(x => x.ApiId != 0).ToList(), _context.Players.Include(x => x.PlayerInfo).Where(x => x.Overall == 0 && x.ApiId != 0).ToList());
+            SearchPlayer VMplayers = new SearchPlayer(_context.Teams.Include(x => x.TeamInfo).Where(x => x.ApiId != 0).ToList(), _context.Players.Include(x => x.PlayerInfo).Where(x => x.ApiId != 0).ToList());
 
             //The player limits are hardcoded smh
             ViewBag.maxForwards = 12;
@@ -169,6 +169,7 @@ namespace HockeyManager.Controllers
                 newlyGeneratedRoster.Add(new HMPlayer
                 {
                     Position = player.Position,
+                    Overall = player.Overall,
                     TeamId = myTeam.Id,
                     PlayerInfoId = player.PlayerInfoId
                 });
@@ -239,6 +240,7 @@ namespace HockeyManager.Controllers
                     newGeneratedPlayers.Add(new HMPlayer
                     {
                         Position = player.Position,
+                        Overall = player.Overall,
                         TeamId = team.Id,
                         PlayerInfoId = player.PlayerInfoId
                     });

@@ -50,7 +50,7 @@ namespace HockeyManager.Controllers
 
         public ActionResult SearchPlayers()
         {
-            SearchPlayer VMplayers = new SearchPlayer(_context.Teams.Include(x => x.TeamInfo).Where(x => x.ApiId != 0).ToList(), _context.Players.Include(x => x.PlayerInfo).Where(x => x.Overall == 0 && x.ApiId != 0).ToList());
+            SearchPlayer VMplayers = new SearchPlayer(_context.Teams.Include(x => x.TeamInfo).Where(x => x.ApiId != 0).ToList(), _context.Players.Include(x => x.PlayerInfo).Where(x => x.ApiId != 0).ToList());
 
             return View(VMplayers);
         }
