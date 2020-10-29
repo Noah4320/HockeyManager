@@ -13,14 +13,18 @@ namespace HockeyManager.Models
         public int Id { get; set; }
         public string Position { get; set; }
         public int GamesPlayed { get; set; }
+        public int TimeOnIce { get; set; }
         public int Goals { get; set; }
         public int Assists { get; set; }
         public int Points { get; set; }
-        public int Rank { get; set; }
         public int PlusMinus { get; set; }
+        public int Hits { get; set; }
+        public int PowerPlayGoals { get; set; }
         public int PenalityMinutes { get; set; }
         public int Saves { get; set; }
         public int Shutouts { get; set; }
+        public int GoalsAgainst { get; set; }
+        public int Overall { get; set; }
 
         public int ApiId { get; set; }
 

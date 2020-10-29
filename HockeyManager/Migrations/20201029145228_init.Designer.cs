@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HockeyManager.Migrations
 {
     [DbContext(typeof(HockeyContext))]
-    [Migration("20201022202730_init")]
+    [Migration("20201029145228_init")]
     partial class init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -111,6 +111,12 @@ namespace HockeyManager.Migrations
 
                     b.Property<int>("Goals");
 
+                    b.Property<int>("GoalsAgainst");
+
+                    b.Property<int>("Hits");
+
+                    b.Property<int>("Overall");
+
                     b.Property<int>("PenalityMinutes");
 
                     b.Property<int?>("PlayerInfoId");
@@ -121,13 +127,15 @@ namespace HockeyManager.Migrations
 
                     b.Property<string>("Position");
 
-                    b.Property<int>("Rank");
+                    b.Property<int>("PowerPlayGoals");
 
                     b.Property<int>("Saves");
 
                     b.Property<int>("Shutouts");
 
                     b.Property<int?>("TeamId");
+
+                    b.Property<int>("TimeOnIce");
 
                     b.HasKey("Id");
 

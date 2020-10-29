@@ -107,17 +107,23 @@ namespace HockeyManager.Areas.Identity.Data
                         await _context.PlayerInfo.AddAsync(hMPlayerInfo);
                         await _context.SaveChangesAsync();
 
-                        int.TryParse(playerStats.stats[0].splits[0].stat.penaltyMinutes, out int parsedPM);
+                        var TOI = playerStats.stats[0].splits[0].stat.timeOnIce.Split(":");
+                        int.TryParse(TOI[0], out int parsedTOI);
+
                         hMPlayers.Add(new HMPlayer
                         {
                             Position = player.position.abbreviation,
                             GamesPlayed = playerStats.stats[0].splits[0].stat.games,
+                            TimeOnIce = parsedTOI,
                             Goals = playerStats.stats[0].splits[0].stat.goals,
                             Assists = playerStats.stats[0].splits[0].stat.assists,
                             Points = playerStats.stats[0].splits[0].stat.points,
-                            PenalityMinutes = parsedPM,
+                            Hits = playerStats.stats[0].splits[0].stat.hits,
+                            PowerPlayGoals = playerStats.stats[0].splits[0].stat.powerPlayGoals,
+                            PenalityMinutes = playerStats.stats[0].splits[0].stat.pim,
                             Saves = playerStats.stats[0].splits[0].stat.saves,
                             Shutouts = playerStats.stats[0].splits[0].stat.shutouts,
+                            GoalsAgainst = playerStats.stats[0].splits[0].stat.goalsAgainst,
                             PlusMinus = playerStats.stats[0].splits[0].stat.plusMinus,
                             ApiId = player.person.id,
                             TeamId = team.Id,
@@ -202,15 +208,22 @@ namespace HockeyManager.Areas.Identity.Data
                         {
                             try
                             {
-                                int.TryParse(playerStats.stats[0].splits[0].stat.penaltyMinutes, out int parsedPM);
+                                
+                                var TOI = playerStats.stats[0].splits[0].stat.timeOnIce.Split(":");
+                                int.TryParse(TOI[0], out int parsedTOI);
+
 
                                 record.GamesPlayed = (playerStats.stats[0].splits[0].stat.games - player.GamesPlayed) + record.GamesPlayed;
+                                record.TimeOnIce = (parsedTOI - player.TimeOnIce) + record.TimeOnIce;
                                 record.Goals = (playerStats.stats[0].splits[0].stat.goals - player.Goals) + record.Goals;
                                 record.Assists = (playerStats.stats[0].splits[0].stat.assists - player.Assists) + record.Assists;
                                 record.Points = (playerStats.stats[0].splits[0].stat.points - player.Points) + record.Points;
-                                record.PenalityMinutes = (parsedPM - player.PenalityMinutes) + record.PenalityMinutes;
+                                record.Hits = (playerStats.stats[0].splits[0].stat.hits - player.Hits) + record.Hits;
+                                record.PowerPlayGoals = (playerStats.stats[0].splits[0].stat.powerPlayGoals - player.PowerPlayGoals) + record.PowerPlayGoals;
+                                record.PenalityMinutes = (playerStats.stats[0].splits[0].stat.pim - player.PenalityMinutes) + record.PenalityMinutes;
                                 record.Saves = (playerStats.stats[0].splits[0].stat.saves - player.Saves) + record.Saves;
                                 record.Shutouts = (playerStats.stats[0].splits[0].stat.shutouts - player.Shutouts) + record.Shutouts;
+                                record.GoalsAgainst = (playerStats.stats[0].splits[0].stat.goalsAgainst - player.GoalsAgainst) + record.GoalsAgainst;
                                 record.PlusMinus = (playerStats.stats[0].splits[0].stat.plusMinus - player.PlusMinus) + record.PlusMinus;
 
                                 _context.Players.Update(record);
@@ -224,15 +237,20 @@ namespace HockeyManager.Areas.Identity.Data
                     }
                     try
                     {
-                        int.TryParse(playerStats.stats[0].splits[0].stat.penaltyMinutes, out int parsedPM);
+                        var TOI = playerStats.stats[0].splits[0].stat.timeOnIce.Split(":");
+                        int.TryParse(TOI[0], out int parsedTOI);
 
                         player.GamesPlayed = playerStats.stats[0].splits[0].stat.games;
+                        player.TimeOnIce = parsedTOI;
                         player.Goals = playerStats.stats[0].splits[0].stat.goals;
                         player.Assists = playerStats.stats[0].splits[0].stat.assists;
                         player.Points = playerStats.stats[0].splits[0].stat.points;
-                        player.PenalityMinutes = parsedPM;
+                        player.Hits = playerStats.stats[0].splits[0].stat.hits;
+                        player.PowerPlayGoals = playerStats.stats[0].splits[0].stat.powerPlayGoals;
+                        player.PenalityMinutes = playerStats.stats[0].splits[0].stat.pim;
                         player.Saves = playerStats.stats[0].splits[0].stat.saves;
                         player.Shutouts = playerStats.stats[0].splits[0].stat.shutouts;
+                        player.GoalsAgainst = playerStats.stats[0].splits[0].stat.goalsAgainst;
                         player.PlusMinus = playerStats.stats[0].splits[0].stat.plusMinus;
 
                         _context.Players.Update(player);
