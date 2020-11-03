@@ -171,6 +171,8 @@ namespace HockeyManager.Migrations
 
                     b.Property<int>("Saves");
 
+                    b.Property<int>("Shots");
+
                     b.Property<int>("Shutouts");
 
                     b.Property<int?>("TeamId");

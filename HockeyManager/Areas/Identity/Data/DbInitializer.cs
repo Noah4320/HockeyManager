@@ -115,6 +115,7 @@ namespace HockeyManager.Areas.Identity.Data
                             Position = player.position.abbreviation,
                             GamesPlayed = playerStats.stats[0].splits[0].stat.games,
                             TimeOnIce = parsedTOI,
+                            Shots = playerStats.stats[0].splits[0].stat.shots,
                             Goals = playerStats.stats[0].splits[0].stat.goals,
                             Assists = playerStats.stats[0].splits[0].stat.assists,
                             Points = playerStats.stats[0].splits[0].stat.points,
@@ -215,6 +216,7 @@ namespace HockeyManager.Areas.Identity.Data
 
                                 record.GamesPlayed = (playerStats.stats[0].splits[0].stat.games - player.GamesPlayed) + record.GamesPlayed;
                                 record.TimeOnIce = (parsedTOI - player.TimeOnIce) + record.TimeOnIce;
+                                record.Shots = (playerStats.stats[0].splits[0].stat.shots - player.Shots) + record.Shots;
                                 record.Goals = (playerStats.stats[0].splits[0].stat.goals - player.Goals) + record.Goals;
                                 record.Assists = (playerStats.stats[0].splits[0].stat.assists - player.Assists) + record.Assists;
                                 record.Points = (playerStats.stats[0].splits[0].stat.points - player.Points) + record.Points;
@@ -242,6 +244,7 @@ namespace HockeyManager.Areas.Identity.Data
 
                         player.GamesPlayed = playerStats.stats[0].splits[0].stat.games;
                         player.TimeOnIce = parsedTOI;
+                        player.Shots = playerStats.stats[0].splits[0].stat.shots;
                         player.Goals = playerStats.stats[0].splits[0].stat.goals;
                         player.Assists = playerStats.stats[0].splits[0].stat.assists;
                         player.Points = playerStats.stats[0].splits[0].stat.points;
@@ -283,6 +286,7 @@ namespace HockeyManager.Areas.Identity.Data
                                 int.TryParse(playerStats.stats[0].splits[0].stat.penaltyMinutes, out int parsedPM);
 
                                 record.GamesPlayed = (playerStats.stats[0].splits[0].stat.games - player.GamesPlayed) + record.GamesPlayed;
+                                record.Shots = (playerStats.stats[0].splits[0].stat.shots - player.Shots) + record.Shots;
                                 record.Goals = (playerStats.stats[0].splits[0].stat.goals - player.Goals) + record.Goals;
                                 record.Assists = (playerStats.stats[0].splits[0].stat.assists - player.Assists) + record.Assists;
                                 record.Points = (playerStats.stats[0].splits[0].stat.points - player.Points) + record.Points;
@@ -305,6 +309,7 @@ namespace HockeyManager.Areas.Identity.Data
                         int.TryParse(playerStats.stats[0].splits[0].stat.penaltyMinutes, out int parsedPM);
 
                         player.GamesPlayed = playerStats.stats[0].splits[0].stat.games;
+                        player.Shots = playerStats.stats[0].splits[0].stat.shots;
                         player.Goals = playerStats.stats[0].splits[0].stat.goals;
                         player.Assists = playerStats.stats[0].splits[0].stat.assists;
                         player.Points = playerStats.stats[0].splits[0].stat.points;

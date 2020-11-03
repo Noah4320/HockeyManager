@@ -337,6 +337,251 @@ namespace HockeyManager.Controllers
             return PartialView("_GameRoster", awayRoster);
         }
 
+        [HttpGet]
+        public void SimPeriod(int gameId)
+        {
+            var homeTeam = _context.Games.Where(x => x.Id == gameId).Select(x => x.HomeTeam).Include(x => x.Players).ThenInclude(x => x.PlayerInfo).Include(x => x.TeamInfo).FirstOrDefault();
+            var awayTeam = _context.Games.Where(x => x.Id == gameId).Select(x => x.AwayTeam).Include(x => x.Players).ThenInclude(x => x.PlayerInfo).Include(x => x.TeamInfo).FirstOrDefault();
+
+            decimal homeProb = homeTeam.Players.Sum(x => x.Overall);
+            decimal awayProb = awayTeam.Players.Sum(x => x.Overall);
+
+            Random random = new Random(DateTime.Now.Millisecond);
+
+            if (homeProb > awayProb)
+            {
+                awayProb = Math.Round((awayProb / homeProb) / 2m, 2) * 100;
+            } 
+            else
+            {
+                homeProb = Math.Round((homeProb / awayProb) / 2m, 2) * 100;
+            }
+
+            int decidingNumber = random.Next(0, 101);
+
+
+        }
+
+        [HttpGet]
+        public async Task<string> FinishGame(int gameId)
+        {
+            //get team instances
+            var homeTeam = _context.Games.Where(x => x.Id == gameId).Select(x => x.HomeTeam).Include(x => x.Players).ThenInclude(x => x.PlayerInfo).Include(x => x.TeamInfo).FirstOrDefault();
+            var awayTeam = _context.Games.Where(x => x.Id == gameId).Select(x => x.AwayTeam).Include(x => x.Players).ThenInclude(x => x.PlayerInfo).Include(x => x.TeamInfo).FirstOrDefault();
+
+            //Sum up each team's roster overall
+            decimal homeProb = (decimal)homeTeam.Players.Average(x => x.Overall);
+            decimal awayProb = (decimal)awayTeam.Players.Average(x => x.Overall);
+            string winner = "";
+            string loser = "";
+
+            Random random = new Random();
+            var randomChance = random.Next(0, 101);
+            //Find which team has the odds against them
+            //prob will always be under 50%
+            if (homeProb > awayProb)
+            {
+                var prob = Math.Round((awayProb / homeProb) / 2m, 2) * 100;
+                if (randomChance < prob)
+                {
+                    winner = homeTeam.TeamInfo.Name;
+                    loser = awayTeam.TeamInfo.Name;
+                }
+                else
+                {
+                    winner = awayTeam.TeamInfo.Name;
+                    loser = homeTeam.TeamInfo.Name;
+                }
+            }
+            else
+            {
+                var prob = Math.Round((homeProb / awayProb) / 2m, 2) * 100;
+                if (randomChance < prob)
+                {
+                    winner = homeTeam.TeamInfo.Name;
+                    loser = awayTeam.TeamInfo.Name;
+                }
+                else
+                {
+                    winner = awayTeam.TeamInfo.Name;
+                    loser = homeTeam.TeamInfo.Name;
+                }
+
+            }
+
+           
+
+
+            List<GameEvent> gameEvents = new List<GameEvent>();
+
+            var randomizer1 = new Random();
+            var randomDouble1 = randomizer1.NextDouble();
+
+            var result1 = Math.Floor(0 + (8 + 1 - 0) * (Math.Pow(randomDouble1, 2)));
+
+            var randomizer2 = new Random();
+            var randomDouble2 = randomizer2.NextDouble();
+
+            var result2 = Math.Floor(0 + (8 + 1 - 0) * (Math.Pow(randomDouble2, 2)));
+           
+            //Process game scores
+            if (result1 > result2)
+            {
+               
+                if (winner == homeTeam.TeamInfo.Name)
+                {
+                    homeTeam.GamesPlayed += 1;
+                    homeTeam.Wins += 1;
+                    homeTeam.RegulationWins += 1;
+                    homeTeam.Points += 1;
+
+                    awayTeam.GamesPlayed += 1;
+                    awayTeam.Loses += 1;
+
+                    for (int i = 0; i < result1; i++)
+                    {
+                        gameEvents.Add(new GameEvent
+                        {
+                            Event = "Goal",
+                            GameId = gameId,
+                            PlayerId = 712
+                        });
+                    }
+
+                    for (int i = 0; i < result2; i++)
+                    {
+                        gameEvents.Add(new GameEvent
+                        {
+                            Event = "Goal",
+                            GameId = gameId,
+                            PlayerId = 847
+                        });
+                    }
+
+                    await _context.GameEvents.AddRangeAsync(gameEvents);
+
+                }
+                else
+                {
+                    awayTeam.GamesPlayed += 1;
+                    awayTeam.Wins += 1;
+                    awayTeam.RegulationWins += 1;
+                    awayTeam.Points += 1;
+
+                    homeTeam.GamesPlayed += 1;
+                    homeTeam.Loses += 1;
+
+                    for (int i = 0; i < result1; i++)
+                    {
+                        gameEvents.Add(new GameEvent
+                        {
+                            Event = "Goal",
+                            GameId = gameId,
+                            PlayerId = 847
+                        });
+                    }
+
+                    for (int i = 0; i < result2; i++)
+                    {
+                        gameEvents.Add(new GameEvent
+                        {
+                            Event = "Goal",
+                            GameId = gameId,
+                            PlayerId = 712
+                        });
+                    }
+
+                    await _context.GameEvents.AddRangeAsync(gameEvents);
+
+                }
+                _context.Teams.Update(homeTeam);
+                _context.Teams.Update(awayTeam);
+                await _context.SaveChangesAsync();
+
+                return $"{winner}: {result1} {loser}: {result2}";
+            }
+            else if (result1 < result2)
+            {
+                
+
+                if (winner == homeTeam.TeamInfo.Name)
+                {
+                    homeTeam.GamesPlayed += 1;
+                    homeTeam.Wins += 1;
+                    homeTeam.RegulationWins += 1;
+                    homeTeam.Points += 1;
+
+                    awayTeam.GamesPlayed += 1;
+                    awayTeam.Loses += 1;
+
+                    for (int i = 0; i < result2; i++)
+                    {
+                        gameEvents.Add(new GameEvent
+                        {
+                            Event = "Goal",
+                            GameId = gameId,
+                            PlayerId = 712
+                        });
+                    }
+
+                    for (int i = 0; i < result1; i++)
+                    {
+                        gameEvents.Add(new GameEvent
+                        {
+                            Event = "Goal",
+                            GameId = gameId,
+                            PlayerId = 847
+                        });
+                    }
+
+                    await _context.GameEvents.AddRangeAsync(gameEvents);
+                }
+                else
+                {
+                    awayTeam.GamesPlayed += 1;
+                    awayTeam.Wins += 1;
+                    awayTeam.RegulationWins += 1;
+                    awayTeam.Points += 2;
+
+                    homeTeam.GamesPlayed += 1;
+                    homeTeam.Loses += 1;
+
+                    for (int i = 0; i < result2; i++)
+                    {
+                        gameEvents.Add(new GameEvent
+                        {
+                            Event = "Goal",
+                            GameId = gameId,
+                            PlayerId = 847
+                        });
+                    }
+
+                    for (int i = 0; i < result1; i++)
+                    {
+                        gameEvents.Add(new GameEvent
+                        {
+                            Event = "Goal",
+                            GameId = gameId,
+                            PlayerId = 712
+                        });
+                    }
+
+                    await _context.GameEvents.AddRangeAsync(gameEvents);
+                }
+                _context.Teams.Update(homeTeam);
+                _context.Teams.Update(awayTeam);
+                await _context.SaveChangesAsync();
+
+                return $"{winner}: {result2} {loser}: {result1}";
+            }
+            else
+            {
+                return "Game draw!";
+            }
+
+
+        }
+
         // GET: SeasonController/Edit/5
         public ActionResult Edit(int id)
         {

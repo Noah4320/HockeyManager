@@ -367,6 +367,7 @@ namespace HockeyManager.Migrations
                     Position = table.Column<string>(nullable: true),
                     GamesPlayed = table.Column<int>(nullable: false),
                     TimeOnIce = table.Column<int>(nullable: false),
+                    Shots = table.Column<int>(nullable: false),
                     Goals = table.Column<int>(nullable: false),
                     Assists = table.Column<int>(nullable: false),
                     Points = table.Column<int>(nullable: false),

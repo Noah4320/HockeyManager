@@ -57,6 +57,39 @@
                 });
             }
         })
+
+    $(document).on('click', '#simPeriod', function () {
+        var gameId = @Context.Request.Query["gameId"];
+        $.ajax({
+            type: "GET",
+            url: "https://localhost:44375/Season/SimPeriod",
+            data: {
+                gameId: gameId
+            }
+        }).done(function (x) {
+            location.reload();
+        }).fail(function (x) {
+            alert(x.responseText);
+
+        });
+    });
+
+     $(document).on('click', '#simGame', function () {
+        var gameId = @Context.Request.Query["gameId"];
+        $.ajax({
+            type: "GET",
+            url: "https://localhost:44375/Season/FinishGame",
+            data: {
+                gameId: gameId
+            }
+        }).done(function (x) {
+            alert(x);
+        }).fail(function (x) {
+            alert(x.responseText);
+
+        });
+    });
+
 </script>
 
 <div class="text-center">
@@ -111,7 +144,7 @@
             </table>
 
             <input type="submit" class="btn btn-warning" id="simPeriod" value="Simulate Period" />
-            <input type="submit" class="btn btn-success" id="finishSim" value="Finish Game" />
+            <input type="submit" class="btn btn-success" id="simGame" value="Finish Game" />
 
         </div>
         <div class="col">
