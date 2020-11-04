@@ -38,7 +38,7 @@ namespace HockeyManager.Models
         public virtual Season Season { get; set; }
 
         [JsonIgnore]
-        public virtual ICollection<HMPlayer> Players { get; set; }
+        public virtual List<HMPlayer> Players { get; set; }
 
         [JsonIgnore]
         public virtual ICollection<Game> HomeSchedule { get; set; }
