@@ -279,6 +279,37 @@ namespace HockeyManager.Controllers
             return View(VMteams);
         }
 
+        [HttpGet]
+        public ActionResult GetCalendarData()
+        {
+            List<CalendarGames> calendarGames = new List<CalendarGames>();
+
+            try
+            {
+                var games = _context.Games.Include(x => x.HomeTeam.TeamInfo).Include(x => x.AwayTeam.TeamInfo).FirstOrDefault();
+
+                calendarGames.Add(new CalendarGames
+                {
+                    Id = games.Id,
+                    Title = $"{games.AwayTeam.TeamInfo.Abbreviation} @ {games.HomeTeam.TeamInfo.Abbreviation}",
+                    Description = "Test description",
+                    StartDate = games.Date.ToString()
+                });
+
+                // Processing.  
+                JsonResult result = Json(calendarGames);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                // Info  
+                Console.Write(ex);
+            }
+
+            // Return info.  
+            return null;
+        }
+
         // GET: SeasonController/SimGame/
         public ActionResult SimGame(int gameId)
         {
@@ -318,8 +349,8 @@ namespace HockeyManager.Controllers
         [HttpGet]
         public void SimPeriod(int gameId)
         {
-           
 
+            //var test = _context.Players.Where(x => x.TeamId == 1).Sum(x => x.Shots / x.GamesPlayed);
         }
 
         [HttpGet]
