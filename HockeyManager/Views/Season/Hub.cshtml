@@ -5,7 +5,7 @@
             <link href="~/lib/calendar/dist/css/main.css" rel="stylesheet" />
             <script src="~/lib/jquery/dist/jquery.js"></script>
             <script src="~/lib/calendar/dist/js/main.js"></script>
-            <script type="text/javascript" src="//cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+            <script src="~/lib/moment/dist/js/moment.min.js"></script>
             <script>
                 var gameEvents = [];
                 var test = '@Url.Action("SimGame", "Season", new { gameId = @Model.MyTeam.HomeSchedule.First().Id })';
@@ -118,7 +118,6 @@
                 <div class="col-5">
                     <h3>Schedule</h3>
                     <div id='calendar'></div>
-                    <button onclick="location.href='@Url.Action("SimGame", "Season", new { gameId =  @Model.MyTeam.HomeSchedule.First().Id})'" )>VS @Model.MyTeam.HomeSchedule.First().AwayTeam.TeamInfo.Name</button>
                 </div>
                 <div class="col">
                     <h3>My Roster</h3>
