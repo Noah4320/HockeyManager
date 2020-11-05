@@ -287,55 +287,32 @@ namespace HockeyManager.Controllers
                 .Include(x => x.HomeTeam.TeamInfo)
                 .Include(x => x.AwayTeam.TeamInfo)
                 .Where(x => x.Id == gameId).FirstOrDefault();
+
+            game.HomeTeam.Players.ForEach(x => x.Goals = 0);
+            game.HomeTeam.Players.ForEach(x => x.Assists = 0);
+            game.HomeTeam.Players.ForEach(x => x.Points = 0);
+            game.HomeTeam.Players.ForEach(x => x.PlusMinus = 0);
+            game.HomeTeam.Players.ForEach(x => x.PowerPlayGoals = 0);
+            game.HomeTeam.Players.ForEach(x => x.Shots = 0);
+            game.HomeTeam.Players.ForEach(x => x.Saves = 0);
+            game.HomeTeam.Players.ForEach(x => x.GoalsAgainst = 0);
+            game.HomeTeam.Players.ForEach(x => x.Hits = 0);
+            game.HomeTeam.Players.ForEach(x => x.Shutouts = 0);
+            game.HomeTeam.Players.ForEach(x => x.TimeOnIce = 0);
+
+            game.AwayTeam.Players.ForEach(x => x.Goals = 0);
+            game.AwayTeam.Players.ForEach(x => x.Assists = 0);
+            game.AwayTeam.Players.ForEach(x => x.Points = 0);
+            game.AwayTeam.Players.ForEach(x => x.PlusMinus = 0);
+            game.AwayTeam.Players.ForEach(x => x.PowerPlayGoals = 0);
+            game.AwayTeam.Players.ForEach(x => x.Shots = 0);
+            game.AwayTeam.Players.ForEach(x => x.Saves = 0);
+            game.AwayTeam.Players.ForEach(x => x.GoalsAgainst = 0);
+            game.AwayTeam.Players.ForEach(x => x.Hits = 0);
+            game.AwayTeam.Players.ForEach(x => x.Shutouts = 0);
+            game.AwayTeam.Players.ForEach(x => x.TimeOnIce = 0);
+
             return View(game);
-        }
-
-        [HttpGet]
-        public ActionResult HomeTeam(int gameId)
-        {
-            var homeRoster = _context.Games
-                .Where(x => x.Id == gameId).SelectMany(x => x.HomeTeam.Players)
-                .Include(x => x.PlayerInfo).ToList();
-
-            foreach (var player in homeRoster)
-            {
-                player.Goals = 0;
-                player.Assists = 0;
-                player.Points = 0;
-                player.TimeOnIce = 0;
-                player.Hits = 0;
-                player.PlusMinus = 0;
-                player.PowerPlayGoals = 0;
-                player.PenalityMinutes = 0;
-                player.GoalsAgainst = 0;
-                player.Saves = 0;
-                player.Shutouts = 0;
-            }
-            return PartialView("_GameRoster", homeRoster);
-        }
-
-        [HttpGet]
-        public ActionResult AwayTeam(int gameId)
-        {
-            var awayRoster = _context.Games
-                .Where(x => x.Id == gameId).SelectMany(x => x.AwayTeam.Players)
-                .Include(x => x.PlayerInfo).ToList();
-
-            foreach (var player in awayRoster)
-            {
-                player.Goals = 0;
-                player.Assists = 0;
-                player.Points = 0;
-                player.TimeOnIce = 0;
-                player.Hits = 0;
-                player.PlusMinus = 0;
-                player.PowerPlayGoals = 0;
-                player.PenalityMinutes = 0;
-                player.GoalsAgainst = 0;
-                player.Saves = 0;
-                player.Shutouts = 0;
-            }
-            return PartialView("_GameRoster", awayRoster);
         }
 
         [HttpGet]
@@ -364,7 +341,7 @@ namespace HockeyManager.Controllers
         }
 
         [HttpGet]
-        public async Task<string> FinishGame(int gameId)
+        public async Task<ActionResult> FinishGame(int gameId)
         {
             //get team instances
             var homeTeam = _context.Games.Where(x => x.Id == gameId).Select(x => x.HomeTeam).Include(x => x.Players).ThenInclude(x => x.PlayerInfo).Include(x => x.TeamInfo).FirstOrDefault();
@@ -663,7 +640,20 @@ namespace HockeyManager.Controllers
                 _context.Teams.Update(awayTeam);
                 await _context.SaveChangesAsync();
 
-                return $"{winner}: {result1} {loser}: {result2}";
+                Game game = new Game();
+                game.HomeTeamId = homeTeam.Id;
+                game.HomeTeam = homeTeam;
+                game.AwayTeamId = awayTeam.Id;
+                game.AwayTeam = awayTeam;
+                game.Date = DateTime.Now;
+                game.GameEvents = gameEvents;
+
+                game.HomeTeam.Players.ForEach(x => x.Goals = gameEvents.Where(y => y.Event == "Goal" && y.PlayerId == x.Id).Count());
+                game.AwayTeam.Players.ForEach(x => x.Goals = gameEvents.Where(y => y.Event == "Goal" && y.PlayerId == x.Id).Count());
+                game.HomeTeam.Players.ForEach(x => x.Points = gameEvents.Where(y => (y.Event == "Goal" || y.Event == "Assist") && y.PlayerId == x.Id).Count());
+                game.AwayTeam.Players.ForEach(x => x.Points = gameEvents.Where(y => (y.Event == "Goal" || y.Event == "Assist") && y.PlayerId == x.Id).Count());
+
+                return PartialView("_SimStats", game);
             }
             else if (result1 < result2)
             {
@@ -871,11 +861,35 @@ namespace HockeyManager.Controllers
                 _context.Teams.Update(awayTeam);
                 await _context.SaveChangesAsync();
 
-                return $"{winner}: {result2} {loser}: {result1}";
+                Game game = new Game();
+                game.HomeTeamId = homeTeam.Id;
+                game.HomeTeam = homeTeam;
+                game.AwayTeamId = awayTeam.Id;
+                game.AwayTeam = awayTeam;
+                game.GameEvents = gameEvents;
+
+                game.HomeTeam.Players.ForEach(x => x.Goals = gameEvents.Where(y => y.Event == "Goal" && y.PlayerId == x.Id).Count());
+                game.AwayTeam.Players.ForEach(x => x.Goals = gameEvents.Where(y => y.Event == "Goal" && y.PlayerId == x.Id).Count());
+                game.HomeTeam.Players.ForEach(x => x.Points = gameEvents.Where(y => (y.Event == "Goal" || y.Event == "Assist") && y.PlayerId == x.Id).Count());
+                game.AwayTeam.Players.ForEach(x => x.Points = gameEvents.Where(y => (y.Event == "Goal" || y.Event == "Assist") && y.PlayerId == x.Id).Count());
+
+                return PartialView("_SimStats", game);
             }
             else
             {
-                return "Game draw!";
+                Game game = new Game();
+                game.HomeTeamId = homeTeam.Id;
+                game.HomeTeam = homeTeam;
+                game.AwayTeamId = awayTeam.Id;
+                game.AwayTeam = awayTeam;
+                game.GameEvents = gameEvents;
+
+                game.HomeTeam.Players.ForEach(x => x.Goals = gameEvents.Where(y => y.Event == "Goal" && y.PlayerId == x.Id).Count());
+                game.AwayTeam.Players.ForEach(x => x.Goals = gameEvents.Where(y => y.Event == "Goal" && y.PlayerId == x.Id).Count());
+                game.HomeTeam.Players.ForEach(x => x.Points = gameEvents.Where(y => (y.Event == "Goal" || y.Event == "Assist") && y.PlayerId == x.Id).Count());
+                game.AwayTeam.Players.ForEach(x => x.Points = gameEvents.Where(y => (y.Event == "Goal" || y.Event == "Assist") && y.PlayerId == x.Id).Count());
+
+                return PartialView("_SimStats", game);
             }
 
 
