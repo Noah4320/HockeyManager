@@ -318,25 +318,7 @@ namespace HockeyManager.Controllers
         [HttpGet]
         public void SimPeriod(int gameId)
         {
-            var homeTeam = _context.Games.Where(x => x.Id == gameId).Select(x => x.HomeTeam).Include(x => x.Players).ThenInclude(x => x.PlayerInfo).Include(x => x.TeamInfo).FirstOrDefault();
-            var awayTeam = _context.Games.Where(x => x.Id == gameId).Select(x => x.AwayTeam).Include(x => x.Players).ThenInclude(x => x.PlayerInfo).Include(x => x.TeamInfo).FirstOrDefault();
-
-            decimal homeProb = homeTeam.Players.Sum(x => x.Overall);
-            decimal awayProb = awayTeam.Players.Sum(x => x.Overall);
-
-            Random random = new Random(DateTime.Now.Millisecond);
-
-            if (homeProb > awayProb)
-            {
-                awayProb = Math.Round((awayProb / homeProb) / 2m, 2) * 100;
-            } 
-            else
-            {
-                homeProb = Math.Round((homeProb / awayProb) / 2m, 2) * 100;
-            }
-
-            int decidingNumber = random.Next(0, 101);
-
+           
 
         }
 
@@ -344,35 +326,35 @@ namespace HockeyManager.Controllers
         public async Task<ActionResult> FinishGame(int gameId)
         {
             //get team instances
-            var homeTeam = _context.Games.Where(x => x.Id == gameId).Select(x => x.HomeTeam).Include(x => x.Players).ThenInclude(x => x.PlayerInfo).Include(x => x.TeamInfo).FirstOrDefault();
-            var awayTeam = _context.Games.Where(x => x.Id == gameId).Select(x => x.AwayTeam).Include(x => x.Players).ThenInclude(x => x.PlayerInfo).Include(x => x.TeamInfo).FirstOrDefault();
+            var homeTeam = await _context.Games.Where(x => x.Id == gameId).Select(x => x.HomeTeam).Include(x => x.Players).ThenInclude(x => x.PlayerInfo).Include(x => x.TeamInfo).FirstOrDefaultAsync();
+            var awayTeam = await _context.Games.Where(x => x.Id == gameId).Select(x => x.AwayTeam).Include(x => x.Players).ThenInclude(x => x.PlayerInfo).Include(x => x.TeamInfo).FirstOrDefaultAsync();
 
             //get roster stats from last year if less than 10 games played
             List<HMPlayer> homeRoster = new List<HMPlayer>();
             List<HMPlayer> awayRoster = new List<HMPlayer>();
 
-            decimal homeGoalsPerGameSum = 0;
-            decimal awayGoalsPerGameSum = 0;
+            decimal homeGPGSum = 0;
+            decimal awayGPGSum = 0;
 
             if (homeTeam.GamesPlayed < 10)
             {
-                homeRoster = _context.Players.Where(x => x.ApiId != 0 && homeTeam.Players.Select(y => y.PlayerInfoId).Contains(x.PlayerInfoId)).ToList();
-                homeGoalsPerGameSum = homeRoster.Sum(x => decimal.Divide(x.Goals, x.GamesPlayed));
+                homeRoster = await _context.Players.Where(x => x.ApiId != 0 && homeTeam.Players.Select(y => y.PlayerInfoId).Contains(x.PlayerInfoId)).ToListAsync();
+                homeGPGSum = homeRoster.Sum(x => decimal.Divide(x.Goals, x.GamesPlayed));
             }
             else
             {
-                homeGoalsPerGameSum = homeTeam.Players.Sum(x => decimal.Divide(x.Goals, x.GamesPlayed));
+                homeGPGSum = homeTeam.Players.Sum(x => decimal.Divide(x.Goals, x.GamesPlayed));
                 homeRoster = homeTeam.Players;
             }
 
             if (awayTeam.GamesPlayed < 10)
             {
-                awayRoster = _context.Players.Where(x => x.ApiId != 0 && awayTeam.Players.Select(y => y.PlayerInfoId).Contains(x.PlayerInfoId)).ToList();
-                awayGoalsPerGameSum = awayRoster.Sum(x => decimal.Divide(x.Goals, x.GamesPlayed));
+                awayRoster = await _context.Players.Where(x => x.ApiId != 0 && awayTeam.Players.Select(y => y.PlayerInfoId).Contains(x.PlayerInfoId)).ToListAsync();
+                awayGPGSum = awayRoster.Sum(x => decimal.Divide(x.Goals, x.GamesPlayed));
             }
             else
             {
-                awayGoalsPerGameSum = awayTeam.Players.Sum(x => decimal.Divide(x.Goals, x.GamesPlayed));
+                awayGPGSum = awayTeam.Players.Sum(x => decimal.Divide(x.Goals, x.GamesPlayed));
                 awayRoster = awayTeam.Players;
             }
 
@@ -445,8 +427,6 @@ namespace HockeyManager.Controllers
                 loserScore = result1;
             }
 
-            //ToDo: Clean up method. Possibly throw duplicated logic into seperate method. b) Send final stats to front end
-
             //Process game scores
             if (winner == homeTeam.TeamInfo.Name)
             {
@@ -460,12 +440,12 @@ namespace HockeyManager.Controllers
 
                 for (int i = 0; i < winnerScore; i++)
                 {
-                    gameEvents = PredictGoal(gameId, homeTeam.Players, homeRoster, homeGoalsPerGameSum, gameEvents);
+                    gameEvents = PredictGoal(gameId, homeTeam.Players, homeRoster, homeGPGSum, gameEvents);
                 }
 
                 for (int i = 0; i < loserScore; i++)
                 {
-                    gameEvents = PredictGoal(gameId, awayTeam.Players, awayRoster, awayGoalsPerGameSum, gameEvents);
+                    gameEvents = PredictGoal(gameId, awayTeam.Players, awayRoster, awayGPGSum, gameEvents);
                 }
 
                 await _context.GameEvents.AddRangeAsync(gameEvents);
@@ -483,12 +463,12 @@ namespace HockeyManager.Controllers
 
                 for (int i = 0; i < winnerScore; i++)
                 {
-                    gameEvents = PredictGoal(gameId, awayTeam.Players, awayRoster, awayGoalsPerGameSum, gameEvents);
+                    gameEvents = PredictGoal(gameId, awayTeam.Players, awayRoster, awayGPGSum, gameEvents);
                 }
 
                 for (int i = 0; i < loserScore; i++)
                 {
-                    gameEvents = PredictGoal(gameId, homeTeam.Players, homeRoster, homeGoalsPerGameSum, gameEvents);
+                    gameEvents = PredictGoal(gameId, homeTeam.Players, homeRoster, homeGPGSum, gameEvents);
                 }
 
                 await _context.GameEvents.AddRangeAsync(gameEvents);

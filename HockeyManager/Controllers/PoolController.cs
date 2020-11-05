@@ -265,7 +265,6 @@ namespace HockeyManager.Controllers
             pool.OwnerId = user.Id;
             try
             {
-                // TODO: Add insert logic here
 
                 await _context.Pools.AddAsync(pool);
                 await _context.SaveChangesAsync();
