@@ -416,7 +416,7 @@ namespace HockeyManager.Controllers
 
             }
 
-           
+
 
 
             List<GameEvent> gameEvents = new List<GameEvent>();
@@ -430,453 +430,71 @@ namespace HockeyManager.Controllers
             var randomDouble2 = randomizer2.NextDouble();
 
             var result2 = Math.Floor(0 + (8 + 1 - 0) * (Math.Pow(randomDouble2, 2)));
-           
-            //ToDo: Clean up method. Possibly throw duplicated logic into seperate method. b) Send final stats to front end
 
-            //Process game scores
+            double winnerScore = 0;
+            double loserScore = 0;
+
             if (result1 > result2)
             {
-               
-                if (winner == homeTeam.TeamInfo.Name)
-                {
-                    homeTeam.GamesPlayed += 1;
-                    homeTeam.Wins += 1;
-                    homeTeam.RegulationWins += 1;
-                    homeTeam.Points += 2;
-
-                    awayTeam.GamesPlayed += 1;
-                    awayTeam.Loses += 1;
-
-                    for (int i = 0; i < result1; i++)
-                    {
-                        Random r = new Random();
-                        double rnd = r.NextDouble();
-                       
-                        try
-                        {
-                            foreach (var player in homeTeam.Players)
-                            {
-                                decimal goalsPerGame = 0;
-                                if (player.GamesPlayed < 10)
-                                {
-                                    var oldStats = homeRoster.Where(x => x.PlayerInfoId == player.PlayerInfoId).FirstOrDefault();
-                                    goalsPerGame = (decimal.Divide(oldStats.Goals, oldStats.GamesPlayed)) / homeGoalsPerGameSum;
-                                }
-                                else
-                                {
-                                    goalsPerGame = (decimal.Divide(player.Goals, player.GamesPlayed)) / homeGoalsPerGameSum;
-                                }
-
-                                
-                                if (rnd < (double)goalsPerGame)
-                                {
-                                    gameEvents.Add(new GameEvent
-                                    {
-                                        Event = "Goal",
-                                        GameId = gameId,
-                                        PlayerId = player.Id
-                                    });
-                                    player.Goals += 1;
-                                    player.Points += 1;
-                                    break;
-                                }
-
-                                rnd -= (double)goalsPerGame;
-                            }
-                        }
-                        catch (InvalidOperationException ex)
-                        {
-                            var test = ex.Message;
-                        }
-
-                        
-                    }
-
-                    for (int i = 0; i < result2; i++)
-                    {
-                        Random r = new Random();
-                        double rnd = r.NextDouble();
-
-                        try
-                        {
-                            foreach (var player in awayTeam.Players)
-                            {
-                                decimal goalsPerGame = 0;
-                                if (player.GamesPlayed < 10)
-                                {
-                                    var oldStats = awayRoster.Where(x => x.PlayerInfoId == player.PlayerInfoId).FirstOrDefault();
-                                    goalsPerGame = (decimal.Divide(oldStats.Goals, oldStats.GamesPlayed)) / homeGoalsPerGameSum;
-                                }
-                                else
-                                {
-                                    goalsPerGame = (decimal.Divide(player.Goals, player.GamesPlayed)) / homeGoalsPerGameSum;
-                                }
-
-                                if (rnd < (double)goalsPerGame)
-                                {
-                                    gameEvents.Add(new GameEvent
-                                    {
-                                        Event = "Goal",
-                                        GameId = gameId,
-                                        PlayerId = player.Id
-                                    });
-                                    player.Goals += 1;
-                                    player.Points += 1;
-                                    break;
-                                }
-
-                                rnd -= (double)goalsPerGame;
-                            }
-                        }
-                        catch (InvalidOperationException ex)
-                        {
-                            var test = ex.Message;
-                        }
-                    }
-
-                    await _context.GameEvents.AddRangeAsync(gameEvents);
-
-                }
-                else
-                {
-                    awayTeam.GamesPlayed += 1;
-                    awayTeam.Wins += 1;
-                    awayTeam.RegulationWins += 1;
-                    awayTeam.Points += 2;
-
-                    homeTeam.GamesPlayed += 1;
-                    homeTeam.Loses += 1;
-
-                    for (int i = 0; i < result1; i++)
-                    {
-                        Random r = new Random();
-                        double rnd = r.NextDouble();
-
-                        try
-                        {
-                            foreach (var player in awayTeam.Players)
-                            {
-                                decimal goalsPerGame = 0;
-                                if (player.GamesPlayed < 10)
-                                {
-                                    var oldStats = awayRoster.Where(x => x.PlayerInfoId == player.PlayerInfoId).FirstOrDefault();
-                                    goalsPerGame = (decimal.Divide(oldStats.Goals, oldStats.GamesPlayed)) / awayGoalsPerGameSum;
-                                }
-                                else
-                                {
-                                    goalsPerGame = (decimal.Divide(player.Goals, player.GamesPlayed)) / awayGoalsPerGameSum;
-                                }
-
-                                if (rnd < (double)goalsPerGame)
-                                {
-                                    gameEvents.Add(new GameEvent
-                                    {
-                                        Event = "Goal",
-                                        GameId = gameId,
-                                        PlayerId = player.Id
-                                    });
-                                    player.Goals += 1;
-                                    player.Points += 1;
-                                    break;
-                                }
-
-                                rnd -= (double)goalsPerGame;
-                            }
-                        }
-                        catch (InvalidOperationException ex)
-                        {
-                            var test = ex.Message;
-                        }
-                    }
-
-                    for (int i = 0; i < result2; i++)
-                    {
-                        Random r = new Random();
-                        double rnd = r.NextDouble();
-
-                        try
-                        {
-                            foreach (var player in homeTeam.Players)
-                            {
-                                decimal goalsPerGame = 0;
-                                if (player.GamesPlayed < 10)
-                                {
-                                    var oldStats = homeRoster.Where(x => x.PlayerInfoId == player.PlayerInfoId).FirstOrDefault();
-                                    goalsPerGame = (decimal.Divide(oldStats.Goals, oldStats.GamesPlayed)) / homeGoalsPerGameSum;
-                                }
-                                else
-                                {
-                                    goalsPerGame = (decimal.Divide(player.Goals, player.GamesPlayed)) / homeGoalsPerGameSum;
-                                }
-
-                                if (rnd < (double)goalsPerGame)
-                                {
-                                    gameEvents.Add(new GameEvent
-                                    {
-                                        Event = "Goal",
-                                        GameId = gameId,
-                                        PlayerId = player.Id
-                                    });
-                                    player.Goals += 1;
-                                    player.Points += 1;
-                                    break;
-                                }
-
-                                rnd -= (double)goalsPerGame;
-                            }
-                        }
-                        catch (InvalidOperationException ex)
-                        {
-                            var test = ex.Message;
-                        }
-                    }
-
-                    await _context.GameEvents.AddRangeAsync(gameEvents);
-
-                }
-                homeTeam.Players.ForEach(x => x.GamesPlayed += 1);
-                awayTeam.Players.ForEach(x => x.GamesPlayed += 1);
-                _context.Teams.Update(homeTeam);
-                _context.Teams.Update(awayTeam);
-                await _context.SaveChangesAsync();
-
-                Game game = new Game();
-                game.HomeTeamId = homeTeam.Id;
-                game.HomeTeam = homeTeam;
-                game.AwayTeamId = awayTeam.Id;
-                game.AwayTeam = awayTeam;
-                game.Date = DateTime.Now;
-                game.GameEvents = gameEvents;
-
-                game.HomeTeam.Players.ForEach(x => x.Goals = gameEvents.Where(y => y.Event == "Goal" && y.PlayerId == x.Id).Count());
-                game.AwayTeam.Players.ForEach(x => x.Goals = gameEvents.Where(y => y.Event == "Goal" && y.PlayerId == x.Id).Count());
-                game.HomeTeam.Players.ForEach(x => x.Points = gameEvents.Where(y => (y.Event == "Goal" || y.Event == "Assist") && y.PlayerId == x.Id).Count());
-                game.AwayTeam.Players.ForEach(x => x.Points = gameEvents.Where(y => (y.Event == "Goal" || y.Event == "Assist") && y.PlayerId == x.Id).Count());
-
-                return PartialView("_SimStats", game);
-            }
-            else if (result1 < result2)
-            {
-
-                if (winner == homeTeam.TeamInfo.Name)
-                {
-                    homeTeam.GamesPlayed += 1;
-                    homeTeam.Wins += 1;
-                    homeTeam.RegulationWins += 1;
-                    homeTeam.Points += 2;
-
-                    awayTeam.GamesPlayed += 1;
-                    awayTeam.Loses += 1;
-
-                    for (int i = 0; i < result2; i++)
-                    {
-                        Random r = new Random();
-                        double rnd = r.NextDouble();
-
-                        try
-                        {
-                            foreach (var player in homeTeam.Players)
-                            {
-                                decimal goalsPerGame = 0;
-                                if (player.GamesPlayed < 10)
-                                {
-                                    var oldStats = homeRoster.Where(x => x.PlayerInfoId == player.PlayerInfoId).FirstOrDefault();
-                                    goalsPerGame = (decimal.Divide(oldStats.Goals, oldStats.GamesPlayed)) / homeGoalsPerGameSum;
-                                }
-                                else
-                                {
-                                    goalsPerGame = (decimal.Divide(player.Goals, player.GamesPlayed)) / homeGoalsPerGameSum;
-                                }
-
-                                if (rnd < (double)goalsPerGame)
-                                {
-                                    gameEvents.Add(new GameEvent
-                                    {
-                                        Event = "Goal",
-                                        GameId = gameId,
-                                        PlayerId = player.Id
-                                    });
-                                    player.Goals += 1;
-                                    player.Points += 1;
-                                    break;
-                                }
-
-                                rnd -= (double)goalsPerGame;
-                            }
-                        }
-                        catch (InvalidOperationException ex)
-                        {
-                            var test = ex.Message;
-                        }
-
-
-                    }
-
-                    for (int i = 0; i < result1; i++)
-                    {
-                        Random r = new Random();
-                        double rnd = r.NextDouble();
-
-                        try
-                        {
-                            foreach (var player in awayTeam.Players)
-                            {
-                                decimal goalsPerGame = 0;
-                                if (player.GamesPlayed < 10)
-                                {
-                                    var oldStats = awayRoster.Where(x => x.PlayerInfoId == player.PlayerInfoId).FirstOrDefault();
-                                    goalsPerGame = (decimal.Divide(oldStats.Goals, oldStats.GamesPlayed)) / homeGoalsPerGameSum;
-                                }
-                                else
-                                {
-                                    goalsPerGame = (decimal.Divide(player.Goals, player.GamesPlayed)) / homeGoalsPerGameSum;
-                                }
-
-                                if (rnd < (double)goalsPerGame)
-                                {
-                                    gameEvents.Add(new GameEvent
-                                    {
-                                        Event = "Goal",
-                                        GameId = gameId,
-                                        PlayerId = player.Id
-                                    });
-                                    player.Goals += 1;
-                                    player.Points += 1;
-                                    break;
-                                }
-
-                                rnd -= (double)goalsPerGame;
-                            }
-                        }
-                        catch (InvalidOperationException ex)
-                        {
-                            var test = ex.Message;
-                        }
-                    }
-
-                    await _context.GameEvents.AddRangeAsync(gameEvents);
-
-                }
-                else
-                {
-                    awayTeam.GamesPlayed += 1;
-                    awayTeam.Wins += 1;
-                    awayTeam.RegulationWins += 1;
-                    awayTeam.Points += 2;
-
-                    homeTeam.GamesPlayed += 1;
-                    homeTeam.Loses += 1;
-
-                    for (int i = 0; i < result2; i++)
-                    {
-                        Random r = new Random();
-                        double rnd = r.NextDouble();
-
-                        try
-                        {
-                            foreach (var player in awayTeam.Players)
-                            {
-                                decimal goalsPerGame = 0;
-                                if (player.GamesPlayed < 10)
-                                {
-                                    var oldStats = awayRoster.Where(x => x.PlayerInfoId == player.PlayerInfoId).FirstOrDefault();
-                                    goalsPerGame = (decimal.Divide(oldStats.Goals, oldStats.GamesPlayed)) / homeGoalsPerGameSum;
-                                }
-                                else
-                                {
-                                    goalsPerGame = (decimal.Divide(player.Goals, player.GamesPlayed)) / homeGoalsPerGameSum;
-                                }
-
-                                if (rnd < (double)goalsPerGame)
-                                {
-                                    gameEvents.Add(new GameEvent
-                                    {
-                                        Event = "Goal",
-                                        GameId = gameId,
-                                        PlayerId = player.Id
-                                    });
-                                    player.Goals += 1;
-                                    player.Points += 1;
-                                    break;
-                                }
-
-                                rnd -= (double)goalsPerGame;
-                            }
-                        }
-                        catch (InvalidOperationException ex)
-                        {
-                            var test = ex.Message;
-                        }
-                    }
-
-                    for (int i = 0; i < result1; i++)
-                    {
-                        Random r = new Random();
-                        double rnd = r.NextDouble();
-
-                        try
-                        {
-                            foreach (var player in homeTeam.Players)
-                            {
-                                decimal goalsPerGame = 0;
-                                if (player.GamesPlayed < 10)
-                                {
-                                    var oldStats = homeRoster.Where(x => x.PlayerInfoId == player.PlayerInfoId).FirstOrDefault();
-                                    goalsPerGame = (decimal.Divide(oldStats.Goals, oldStats.GamesPlayed)) / homeGoalsPerGameSum;
-                                }
-                                else
-                                {
-                                    goalsPerGame = (decimal.Divide(player.Goals, player.GamesPlayed)) / homeGoalsPerGameSum;
-                                }
-
-                                if (rnd < (double)goalsPerGame)
-                                {
-                                    gameEvents.Add(new GameEvent
-                                    {
-                                        Event = "Goal",
-                                        GameId = gameId,
-                                        PlayerId = player.Id
-                                    });
-                                    player.Goals += 1;
-                                    player.Points += 1;
-                                    break;
-                                }
-
-                                rnd -= (double)goalsPerGame;
-                            }
-                        }
-                        catch (InvalidOperationException ex)
-                        {
-                            var test = ex.Message;
-                        }
-                    }
-
-                    await _context.GameEvents.AddRangeAsync(gameEvents);
-
-                }
-
-                homeTeam.Players.ForEach(x => x.GamesPlayed += 1);
-                awayTeam.Players.ForEach(x => x.GamesPlayed += 1);
-                _context.Teams.Update(homeTeam);
-                _context.Teams.Update(awayTeam);
-                await _context.SaveChangesAsync();
-
-                Game game = new Game();
-                game.HomeTeamId = homeTeam.Id;
-                game.HomeTeam = homeTeam;
-                game.AwayTeamId = awayTeam.Id;
-                game.AwayTeam = awayTeam;
-                game.GameEvents = gameEvents;
-
-                game.HomeTeam.Players.ForEach(x => x.Goals = gameEvents.Where(y => y.Event == "Goal" && y.PlayerId == x.Id).Count());
-                game.AwayTeam.Players.ForEach(x => x.Goals = gameEvents.Where(y => y.Event == "Goal" && y.PlayerId == x.Id).Count());
-                game.HomeTeam.Players.ForEach(x => x.Points = gameEvents.Where(y => (y.Event == "Goal" || y.Event == "Assist") && y.PlayerId == x.Id).Count());
-                game.AwayTeam.Players.ForEach(x => x.Points = gameEvents.Where(y => (y.Event == "Goal" || y.Event == "Assist") && y.PlayerId == x.Id).Count());
-
-                return PartialView("_SimStats", game);
+                winnerScore = result1;
+                loserScore = result2;
             }
             else
             {
+                winnerScore = result2;
+                loserScore = result1;
+            }
+
+            //ToDo: Clean up method. Possibly throw duplicated logic into seperate method. b) Send final stats to front end
+
+            //Process game scores
+            if (winner == homeTeam.TeamInfo.Name)
+            {
+                homeTeam.GamesPlayed += 1;
+                homeTeam.Wins += 1;
+                homeTeam.RegulationWins += 1;
+                homeTeam.Points += 2;
+
+                awayTeam.GamesPlayed += 1;
+                awayTeam.Loses += 1;
+
+                for (int i = 0; i < winnerScore; i++)
+                {
+                    gameEvents = PredictGoal(gameId, homeTeam.Players, homeRoster, homeGoalsPerGameSum, gameEvents);
+                }
+
+                for (int i = 0; i < loserScore; i++)
+                {
+                    gameEvents = PredictGoal(gameId, awayTeam.Players, awayRoster, awayGoalsPerGameSum, gameEvents);
+                }
+
+                await _context.GameEvents.AddRangeAsync(gameEvents);
+
+            }
+            else if (winner == awayTeam.TeamInfo.Name)
+            {
+                awayTeam.GamesPlayed += 1;
+                awayTeam.Wins += 1;
+                awayTeam.RegulationWins += 1;
+                awayTeam.Points += 2;
+
+                homeTeam.GamesPlayed += 1;
+                homeTeam.Loses += 1;
+
+                for (int i = 0; i < winnerScore; i++)
+                {
+                    gameEvents = PredictGoal(gameId, awayTeam.Players, awayRoster, awayGoalsPerGameSum, gameEvents);
+                }
+
+                for (int i = 0; i < loserScore; i++)
+                {
+                    gameEvents = PredictGoal(gameId, homeTeam.Players, homeRoster, homeGoalsPerGameSum, gameEvents);
+                }
+
+                await _context.GameEvents.AddRangeAsync(gameEvents);
+            }
+            else //TIED
+            {
                 Game game = new Game();
                 game.HomeTeamId = homeTeam.Id;
                 game.HomeTeam = homeTeam;
@@ -892,7 +510,69 @@ namespace HockeyManager.Controllers
                 return PartialView("_SimStats", game);
             }
 
+            homeTeam.Players.ForEach(x => x.GamesPlayed += 1);
+            awayTeam.Players.ForEach(x => x.GamesPlayed += 1);
+            _context.Teams.Update(homeTeam);
+            _context.Teams.Update(awayTeam);
+            await _context.SaveChangesAsync();
 
+            Game finishedGame = new Game();
+            finishedGame.HomeTeamId = homeTeam.Id;
+            finishedGame.HomeTeam = homeTeam;
+            finishedGame.AwayTeamId = awayTeam.Id;
+            finishedGame.AwayTeam = awayTeam;
+            finishedGame.GameEvents = gameEvents;
+
+            finishedGame.HomeTeam.Players.ForEach(x => x.Goals = gameEvents.Where(y => y.Event == "Goal" && y.PlayerId == x.Id).Count());
+            finishedGame.AwayTeam.Players.ForEach(x => x.Goals = gameEvents.Where(y => y.Event == "Goal" && y.PlayerId == x.Id).Count());
+            finishedGame.HomeTeam.Players.ForEach(x => x.Points = gameEvents.Where(y => (y.Event == "Goal" || y.Event == "Assist") && y.PlayerId == x.Id).Count());
+            finishedGame.AwayTeam.Players.ForEach(x => x.Points = gameEvents.Where(y => (y.Event == "Goal" || y.Event == "Assist") && y.PlayerId == x.Id).Count());
+
+            return PartialView("_SimStats", finishedGame);
+        }
+
+        public List<GameEvent> PredictGoal(int gameId, List<HMPlayer> teamPlayers, List<HMPlayer> oldRoster, decimal teamGPGSum, List<GameEvent> gameEvents)
+        {
+            Random r = new Random();
+            double rnd = r.NextDouble();
+
+            try
+            {
+                foreach (var player in teamPlayers)
+                {
+                    decimal goalsPerGame = 0;
+                    if (player.GamesPlayed < 10)
+                    {
+                        var oldStats = oldRoster.Where(x => x.PlayerInfoId == player.PlayerInfoId).FirstOrDefault();
+                        goalsPerGame = (decimal.Divide(oldStats.Goals, oldStats.GamesPlayed)) / teamGPGSum;
+                    }
+                    else
+                    {
+                        goalsPerGame = (decimal.Divide(player.Goals, player.GamesPlayed)) / teamGPGSum;
+                    }
+
+                    if (rnd < (double)goalsPerGame)
+                    {
+                        gameEvents.Add(new GameEvent
+                        {
+                            Event = "Goal",
+                            GameId = gameId,
+                            PlayerId = player.Id
+                        });
+                        player.Goals += 1;
+                        player.Points += 1;
+                        break;
+                    }
+
+                    rnd -= (double)goalsPerGame;
+                }
+            }
+            catch (InvalidOperationException ex)
+            {
+                var test = ex.Message;
+            }
+
+            return gameEvents;
         }
 
         // GET: SeasonController/Edit/5
