@@ -123,18 +123,38 @@ x.Player.TeamId == Model.HomeTeamId).Count()
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>Shots</td>
-                        <td>0</td>
-                        <td>0</td>
-                    </tr>
-                    <tr>
-                        <td>Goals</td>
-                        <td>0</td>
-                        <td>0</td>
-                    </tr>
-                </tbody>
-            </table>
+
+                    @if (Model.GameEvents == null)
+                    {
+                        <tr>
+                            <td>Shots</td>
+                            <td>0</td>
+                            <td>0</td>
+                        </tr>
+                        <tr>
+                            <td>Goals</td>
+                            <td>0</td>
+                            <td>0</td>
+                        </tr>
+                    }
+                    else
+                    {
+                <tr>
+                    <td>Shots</td>
+                    <td>@Model.GameEvents.Where(x => x.Event == "Shot" && x.Player.Team.Id == Model.AwayTeamId).Count()</td>
+                    <td>@Model.GameEvents.Where(x => x.Event == "Shot" && x.Player.Team.Id == Model.HomeTeamId).Count()</td>
+                </tr>
+
+                <tr>
+                    <td>Goals</td>
+                    <td>@Model.GameEvents.Where(x => x.Event == "Goal" && x.Player.Team.Id == Model.AwayTeamId).Count()</td>
+                    <td>@Model.GameEvents.Where(x => x.Event == "Goal" && x.Player.Team.Id == Model.HomeTeamId).Count()</td>
+                </tr>
+                    }
+
+
+                    </tbody>
+                </table>
 
             <input type="submit" class="btn btn-warning" id="simPeriod" value="Simulate Period" />
             <input type="submit" class="btn btn-success" id="simGame" value="Finish Game" />
@@ -153,6 +173,7 @@ x.Player.TeamId == Model.HomeTeamId).Count()
                         <tr>
                             <th>Position</th>
                             <th>Name</th>
+                            <th>S</th>
                             <th>G</th>
                             <th>A</th>
                             <th>P</th>
@@ -173,6 +194,7 @@ x.Player.TeamId == Model.HomeTeamId).Count()
                         <tr>
                             <th>Position</th>
                             <th>Name</th>
+                            <th>S</th>
                             <th>G</th>
                             <th>A</th>
                             <th>P</th>

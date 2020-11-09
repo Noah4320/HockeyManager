@@ -366,15 +366,19 @@ namespace HockeyManager.Controllers
 
             decimal homeGPGSum = 0;
             decimal awayGPGSum = 0;
+            decimal homeSPGSum = 0;
+            decimal awaySPGSum = 0;
 
             if (homeTeam.GamesPlayed < 10)
             {
                 homeRoster = await _context.Players.Where(x => x.ApiId != 0 && homeTeam.Players.Select(y => y.PlayerInfoId).Contains(x.PlayerInfoId)).ToListAsync();
                 homeGPGSum = homeRoster.Sum(x => decimal.Divide(x.Goals, x.GamesPlayed));
+                homeSPGSum = homeRoster.Sum(x => decimal.Divide(x.Shots, x.GamesPlayed));
             }
             else
             {
                 homeGPGSum = homeTeam.Players.Sum(x => decimal.Divide(x.Goals, x.GamesPlayed));
+                homeSPGSum = homeTeam.Players.Sum(x => decimal.Divide(x.Shots, x.GamesPlayed));
                 homeRoster = homeTeam.Players;
             }
 
@@ -382,10 +386,12 @@ namespace HockeyManager.Controllers
             {
                 awayRoster = await _context.Players.Where(x => x.ApiId != 0 && awayTeam.Players.Select(y => y.PlayerInfoId).Contains(x.PlayerInfoId)).ToListAsync();
                 awayGPGSum = awayRoster.Sum(x => decimal.Divide(x.Goals, x.GamesPlayed));
+                awaySPGSum = awayRoster.Sum(x => decimal.Divide(x.Shots, x.GamesPlayed));
             }
             else
             {
                 awayGPGSum = awayTeam.Players.Sum(x => decimal.Divide(x.Goals, x.GamesPlayed));
+                awaySPGSum = awayTeam.Players.Sum(x => decimal.Divide(x.Shots, x.GamesPlayed));
                 awayRoster = awayTeam.Players;
             }
 
@@ -458,6 +464,24 @@ namespace HockeyManager.Controllers
                 loserScore = result1;
             }
 
+            //Randomize shot totals
+            int shotResult1 = randomizer1.Next(20, 40);
+            int shotResult2 = randomizer1.Next(20, 40);
+
+            int winnerShots = 0;
+            int loserShots = 0;
+
+            if (shotResult1 > shotResult2)
+            {
+                winnerShots = shotResult1;
+                loserShots = shotResult2;
+            }
+            else
+            {
+                winnerShots = shotResult2;
+                loserShots = shotResult1;
+            }
+
             //Process game scores
             if (winner == homeTeam.TeamInfo.Name)
             {
@@ -477,6 +501,17 @@ namespace HockeyManager.Controllers
                 for (int i = 0; i < loserScore; i++)
                 {
                     gameEvents = PredictGoal(gameId, awayTeam.Players, awayRoster, awayGPGSum, gameEvents);
+                }
+
+
+                for (int i = 0; i < winnerShots; i++)
+                {
+                    gameEvents = PredictShot(gameId, homeTeam.Players, homeRoster, homeSPGSum, gameEvents);
+                }
+
+                for (int i = 0; i < loserShots; i++)
+                {
+                    gameEvents = PredictShot(gameId, awayTeam.Players, awayRoster, awaySPGSum, gameEvents);
                 }
 
                 await _context.GameEvents.AddRangeAsync(gameEvents);
@@ -502,6 +537,17 @@ namespace HockeyManager.Controllers
                     gameEvents = PredictGoal(gameId, homeTeam.Players, homeRoster, homeGPGSum, gameEvents);
                 }
 
+
+                for (int i = 0; i < winnerShots; i++)
+                {
+                    gameEvents = PredictShot(gameId, awayTeam.Players, awayRoster, awaySPGSum, gameEvents);
+                }
+
+                for (int i = 0; i < loserShots; i++)
+                {
+                    gameEvents = PredictShot(gameId, homeTeam.Players, homeRoster, homeSPGSum, gameEvents);
+                }
+
                 await _context.GameEvents.AddRangeAsync(gameEvents);
             }
             else //TIED
@@ -515,8 +561,12 @@ namespace HockeyManager.Controllers
 
                 game.HomeTeam.Players.ForEach(x => x.Goals = gameEvents.Where(y => y.Event == "Goal" && y.PlayerId == x.Id).Count());
                 game.AwayTeam.Players.ForEach(x => x.Goals = gameEvents.Where(y => y.Event == "Goal" && y.PlayerId == x.Id).Count());
+
                 game.HomeTeam.Players.ForEach(x => x.Points = gameEvents.Where(y => (y.Event == "Goal" || y.Event == "Assist") && y.PlayerId == x.Id).Count());
                 game.AwayTeam.Players.ForEach(x => x.Points = gameEvents.Where(y => (y.Event == "Goal" || y.Event == "Assist") && y.PlayerId == x.Id).Count());
+
+                game.HomeTeam.Players.ForEach(x => x.Shots = gameEvents.Where(y => y.Event == "Shot" && y.PlayerId == x.Id).Count());
+                game.AwayTeam.Players.ForEach(x => x.Shots = gameEvents.Where(y => y.Event == "Shot" && y.PlayerId == x.Id).Count());
 
                 return PartialView("_SimStats", game);
             }
@@ -536,8 +586,12 @@ namespace HockeyManager.Controllers
 
             finishedGame.HomeTeam.Players.ForEach(x => x.Goals = gameEvents.Where(y => y.Event == "Goal" && y.PlayerId == x.Id).Count());
             finishedGame.AwayTeam.Players.ForEach(x => x.Goals = gameEvents.Where(y => y.Event == "Goal" && y.PlayerId == x.Id).Count());
+
             finishedGame.HomeTeam.Players.ForEach(x => x.Points = gameEvents.Where(y => (y.Event == "Goal" || y.Event == "Assist") && y.PlayerId == x.Id).Count());
             finishedGame.AwayTeam.Players.ForEach(x => x.Points = gameEvents.Where(y => (y.Event == "Goal" || y.Event == "Assist") && y.PlayerId == x.Id).Count());
+
+            finishedGame.HomeTeam.Players.ForEach(x => x.Shots = gameEvents.Where(y => y.Event == "Shot" && y.PlayerId == x.Id).Count());
+            finishedGame.AwayTeam.Players.ForEach(x => x.Shots = gameEvents.Where(y => y.Event == "Shot" && y.PlayerId == x.Id).Count());
 
             return PartialView("_SimStats", finishedGame);
         }
@@ -576,6 +630,49 @@ namespace HockeyManager.Controllers
                     }
 
                     rnd -= (double)goalsPerGame;
+                }
+            }
+            catch (InvalidOperationException ex)
+            {
+                var test = ex.Message;
+            }
+
+            return gameEvents;
+        }
+
+        public List<GameEvent> PredictShot(int gameId, List<HMPlayer> teamPlayers, List<HMPlayer> oldRoster, decimal teamSPGSum, List<GameEvent> gameEvents)
+        {
+            Random r = new Random();
+            double rnd = r.NextDouble();
+
+            try
+            {
+                foreach (var player in teamPlayers)
+                {
+                    decimal shotsPerGame = 0;
+                    if (player.GamesPlayed < 10)
+                    {
+                        var oldStats = oldRoster.Where(x => x.PlayerInfoId == player.PlayerInfoId).FirstOrDefault();
+                        shotsPerGame = (decimal.Divide(oldStats.Shots, oldStats.GamesPlayed)) / teamSPGSum;
+                    }
+                    else
+                    {
+                        shotsPerGame = (decimal.Divide(player.Shots, player.GamesPlayed)) / teamSPGSum;
+                    }
+
+                    if (rnd < (double)shotsPerGame)
+                    {
+                        gameEvents.Add(new GameEvent
+                        {
+                            Event = "Shot",
+                            GameId = gameId,
+                            PlayerId = player.Id
+                        });
+                        player.Shots += 1;
+                        break;
+                    }
+
+                    rnd -= (double)shotsPerGame;
                 }
             }
             catch (InvalidOperationException ex)
