@@ -173,14 +173,30 @@ x.Player.TeamId == Model.HomeTeamId).Count()
                         <tr>
                             <th>Position</th>
                             <th>Name</th>
+                            <th>Saves</th>
+                            <th>GA</th>
+                            <th>S%</th>
+                            <th>Shutouts</th>
+                            <th>OVR</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <partial name="_GoalieRoster" model="Model.HomeTeam.Players" />
+                    </tbody>
+                </table>
+
+
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Position</th>
+                            <th>Name</th>
                             <th>S</th>
                             <th>G</th>
                             <th>A</th>
                             <th>P</th>
                             <th>H</th>
                             <th>+/-</th>
-                            <th>OVR</th>
-
                         </tr>
                     </thead>
                     <tbody>
@@ -189,6 +205,24 @@ x.Player.TeamId == Model.HomeTeamId).Count()
                 </table>
             </div>
             <div id="awayRoster">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Position</th>
+                            <th>Name</th>
+                            <th>Saves</th>
+                            <th>GA</th>
+                            <th>S%</th>
+                            <th>Shutouts</th>
+                            <th>OVR</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <partial name="_GoalieRoster" model="Model.AwayTeam.Players" />
+                    </tbody>
+                </table>
+
+
                 <table class="table table-striped">
                     <thead>
                         <tr>

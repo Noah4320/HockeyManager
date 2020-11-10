@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -25,6 +26,8 @@ namespace HockeyManager.Models
         public int Saves { get; set; }
         public int Shutouts { get; set; }
         public int GoalsAgainst { get; set; }
+        [NotMapped]
+        public decimal SavePercentage { get; set; }
         public int Overall { get; set; }
 
         public int ApiId { get; set; }

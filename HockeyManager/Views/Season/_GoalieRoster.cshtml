@@ -2,17 +2,22 @@
 
 @foreach (var player in Model)
 {
-    @if (player.Position != "G")
+    @if (player.Position == "G")
     {
 <tr class="rosterData" id=@player.Id>
     <td>@player.Position</td>
     <td>@player.PlayerInfo.Name</td>
-    <td>@player.Shots</td>
-    <td>@player.Goals</td>
-    <td>@player.Assists</td>
-    <td>@player.Points</td>
-    <td>@player.Hits</td>
-    <td>@player.PlusMinus</td>
+    <td>@player.Saves</td>
+    <td>@player.GoalsAgainst</td>
+    @if (player.Saves > 0)
+    {
+        <td>@player.SavePercentage</td>
+    } else
+    {
+        <td>0</td>
+    }
+
+    <td>@player.Shutouts</td>
     <td>@player.Overall</td>
 </tr>
         }
