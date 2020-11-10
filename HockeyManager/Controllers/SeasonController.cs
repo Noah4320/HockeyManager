@@ -350,7 +350,6 @@ namespace HockeyManager.Controllers
         public void SimPeriod(int gameId)
         {
 
-            //var test = _context.Players.Where(x => x.TeamId == 1).Sum(x => x.Shots / x.GamesPlayed);
         }
 
         [HttpGet]
@@ -600,7 +599,8 @@ namespace HockeyManager.Controllers
         {
             Random r = new Random();
             double rnd = r.NextDouble();
-
+            int primaryAssist = r.Next(0, 4);
+            int secondaryAssist = r.Next(0, 4);
             try
             {
                 foreach (var player in teamPlayers)
@@ -618,6 +618,7 @@ namespace HockeyManager.Controllers
 
                     if (rnd < (double)goalsPerGame)
                     {
+                        var nearestPlayerSkill = teamPlayers.OrderBy(x => Math.Abs((long)x.Overall - player.Overall)).ToList();
                         gameEvents.Add(new GameEvent
                         {
                             Event = "Goal",
@@ -626,6 +627,34 @@ namespace HockeyManager.Controllers
                         });
                         player.Goals += 1;
                         player.Points += 1;
+
+                        if (primaryAssist > 0)
+                        {
+                            gameEvents.Add(new GameEvent
+                            {
+                                Event = "Assist",
+                                GameId = gameId,
+                                PlayerId = nearestPlayerSkill[primaryAssist].Id
+                            });
+
+                            nearestPlayerSkill[primaryAssist].Assists += 1;
+                            nearestPlayerSkill[primaryAssist].Points += 1;
+
+                            if (secondaryAssist > 0 && secondaryAssist != primaryAssist)
+                            {
+                                gameEvents.Add(new GameEvent
+                                {
+                                    Event = "Assist",
+                                    GameId = gameId,
+                                    PlayerId = nearestPlayerSkill[secondaryAssist].Id
+                                });
+
+                                nearestPlayerSkill[secondaryAssist].Assists += 1;
+                                nearestPlayerSkill[secondaryAssist].Points += 1;
+                            }
+
+                        }
+
                         break;
                     }
 
