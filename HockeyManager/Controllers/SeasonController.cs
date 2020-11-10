@@ -588,8 +588,25 @@ namespace HockeyManager.Controllers
                 return PartialView("_SimStats", game);
             }
 
+
+            var homeGoalie = homeTeam.Players.Find(x => x.Id == homeGoalieId);
+            var awayGoalie = awayTeam.Players.Find(x => x.Id == awayGoalieId);
+
+            if (gameEvents.Where(x => x.Event == "Goal" && x.Player.TeamId == homeGoalie.TeamId && x.GameId == gameId).Count() == 0)
+            {
+                awayGoalie.Shutouts += 1;
+            }
+
+            if (gameEvents.Where(x => x.Event == "Goal" && x.Player.TeamId == awayGoalie.TeamId && x.GameId == gameId).Count() == 0)
+            {
+                homeGoalie.Shutouts += 1;
+            }
+
             homeTeam.Players.ForEach(x => x.GamesPlayed += 1);
             awayTeam.Players.ForEach(x => x.GamesPlayed += 1);
+
+            
+
             _context.Teams.Update(homeTeam);
             _context.Teams.Update(awayTeam);
             await _context.SaveChangesAsync();
@@ -610,8 +627,6 @@ namespace HockeyManager.Controllers
             finishedGame.HomeTeam.Players.ForEach(x => x.Shots = gameEvents.Where(y => y.Event == "Shot" && y.PlayerId == x.Id).Count());
             finishedGame.AwayTeam.Players.ForEach(x => x.Shots = gameEvents.Where(y => y.Event == "Shot" && y.PlayerId == x.Id).Count());
 
-            HMPlayer homeGoalie = finishedGame.HomeTeam.Players.Find(x => x.Id == homeGoalieId);
-            HMPlayer awayGoalie = finishedGame.AwayTeam.Players.Find(x => x.Id == awayGoalieId);
             HMPlayer homeBackup = finishedGame.HomeTeam.Players.Where(x => x.Id != homeGoalieId && x.Position == "G").FirstOrDefault();
             HMPlayer awayBackup = finishedGame.AwayTeam.Players.Where(x => x.Id != awayGoalieId && x.Position == "G").FirstOrDefault();
 
