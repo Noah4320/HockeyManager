@@ -8,12 +8,15 @@
             <script src="~/lib/moment/dist/js/moment.min.js"></script>
             <script>
                 var gameEvents = [];
-                var test = '@Url.Action("SimGame", "Season", new { gameId = @Model.MyTeam.HomeSchedule.First().Id })';
+                var actionUrl = '@Url.Action("SimGame", "Season", new { gameId = @Model.MyTeam.HomeSchedule.First().Id })';
+                var seasonId = @Model.MyTeam.SeasonId;
                 $.ajax({
                     url: '/Season/GetCalendarData',
                     type: "GET",
                     dataType: "JSON",
-
+                    data: {
+                        seasonId: seasonId
+                    },
                     success: function (result) {
 
                         $.each(result, function (i, data) {
@@ -25,7 +28,7 @@
                                     start: moment(data.startDate).format('YYYY-MM-DD'),
                                     backgroundColor: "#9501fc",
                                     borderColor: "#fc0101",
-                                    url: 'https://localhost:44375' + test
+                                    url: 'https://localhost:44375/Season/SimGame?gameId=' + data.id
                                 });
                         });
 
@@ -38,7 +41,7 @@
                                 center: 'title',
                                 right: 'dayGridMonth,timeGridWeek,timeGridDay'
                             },
-                            initialDate: '2020-09-12',
+                            initialDate: '2020-11-03',
                             navLinks: true, // can click day/week names to navigate views
                             selectable: true,
                             selectMirror: true,

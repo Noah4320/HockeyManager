@@ -5,6 +5,10 @@
     <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+  </PropertyGroup>
+
   <ItemGroup>
     <Content Include="..\..\..\..\..\..\Noah%2527s Folder\School\Hockey Manager\Project\HockeyManager\HockeyManager\wwwroot\lib\calendar\dist\css\main.css" />
     <Content Include="..\..\..\..\..\..\Noah%2527s Folder\School\Hockey Manager\Project\HockeyManager\HockeyManager\wwwroot\lib\calendar\dist\css\main.min.css" />
