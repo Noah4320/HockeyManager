@@ -30,7 +30,7 @@ namespace HockeyManager.Models
         public string OwnerId { get; set; }
         public User Owner { get; set; }
 
-        public virtual ICollection<HMTeam> Teams { get; set; }
+        public virtual List<HMTeam> Teams { get; set; }
 
     }
 }

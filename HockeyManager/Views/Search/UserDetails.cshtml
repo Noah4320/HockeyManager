@@ -1,0 +1,82 @@
+﻿@model HockeyManager.Areas.Identity.Data.User
+
+
+
+    <div class="container">
+        <div class="text-center">
+            <h1>@Model.UserName</h1>
+            <div class="row">
+                <div class="col-md-6">
+                    @if (Model.PoolsOwned.FirstOrDefault() == null)
+                    {
+                        <h4>No pools recorded</h4>
+                    }
+                    else
+                    {
+                        <h4>Pools</h4>
+
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Place</th>
+                                    <th>Pool Name</th>
+                                    <th>Team Name</th>
+                                    <th>Points</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var pool in Model.PoolsOwned)
+                                {
+                                    <tr>
+                                        <td>@(pool.Pool.Teams.OrderByDescending(x => x.Points).ToList().FindIndex(x => x.UserId == Model.Id) + 1)</td>
+                                        <td>@pool.Pool.Name</td>
+                                        <td>@pool.Pool.Teams.Where(x => x.UserId == Model.Id).Select(x => x.TeamInfo.Name).FirstOrDefault()</td>
+                                        <td>@pool.Pool.Teams.Where(x => x.UserId == Model.Id).Select(x => x.Points).FirstOrDefault()</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
+                </div>
+
+                <div class="col-md-6">
+
+                    @if (@Model.Seasons.FirstOrDefault() == null)
+                    {
+                        <h4>No season recorded</h4>
+                    }
+                    else
+                    {
+                        <h4>@Model.Seasons.FirstOrDefault().Teams.Where(x => x.UserId == Model.Id).Select(x => x.TeamInfo.Name).FirstOrDefault() Season</h4>
+
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Position</th>
+                                    <th>Name</th>
+                                    <th>G</th>
+                                    <th>A</th>
+                                    <th>P</th>
+                                    <th>Ovr</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var player in Model.Seasons.FirstOrDefault().Teams.Where(x => x.UserId == Model.Id).FirstOrDefault().Players)
+                                {
+                                    <tr>
+                                        <td>@player.Position</td>
+                                        <td>@player.PlayerInfo.Name</td>
+                                        <td>@player.Goals</td>
+                                        <td>@player.Assists</td>
+                                        <td>@player.Points</td>
+                                        <td>@player.Overall</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
+
+                </div>
+            </div>
+        </div>
+    </div>

@@ -72,6 +72,17 @@ namespace HockeyManager.Controllers
             return usernames;
         }
 
+
+        // GET: Search/UserDetails/5
+        public async Task<ActionResult> UserDetails(string username)
+        {
+            var user = await _context.Users.Include(x => x.PoolsOwned).ThenInclude(x => x.Pool).ThenInclude(x => x.Teams).ThenInclude(x => x.TeamInfo)
+                .Include(x => x.Seasons).ThenInclude(x => x.Teams).ThenInclude(x => x.TeamInfo)
+                .Include(x => x.Seasons).ThenInclude(x => x.Teams).ThenInclude(x => x.Players).ThenInclude(x => x.PlayerInfo)
+                .Where(x => x.UserName == username).FirstOrDefaultAsync();
+            return View(user);
+        }
+
         public ActionResult SearchPlayers()
         {
             SearchPlayer VMplayers = new SearchPlayer(_context.Teams.Include(x => x.TeamInfo).Where(x => x.ApiId != 0).ToList(), _context.Players.Include(x => x.PlayerInfo).Where(x => x.ApiId != 0).ToList());

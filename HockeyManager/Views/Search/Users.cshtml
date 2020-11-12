@@ -16,7 +16,9 @@
                             });
                         }
                     });
-               
+
+             
+
             });
         });
     </script>
@@ -41,9 +43,9 @@
             <tbody>
                 @foreach (var user in Model)
                 {
-                    <tr>
-                        <td>@user.UserName</td>
-                    </tr>
+                <tr onclick="location.href = '@Url.Action("UserDetails", "Search", new { username=user.UserName })'">
+                    <td>@user.UserName</td>
+                </tr>
                 }
             </tbody>
         </table>
