@@ -46,16 +46,18 @@
                             selectable: true,
                             selectMirror: true,
                             select: function (arg) {
-                                var title = prompt('Event Title:');
-                                if (title) {
-                                    calendar.addEvent({
-                                        title: title,
-                                        start: arg.start,
-                                        end: arg.end,
-                                        allDay: arg.allDay
-                                    })
-                                }
-                                calendar.unselect()
+                                $.ajax({
+                                    url: '/Season/SimToDate',
+                                    type: "GET",
+                                    dataType: "JSON",
+                                    data: {
+                                        seasonId: seasonId,
+                                        toDate: arg.startStr
+                                    },
+                                    success: function (result) {
+                                        
+                                    }
+                                });
                             },
                             eventClick: function (arg) {
                                 //Date click logic

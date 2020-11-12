@@ -365,6 +365,20 @@ namespace HockeyManager.Controllers
             return null;
         }
 
+        [HttpGet]
+        public void SimToDate(int seasonId, string toDate)
+        {
+            var games = _context.Games.Where(x => x.HomeTeam.SeasonId == seasonId).ToList();
+            var dateClicked = DateTime.Parse(toDate);
+            foreach (var game in games)
+            {
+                if (game.Date.Date <= dateClicked.Date)
+                {
+                    
+                }
+            }
+        }
+
         // GET: SeasonController/SimGame/
         public ActionResult SimGame(int gameId)
         {
