@@ -20,16 +20,31 @@
                     success: function (result) {
 
                         $.each(result, function (i, data) {
-                            gameEvents.push(
-                                {
-                                    id: data.id,
-                                    title: data.title,
-                                    description: data.description,
-                                    start: moment(data.startDate).format('YYYY-MM-DD'),
-                                    backgroundColor: "#9501fc",
-                                    borderColor: "#fc0101",
-                                    url: 'https://localhost:44375/Season/SimGame?gameId=' + data.id
-                                });
+                            if (data.description == "Game over") {
+                                gameEvents.push(
+                                    {
+                                        id: data.id,
+                                        title: data.title,
+                                        description: data.description,
+                                        start: moment(data.startDate).format('YYYY-MM-DD'),
+                                        textColor: "black",
+                                        backgroundColor: "#e8fa8e",
+                                        borderColor: "#e8fa8e",
+                                        url: 'https://localhost:44375/Season/SimGame?gameId=' + data.id
+                                    });
+                            } else {
+                                gameEvents.push(
+                                    {
+                                        id: data.id,
+                                        title: data.title,
+                                        description: data.description,
+                                        start: moment(data.startDate).format('YYYY-MM-DD'),
+                                        textColor: "white",
+                                        backgroundColor: "#9501fc",
+                                        borderColor: "#fc0101",
+                                        url: 'https://localhost:44375/Season/SimGame?gameId=' + data.id
+                                    });
+                            }
                         });
 
 

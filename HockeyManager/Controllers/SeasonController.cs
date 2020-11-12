@@ -335,17 +335,34 @@ namespace HockeyManager.Controllers
 
             try
             {
-                var games = _context.Games.Include(x => x.HomeTeam.TeamInfo).Include(x => x.AwayTeam.TeamInfo).Where(x => x.HomeTeam.SeasonId == seasonId).ToList();
+                var games = _context.Games.Include(x => x.HomeTeam.TeamInfo).Include(x => x.AwayTeam.TeamInfo)
+                    .Include(x => x.GameEvents).ThenInclude(x => x.Player)
+                    .Where(x => x.HomeTeam.SeasonId == seasonId).ToList();
 
                 foreach (var game in games)
                 {
-                    calendarGames.Add(new CalendarGames
+                    bool hasPlayed = game.GameEvents.Count > 0;
+
+                    if (hasPlayed)
                     {
-                        Id = game.Id,
-                        Title = $"{game.AwayTeam.TeamInfo.Abbreviation} @ {game.HomeTeam.TeamInfo.Abbreviation}",
-                        Description = "Test description",
-                        StartDate = game.Date.ToString()
-                    });
+                        calendarGames.Add(new CalendarGames
+                        {
+                            Id = game.Id,
+                            Title = $"{game.AwayTeam.TeamInfo.Abbreviation} {game.GameEvents.Where(x => x.Event == "Goal" && x.Player.TeamId == game.AwayTeamId).Count()} {game.HomeTeam.TeamInfo.Abbreviation} {game.GameEvents.Where(x => x.Event == "Goal" && x.Player.TeamId == game.HomeTeamId).Count()}",
+                            Description = "Game over",
+                            StartDate = game.Date.ToString()
+                        });
+                    }
+                    else
+                    {
+                        calendarGames.Add(new CalendarGames
+                        {
+                            Id = game.Id,
+                            Title = $"{game.AwayTeam.TeamInfo.Abbreviation} @ {game.HomeTeam.TeamInfo.Abbreviation}",
+                            Description = "Game hasn't been played",
+                            StartDate = game.Date.ToString()
+                        });
+                    }
                 }
 
                 // Processing.  
@@ -365,14 +382,12 @@ namespace HockeyManager.Controllers
         [HttpGet]
         public void SimToDate(int seasonId, string toDate)
         {
-            var games = _context.Games.Where(x => x.HomeTeam.SeasonId == seasonId).ToList();
             var dateClicked = DateTime.Parse(toDate);
+            var games = _context.Games.Where(x => x.HomeTeam.SeasonId == seasonId && x.Date < dateClicked).ToList();
+           
             foreach (var game in games)
             {
-                if (game.Date.Date <= dateClicked.Date)
-                {
-                    
-                }
+
             }
         }
 
