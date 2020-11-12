@@ -286,11 +286,9 @@ namespace HockeyManager.Controllers
 
             for (int day = 0; day < numDays; day++)
             {
-                Debug.WriteLine("Day {0}", (day + 1));
 
                 int teamIdx = day % teamsSize;
 
-                Debug.WriteLine("{0} vs {1}", teams[teamIdx].TeamInfo.Name, allTeams[0].TeamInfo.Name);
                 games.Add(new Game
                 {
                     AwayTeamId = teams[teamIdx].Id,
@@ -302,7 +300,6 @@ namespace HockeyManager.Controllers
                 {
                     int firstTeam = (day + idx) % teamsSize;
                     int secondTeam = (day + teamsSize - idx) % teamsSize;
-                    Debug.WriteLine("{0} vs {1}", teams[firstTeam].TeamInfo.Name, teams[secondTeam].TeamInfo.Name);
                     games.Add(new Game
                     {
                         AwayTeamId = teams[firstTeam].Id,
@@ -382,11 +379,29 @@ namespace HockeyManager.Controllers
         // GET: SeasonController/SimGame/
         public ActionResult SimGame(int gameId)
         {
+
             var game = _context.Games.Include(x => x.HomeTeam.Players).ThenInclude(x => x.PlayerInfo)
                 .Include(x => x.AwayTeam.Players).ThenInclude(x => x.PlayerInfo)
                 .Include(x => x.HomeTeam.TeamInfo)
                 .Include(x => x.AwayTeam.TeamInfo)
+                .Include(x => x.GameEvents).ThenInclude(x => x.Player.PlayerInfo)
+                .Include(x => x.GameEvents).ThenInclude(x => x.Player).ThenInclude(x => x.Team.TeamInfo)
                 .Where(x => x.Id == gameId).FirstOrDefault();
+
+            //Has this game been played?
+            if (game.GameEvents.Count > 0)
+            {
+                game.HomeTeam.Players.ForEach(x => x.Goals = game.GameEvents.Where(y => y.Event == "Goal" && y.PlayerId == x.Id).Count());
+                game.AwayTeam.Players.ForEach(x => x.Goals = game.GameEvents.Where(y => y.Event == "Goal" && y.PlayerId == x.Id).Count());
+
+                game.HomeTeam.Players.ForEach(x => x.Points = game.GameEvents.Where(y => (y.Event == "Goal" || y.Event == "Assist") && y.PlayerId == x.Id).Count());
+                game.AwayTeam.Players.ForEach(x => x.Points = game.GameEvents.Where(y => (y.Event == "Goal" || y.Event == "Assist") && y.PlayerId == x.Id).Count());
+
+                game.HomeTeam.Players.ForEach(x => x.Shots = game.GameEvents.Where(y => y.Event == "Shot" && y.PlayerId == x.Id).Count());
+                game.AwayTeam.Players.ForEach(x => x.Shots = game.GameEvents.Where(y => y.Event == "Shot" && y.PlayerId == x.Id).Count());
+
+                return View(game);
+            }
 
             game.HomeTeam.Players.ForEach(x => x.Goals = 0);
             game.HomeTeam.Players.ForEach(x => x.Assists = 0);
@@ -703,17 +718,26 @@ namespace HockeyManager.Controllers
 
             homeGoalie.Saves = gameEvents.Where(x => x.Event == "Shot" && x.Player.TeamId != homeGoalie.TeamId).Count() - gameEvents.Where(x => x.Event == "Goal" && x.Player.TeamId != homeGoalie.TeamId).Count();
             awayGoalie.Saves = gameEvents.Where(x => x.Event == "Shot" && x.Player.TeamId != awayGoalie.TeamId).Count() - gameEvents.Where(x => x.Event == "Goal" && x.Player.TeamId != awayGoalie.TeamId).Count();
-            homeBackup.Saves = 0;
-            awayBackup.Saves = 0;
-
+            
             homeGoalie.GoalsAgainst = gameEvents.Where(x => x.Event == "Goal" && x.Player.TeamId != homeGoalie.TeamId && x.GameId == gameId).Count();
             awayGoalie.GoalsAgainst = gameEvents.Where(x => x.Event == "Goal" && x.Player.TeamId != awayGoalie.TeamId && x.GameId == gameId).Count();
-            homeBackup.GoalsAgainst = 0;
-            awayBackup.GoalsAgainst = 0;
-
+                      
             homeGoalie.SavePercentage = Math.Round(decimal.Divide((decimal)homeGoalie.Saves, (decimal)homeGoalie.Saves + (decimal)homeGoalie.GoalsAgainst), 3);
             awayGoalie.SavePercentage = Math.Round(decimal.Divide((decimal)awayGoalie.Saves, (decimal)awayGoalie.Saves + (decimal)awayGoalie.GoalsAgainst), 3);
- 
+
+            //Teams might not have a backup
+            if (homeBackup != null)
+            {
+                homeBackup.Saves = 0;
+                homeBackup.GoalsAgainst = 0;
+            }
+
+            if (awayBackup != null)
+            {
+                awayBackup.Saves = 0;
+                awayBackup.GoalsAgainst = 0;
+            }
+
             return PartialView("_SimStats", finishedGame);
         }
 

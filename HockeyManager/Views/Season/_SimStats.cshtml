@@ -4,6 +4,13 @@
 <script>
     $(document).ready(function () {
 
+        @if (Model.GameEvents.Count > 0)
+        {
+            <text>
+        $('#simGame').prop("disabled", true);
+            </text>
+        }
+
         var gameId = @Context.Request.Query["gameId"];
         $("#awayRoster").hide();
 
@@ -55,6 +62,7 @@
             alert(x.responseText);
 
         });
+         this.prop("disabled", true);
     });
 
 </script>
