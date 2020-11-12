@@ -1,0 +1,51 @@
+﻿@model IEnumerable<HockeyManager.Areas.Identity.Data.User>
+
+@section scripts{
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script>
+        $(function () {
+            $(document).ready(function () {
+                $.ajax(
+                    {
+                        url: "https://localhost:44375/Search/GetUsers",
+                        success: function (result) {
+                            $("#users").autocomplete({
+                                source: result
+                            });
+                        }
+                    });
+               
+            });
+        });
+    </script>
+    }
+    <div class="container">
+            <div class="d-flex justify-content-center">
+                <form method="post" action="Users">
+                    <label class="control-label" for="pools">Search Users: </label>
+                    <input type="text" class="form-control" id="users" name="user">
+                    <br />
+                    <input type="submit" value="Search" id="search" class="btn btn-primary" />
+                </form>
+            </div>
+
+        <br />
+        <table class="table table-striped" id="InteractiveTable">
+            <thead>
+                <tr>
+                    <th>User</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var user in Model)
+                {
+                    <tr>
+                        <td>@user.UserName</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+    </div>

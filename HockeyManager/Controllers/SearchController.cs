@@ -48,6 +48,30 @@ namespace HockeyManager.Controllers
             return View(roster);
         }
 
+
+        // GET: Search/Users
+        public ActionResult Users()
+        {
+            List<User> users = new List<User>();
+            return View(users);
+        }
+
+        [HttpPost]
+        public ActionResult Users (string user)
+        {
+            var users = _context.Users.Where(x => x.UserName.Contains(user)).ToList();
+            return View(users);
+        }
+
+
+        [HttpGet]
+        public string[] GetUsers()
+        {
+            var usernames = _context.Users.Select(x => x.UserName).ToArray();
+
+            return usernames;
+        }
+
         public ActionResult SearchPlayers()
         {
             SearchPlayer VMplayers = new SearchPlayer(_context.Teams.Include(x => x.TeamInfo).Where(x => x.ApiId != 0).ToList(), _context.Players.Include(x => x.PlayerInfo).Where(x => x.ApiId != 0).ToList());
