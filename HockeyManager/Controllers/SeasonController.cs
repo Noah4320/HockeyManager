@@ -380,14 +380,18 @@ namespace HockeyManager.Controllers
         }
 
         [HttpGet]
-        public void SimToDate(int seasonId, string toDate)
+        public async Task SimToDate(int seasonId, string toDate)
         {
             var dateClicked = DateTime.Parse(toDate);
-            var games = _context.Games.Where(x => x.HomeTeam.SeasonId == seasonId && x.Date < dateClicked).ToList();
+            var games = _context.Games.Include(x => x.GameEvents).Where(x => x.HomeTeam.SeasonId == seasonId && x.Date < dateClicked).ToList();
            
             foreach (var game in games)
             {
-
+                if (game.GameEvents.Count == 0)
+                {
+                    await FinishGame(game.Id);
+                }
+                
             }
         }
 
