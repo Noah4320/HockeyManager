@@ -27,10 +27,18 @@
                                         title: data.title,
                                         description: data.description,
                                         start: moment(data.startDate).format('YYYY-MM-DD'),
+                                        end: moment(data.startDate).format('YYYY-MM-DD'),
                                         textColor: "black",
                                         backgroundColor: "#e8fa8e",
                                         borderColor: "#e8fa8e",
                                         url: 'https://localhost:44375/Season/SimGame?gameId=' + data.id
+                                    });
+                                gameEvents.push(
+                                    {
+                                        start: moment(data.startDate).format('YYYY-MM-DD'),
+                                        end: moment(data.startDate).format('YYYY-MM-DD'),
+                                        display: 'background',
+                                        color: '#d1edff'
                                     });
                             } else {
                                 gameEvents.push(
@@ -39,10 +47,10 @@
                                         title: data.title,
                                         description: data.description,
                                         start: moment(data.startDate).format('YYYY-MM-DD'),
+                                        end: moment(data.startDate).format('YYYY-MM-DD'),
                                         textColor: "white",
                                         backgroundColor: "#9501fc",
-                                        borderColor: "#fc0101",
-                                        url: 'https://localhost:44375/Season/SimGame?gameId=' + data.id
+                                        borderColor: "#fc0101"
                                     });
                             }
                         });
@@ -60,6 +68,7 @@
                             navLinks: true, // can click day/week names to navigate views
                             selectable: true,
                             selectMirror: true,
+                            eventColor: '#378006',
                             select: function (arg) {
                                 $.ajax({
                                     url: '/Season/SimToDate',
@@ -76,6 +85,21 @@
                             },
                             eventClick: function (arg) {
                                 //Date click logic
+                                $.ajax({
+                                    url: '/Season/CanSimGame',
+                                    type: "GET",
+                                    data: {
+                                        seasonId: seasonId,
+                                        date: arg.event.startStr
+                                    },
+                                    success: function (isPlayable) {
+                                        if (isPlayable) {
+                                           window.location.href = 'https://localhost:44375/Season/SimGame?gameId=' + arg.event.id
+                                        }
+                                        
+                                    }
+                                });
+                                
                             },
                             editable: true,
                             dayMaxEvents: true, // allow "more" link when too many events

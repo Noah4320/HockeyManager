@@ -395,6 +395,17 @@ namespace HockeyManager.Controllers
             }
         }
 
+        [HttpGet]
+        public bool CanSimGame(int seasonId, string date)
+        {
+            var dateClicked = DateTime.Parse(date);
+
+            var gamesToDate = _context.Games.Include(x => x.HomeTeam).Include(x => x.GameEvents).Where(x => x.HomeTeam.SeasonId == seasonId && x.Date <= dateClicked).ToList();
+            var gamesPlayed = _context.Games.Include(x => x.HomeTeam).Include(x => x.GameEvents).Where(x => x.HomeTeam.SeasonId == seasonId && x.Date <= dateClicked && x.GameEvents.Count > 0).ToList();
+
+            return gamesPlayed.Count() == gamesToDate.Count();
+        }
+
         // GET: SeasonController/SimGame/
         public ActionResult SimGame(int gameId)
         {
