@@ -183,7 +183,9 @@ namespace HockeyManager.Areas.Identity.Data
         public async Task FetchUpdatedStats()
         {
             //ToDo: change date in url
-            var gamesUrl = "https://statsapi.web.nhl.com/api/v1/schedule?startDate=2018-01-02&endDate=2018-01-02";
+            var currentDate = DateTime.Now;
+
+            var gamesUrl = $"https://statsapi.web.nhl.com/api/v1/schedule?startDate={currentDate.Year}-{currentDate.Month}-{currentDate.Day}&endDate={currentDate.Year}-{currentDate.Month}-{currentDate.Day}";
             var httpClient = HttpClientFactory.Create();
             var gamesData = await httpClient.GetStringAsync(gamesUrl);
             var games = JsonConvert.DeserializeObject<GameRoot>(gamesData);
@@ -197,7 +199,17 @@ namespace HockeyManager.Areas.Identity.Data
 
                 foreach (var player in awayTeam.Players)
                 {
-                    var playerStatsUrl = $"https://statsapi.web.nhl.com/api/v1/people/{player.ApiId}/stats?stats=statsSingleSeason&season=20192020";
+                    string playerStatsUrl = "";
+
+                    //Is it before September?
+                    if (currentDate.Month <= 8)
+                    {
+                        playerStatsUrl = $"https://statsapi.web.nhl.com/api/v1/people/{player.ApiId}/stats?stats=statsSingleSeason&season={currentDate.Year - 1}{currentDate.Year}";
+                    } 
+                    else
+                    {
+                        playerStatsUrl = $"https://statsapi.web.nhl.com/api/v1/people/{player.ApiId}/stats?stats=statsSingleSeason&season={currentDate.Year}{currentDate.Year + 1}";
+                    }
                     var playerStatsData = await httpClient.GetStringAsync(playerStatsUrl);
                     var playerStats = JsonConvert.DeserializeObject<StatsRoot>(playerStatsData);
 
@@ -271,7 +283,17 @@ namespace HockeyManager.Areas.Identity.Data
 
                 foreach (var player in homeTeam.Players)
                 {
-                    var playerStatsUrl = $"https://statsapi.web.nhl.com/api/v1/people/{player.ApiId}/stats?stats=statsSingleSeason&season=20192020";
+                    string playerStatsUrl = "";
+
+                    //Is it before September?
+                    if (currentDate.Month <= 8)
+                    {
+                        playerStatsUrl = $"https://statsapi.web.nhl.com/api/v1/people/{player.ApiId}/stats?stats=statsSingleSeason&season={currentDate.Year - 1}{currentDate.Year}";
+                    }
+                    else
+                    {
+                        playerStatsUrl = $"https://statsapi.web.nhl.com/api/v1/people/{player.ApiId}/stats?stats=statsSingleSeason&season={currentDate.Year}{currentDate.Year + 1}";
+                    }
                     var playerStatsData = await httpClient.GetStringAsync(playerStatsUrl);
                     var playerStats = JsonConvert.DeserializeObject<StatsRoot>(playerStatsData);
 

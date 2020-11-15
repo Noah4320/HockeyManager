@@ -76,7 +76,7 @@
 
                             @{ int counter = 1;}
 
-                            @foreach (var team in pool.Pool.Teams)
+                            @foreach (var team in pool.Pool.Teams.OrderByDescending(x => x.Points))
                             {
                                 <tr>
                                     <td>@counter</td>

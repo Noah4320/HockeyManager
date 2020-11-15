@@ -99,7 +99,7 @@
                 </thead>
                 <tbody>
                     @{ int counter = 1;}
-                    @foreach (var team in Model.Teams)
+                    @foreach (var team in Model.Teams.OrderByDescending(x => x.Points))
                     {
                         <tr class="playerData" id=@team.Id>
                             <td>@counter</td>
@@ -107,6 +107,7 @@
                             <td>@team.Points</td>
                             <td>@team.TeamInfo.Name</td>
                         </tr>
+                        counter++;
                     }
                 </tbody>
             </table>
