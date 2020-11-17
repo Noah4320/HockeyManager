@@ -1,0 +1,16 @@
+﻿@model IEnumerable<HockeyManager.Models.HMTeam>
+
+@{ int counter = 1;}
+@foreach (var team in Model)
+{
+    <tr>
+        <td>@counter</td>
+        <td>@team.TeamInfo.Name</td>
+        <td>@team.GamesPlayed</td>
+        <td>@team.Wins</td>
+        <td>@team.Loses</td>
+        <td>@team.OvertimeLoses</td>
+        <td>@team.Points</td>
+    </tr>
+    counter++;
+}

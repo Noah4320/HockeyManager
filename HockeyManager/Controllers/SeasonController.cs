@@ -327,6 +327,40 @@ namespace HockeyManager.Controllers
         }
 
         [HttpGet]
+        public ActionResult ApplyStandingsFilter (int seasonId, string filter)
+        {
+
+            var teams = _context.Teams.Include(x => x.TeamInfo).Where(x => x.SeasonId == seasonId);
+
+            if (filter == "Eastern")
+            {
+                teams = teams.Where(x => x.Conference == "Eastern");
+            }
+            else if (filter == "Western")
+            {
+                teams = teams.Where(x => x.Conference == "Western");
+            }
+            else if (filter == "Atlantic")
+            {
+                teams = teams.Where(x => x.Division == "Atlantic");
+            }
+            else if (filter == "Metro")
+            {
+                teams = teams.Where(x => x.Division == "Metropolitan");
+            }
+            else if (filter == "Central")
+            {
+                teams = teams.Where(x => x.Division == "Central");
+            }
+            else if (filter == "Pacific")
+            {
+                teams = teams.Where(x => x.Division == "Pacific");
+            } 
+
+            return PartialView("_Standings", teams.OrderByDescending(x => x.Points).ToList());
+        }
+
+        [HttpGet]
         public ActionResult GetCalendarData(int seasonId)
         {
             List<CalendarGames> calendarGames = new List<CalendarGames>();

@@ -110,6 +110,24 @@
                     }
                 });
 
+                $(document).on("[name='filterDropdown']")
+                    .change(function () {
+                        var filter = $("#standingsFilter").val();
+
+                        $.ajax({
+                            url: '/Season/ApplyStandingsFilter',
+                            type: "GET",
+                            data: {
+                                seasonId: seasonId,
+                                filter: filter
+                            },
+                            success: function (result) {
+                                $("#standingsTable").html(result);
+                            }
+                        });
+                       
+                    });
+
             </script>
             <style>
                 #calendar {
@@ -125,10 +143,15 @@
                 <div class="col">
                     <h3>Standings</h3>
 
-                    <select class="form-control">
+                    <select class="form-control" name="filterDropdown" id="standingsFilter">
                         <option value="League">League</option>
-                        <option value="Division">Division</option>
-                        <option value="Conference">Conference</option>
+                        <option value="Eastern">Eastern Conference</option>
+                        <option value="Western">Western Conference</option>
+                        <option value="Atlantic">Atlantic Division</option>
+                        <option value="Metro">Metropolitan Division</option>
+                        <option value="Central">Central Division</option>
+                        <option value="Pacific">Pacific Division</option>
+
                     </select>
 
                     <table class="table table-striped">
@@ -143,21 +166,8 @@
                                 <th>P</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            @{ int counter = 1;}
-                            @foreach (var team in Model.Teams)
-                            {
-                                <tr>
-                                    <td>@counter</td>
-                                    <td>@team.TeamInfo.Name</td>
-                                    <td>@team.GamesPlayed</td>
-                                    <td>@team.Wins</td>
-                                    <td>@team.Loses</td>
-                                    <td>@team.OvertimeLoses</td>
-                                    <td>@team.Points</td>
-                                </tr>
-                                counter++;
-                            }
+                        <tbody id="standingsTable">
+
                         </tbody>
                     </table>
                 </div>
