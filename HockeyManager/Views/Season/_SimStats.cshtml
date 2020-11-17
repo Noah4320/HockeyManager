@@ -52,7 +52,7 @@
         var gameId = @Context.Request.Query["gameId"];
         $.ajax({
             type: "GET",
-            url: "https://localhost:44375/Season/FinishGame",
+            url: "https://localhost:44375/Season/GetSimulatedGame",
             data: {
                 gameId: gameId
             }

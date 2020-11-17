@@ -223,8 +223,6 @@ namespace HockeyManager.Controllers
                 {
                     Division = division,
                     Conference = conference,
-                    //ToDo: This property might not be necessary
-                    Place = "1",
                     TeamInfoId = team.TeamInfoId,
                     SeasonId = season.Id
                 });
@@ -318,7 +316,7 @@ namespace HockeyManager.Controllers
         // GET: SeasonController/Hub/5
         public ActionResult Hub(int id)
         {
-            var teams = _context.Teams.Include(x => x.TeamInfo).Include(x => x.Players).ThenInclude(x => x.PlayerInfo).Where(x => x.SeasonId == id).ToList();
+            var teams = _context.Teams.Include(x => x.TeamInfo).Include(x => x.Players).ThenInclude(x => x.PlayerInfo).Where(x => x.SeasonId == id).OrderByDescending(x => x.Points).ToList();
             var myTeam = _context.Teams.Include(x => x.HomeSchedule).Where(x => x.SeasonId == id && x.UserId == _userManager.GetUserId(User)).FirstOrDefault();
 
             SeasonsViewModel VMteams = new SeasonsViewModel();
@@ -383,7 +381,7 @@ namespace HockeyManager.Controllers
         public async Task SimToDate(int seasonId, string toDate)
         {
             var dateClicked = DateTime.Parse(toDate);
-            var games = _context.Games.Include(x => x.GameEvents).Where(x => x.HomeTeam.SeasonId == seasonId && x.Date < dateClicked).ToList();
+            var games = await _context.Games.Include(x => x.GameEvents).Include(x => x.HomeTeam.TeamInfo).Include(x => x.AwayTeam.TeamInfo).Where(x => x.HomeTeam.SeasonId == seasonId && x.Date < dateClicked).OrderBy(x => x.Date).ToListAsync();
            
             foreach (var game in games)
             {
@@ -466,8 +464,71 @@ namespace HockeyManager.Controllers
 
         }
 
+
         [HttpGet]
-        public async Task<ActionResult> FinishGame(int gameId)
+        public async Task<ActionResult> GetSimulatedGame(int gameId)
+        {
+            await FinishGame(gameId);
+
+            //get team instances
+            var homeTeam = await _context.Games.Where(x => x.Id == gameId).Select(x => x.HomeTeam).Include(x => x.Players).ThenInclude(x => x.PlayerInfo).Include(x => x.TeamInfo).FirstOrDefaultAsync();
+            var awayTeam = await _context.Games.Where(x => x.Id == gameId).Select(x => x.AwayTeam).Include(x => x.Players).ThenInclude(x => x.PlayerInfo).Include(x => x.TeamInfo).FirstOrDefaultAsync();
+
+            var homeGoalie = homeTeam.Players.Where(x => x.Position == "G").FirstOrDefault();
+            var awayGoalie = awayTeam.Players.Where(x => x.Position == "G").FirstOrDefault();
+
+            var gameEvents = await _context.GameEvents.Where(x => x.GameId == gameId).ToListAsync();
+
+            Game finishedGame = new Game();
+            finishedGame.HomeTeamId = homeTeam.Id;
+            finishedGame.HomeTeam = homeTeam;
+            finishedGame.AwayTeamId = awayTeam.Id;
+            finishedGame.AwayTeam = awayTeam;
+            finishedGame.GameEvents = gameEvents;
+
+
+            finishedGame.HomeTeam.Players.ForEach(x => x.Goals = gameEvents.Where(y => y.Event == "Goal" && y.PlayerId == x.Id && y.GameId == gameId).Count());
+            finishedGame.AwayTeam.Players.ForEach(x => x.Goals = gameEvents.Where(y => y.Event == "Goal" && y.PlayerId == x.Id && y.GameId == gameId).Count());
+
+            finishedGame.HomeTeam.Players.ForEach(x => x.Assists = gameEvents.Where(y => y.Event == "Assist" && y.PlayerId == x.Id && y.GameId == gameId).Count());
+            finishedGame.AwayTeam.Players.ForEach(x => x.Assists = gameEvents.Where(y => y.Event == "Assist" && y.PlayerId == x.Id && y.GameId == gameId).Count());
+
+            finishedGame.HomeTeam.Players.ForEach(x => x.Points = gameEvents.Where(y => (y.Event == "Goal" || y.Event == "Assist") && y.PlayerId == x.Id && y.GameId == gameId).Count());
+            finishedGame.AwayTeam.Players.ForEach(x => x.Points = gameEvents.Where(y => (y.Event == "Goal" || y.Event == "Assist") && y.PlayerId == x.Id && y.GameId == gameId).Count());
+
+            finishedGame.HomeTeam.Players.ForEach(x => x.Shots = gameEvents.Where(y => y.Event == "Shot" && y.PlayerId == x.Id && y.GameId == gameId).Count());
+            finishedGame.AwayTeam.Players.ForEach(x => x.Shots = gameEvents.Where(y => y.Event == "Shot" && y.PlayerId == x.Id && y.GameId == gameId).Count());
+
+            HMPlayer homeBackup = finishedGame.HomeTeam.Players.Where(x => x.Id != homeGoalie.Id && x.Position == "G").FirstOrDefault();
+            HMPlayer awayBackup = finishedGame.AwayTeam.Players.Where(x => x.Id != awayGoalie.Id && x.Position == "G").FirstOrDefault();
+
+            homeGoalie.Saves = gameEvents.Where(x => x.Event == "Shot" && x.Player.TeamId != homeGoalie.TeamId).Count() - gameEvents.Where(x => x.Event == "Goal" && x.Player.TeamId != homeGoalie.TeamId).Count();
+            awayGoalie.Saves = gameEvents.Where(x => x.Event == "Shot" && x.Player.TeamId != awayGoalie.TeamId).Count() - gameEvents.Where(x => x.Event == "Goal" && x.Player.TeamId != awayGoalie.TeamId).Count();
+
+            homeGoalie.GoalsAgainst = gameEvents.Where(x => x.Event == "Goal" && x.Player.TeamId != homeGoalie.TeamId && x.GameId == gameId).Count();
+            awayGoalie.GoalsAgainst = gameEvents.Where(x => x.Event == "Goal" && x.Player.TeamId != awayGoalie.TeamId && x.GameId == gameId).Count();
+
+            homeGoalie.SavePercentage = Math.Round(decimal.Divide((decimal)homeGoalie.Saves, (decimal)homeGoalie.Saves + (decimal)homeGoalie.GoalsAgainst), 3);
+            awayGoalie.SavePercentage = Math.Round(decimal.Divide((decimal)awayGoalie.Saves, (decimal)awayGoalie.Saves + (decimal)awayGoalie.GoalsAgainst), 3);
+
+            //Teams might not have a backup
+            if (homeBackup != null)
+            {
+                homeBackup.Saves = 0;
+                homeBackup.GoalsAgainst = 0;
+            }
+
+            if (awayBackup != null)
+            {
+                awayBackup.Saves = 0;
+                awayBackup.GoalsAgainst = 0;
+            }
+
+            return PartialView("_SimStats", finishedGame);
+        }
+
+
+        public async Task FinishGame(int gameId)
         {
             //get team instances
             var homeTeam = await _context.Games.Where(x => x.Id == gameId).Select(x => x.HomeTeam).Include(x => x.Players).ThenInclude(x => x.PlayerInfo).Include(x => x.TeamInfo).FirstOrDefaultAsync();
@@ -484,7 +545,8 @@ namespace HockeyManager.Controllers
             {
                 homeGoalieId = homeTeam.Players.OrderByDescending(x => x.Overall).First(x => x.Position == "G").Id;
                 awayGoalieId = awayTeam.Players.OrderByDescending(x => x.Overall).First(x => x.Position == "G").Id;
-            } else
+            }
+            else
             {
                 homeGoalieId = homeTeam.Players.OrderBy(x => x.Overall).First(x => x.Position == "G").Id;
                 awayGoalieId = awayTeam.Players.OrderBy(x => x.Overall).First(x => x.Position == "G").Id;
@@ -698,7 +760,6 @@ namespace HockeyManager.Controllers
                 game.HomeTeam.Players.ForEach(x => x.Shots = gameEvents.Where(y => y.Event == "Shot" && y.PlayerId == x.Id).Count());
                 game.AwayTeam.Players.ForEach(x => x.Shots = gameEvents.Where(y => y.Event == "Shot" && y.PlayerId == x.Id).Count());
 
-                return PartialView("_SimStats", game);
             }
 
 
@@ -718,58 +779,9 @@ namespace HockeyManager.Controllers
             homeTeam.Players.ForEach(x => x.GamesPlayed += 1);
             awayTeam.Players.ForEach(x => x.GamesPlayed += 1);
 
-            
-
-            _context.Teams.Update(homeTeam);
-            _context.Teams.Update(awayTeam);
             await _context.SaveChangesAsync();
-
-            Game finishedGame = new Game();
-            finishedGame.HomeTeamId = homeTeam.Id;
-            finishedGame.HomeTeam = homeTeam;
-            finishedGame.AwayTeamId = awayTeam.Id;
-            finishedGame.AwayTeam = awayTeam;
-            finishedGame.GameEvents = gameEvents;
-
-            finishedGame.HomeTeam.Players.ForEach(x => x.Goals = gameEvents.Where(y => y.Event == "Goal" && y.PlayerId == x.Id && y.GameId == gameId).Count());
-            finishedGame.AwayTeam.Players.ForEach(x => x.Goals = gameEvents.Where(y => y.Event == "Goal" && y.PlayerId == x.Id && y.GameId == gameId).Count());
-
-            finishedGame.HomeTeam.Players.ForEach(x => x.Assists = gameEvents.Where(y => y.Event == "Assist" && y.PlayerId == x.Id && y.GameId == gameId).Count());
-            finishedGame.AwayTeam.Players.ForEach(x => x.Assists = gameEvents.Where(y => y.Event == "Assist" && y.PlayerId == x.Id && y.GameId == gameId).Count());
-
-            finishedGame.HomeTeam.Players.ForEach(x => x.Points = gameEvents.Where(y => (y.Event == "Goal" || y.Event == "Assist") && y.PlayerId == x.Id && y.GameId == gameId).Count());
-            finishedGame.AwayTeam.Players.ForEach(x => x.Points = gameEvents.Where(y => (y.Event == "Goal" || y.Event == "Assist") && y.PlayerId == x.Id && y.GameId == gameId).Count());
-
-            finishedGame.HomeTeam.Players.ForEach(x => x.Shots = gameEvents.Where(y => y.Event == "Shot" && y.PlayerId == x.Id && y.GameId == gameId).Count());
-            finishedGame.AwayTeam.Players.ForEach(x => x.Shots = gameEvents.Where(y => y.Event == "Shot" && y.PlayerId == x.Id && y.GameId == gameId).Count());
-
-            HMPlayer homeBackup = finishedGame.HomeTeam.Players.Where(x => x.Id != homeGoalieId && x.Position == "G").FirstOrDefault();
-            HMPlayer awayBackup = finishedGame.AwayTeam.Players.Where(x => x.Id != awayGoalieId && x.Position == "G").FirstOrDefault();
-
-            homeGoalie.Saves = gameEvents.Where(x => x.Event == "Shot" && x.Player.TeamId != homeGoalie.TeamId).Count() - gameEvents.Where(x => x.Event == "Goal" && x.Player.TeamId != homeGoalie.TeamId).Count();
-            awayGoalie.Saves = gameEvents.Where(x => x.Event == "Shot" && x.Player.TeamId != awayGoalie.TeamId).Count() - gameEvents.Where(x => x.Event == "Goal" && x.Player.TeamId != awayGoalie.TeamId).Count();
-            
-            homeGoalie.GoalsAgainst = gameEvents.Where(x => x.Event == "Goal" && x.Player.TeamId != homeGoalie.TeamId && x.GameId == gameId).Count();
-            awayGoalie.GoalsAgainst = gameEvents.Where(x => x.Event == "Goal" && x.Player.TeamId != awayGoalie.TeamId && x.GameId == gameId).Count();
-                      
-            homeGoalie.SavePercentage = Math.Round(decimal.Divide((decimal)homeGoalie.Saves, (decimal)homeGoalie.Saves + (decimal)homeGoalie.GoalsAgainst), 3);
-            awayGoalie.SavePercentage = Math.Round(decimal.Divide((decimal)awayGoalie.Saves, (decimal)awayGoalie.Saves + (decimal)awayGoalie.GoalsAgainst), 3);
-
-            //Teams might not have a backup
-            if (homeBackup != null)
-            {
-                homeBackup.Saves = 0;
-                homeBackup.GoalsAgainst = 0;
-            }
-
-            if (awayBackup != null)
-            {
-                awayBackup.Saves = 0;
-                awayBackup.GoalsAgainst = 0;
-            }
-
-            return PartialView("_SimStats", finishedGame);
         }
+
 
         public List<GameEvent> PredictGoal(int gameId, List<HMPlayer> teamPlayers, List<HMPlayer> opponents, List<HMPlayer> oldRoster, decimal teamGPGSum, List<GameEvent> gameEvents, int opponentGoalieId)
         {

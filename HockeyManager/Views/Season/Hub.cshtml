@@ -144,10 +144,11 @@
                             </tr>
                         </thead>
                         <tbody>
+                            @{ int counter = 1;}
                             @foreach (var team in Model.Teams)
                             {
                                 <tr>
-                                    <td>@team.Place</td>
+                                    <td>@counter</td>
                                     <td>@team.TeamInfo.Name</td>
                                     <td>@team.GamesPlayed</td>
                                     <td>@team.Wins</td>
@@ -155,6 +156,7 @@
                                     <td>@team.OvertimeLoses</td>
                                     <td>@team.Points</td>
                                 </tr>
+                                counter++;
                             }
                         </tbody>
                     </table>
@@ -178,23 +180,21 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach (var team in Model.Teams)
-                            {
-                                if (team.UserId != null)
+                         
+
+                                @foreach (var player in Model.MyTeam.Players)
                                 {
-                                    foreach (var player in team.Players)
-                                    {
-                                        <tr>
-                                            <td>@player.Position</td>
-                                            <td>@player.PlayerInfo.Name</td>
-                                            <td>@player.Goals</td>
-                                            <td>@player.Assists</td>
-                                            <td>@player.Overall</td>
-                                            <td>@player.PlusMinus</td>
-                                        </tr>
-                                    }
+                            <tr>
+                                <td>@player.Position</td>
+                                <td>@player.PlayerInfo.Name</td>
+                                <td>@player.Goals</td>
+                                <td>@player.Assists</td>
+                                <td>@player.Overall</td>
+                                <td>@player.PlusMinus</td>
+                            </tr>
                                 }
-                            }
+
+
                         </tbody>
                     </table>
                 </div>
