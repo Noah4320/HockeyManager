@@ -7,6 +7,9 @@
             <script src="~/lib/calendar/dist/js/main.js"></script>
             <script src="~/lib/moment/dist/js/moment.min.js"></script>
             <script>
+                $(document).ready(function () {
+                    $("#simSpinner").hide()
+
                 var gameEvents = [];
                 var actionUrl = '@Url.Action("SimGame", "Season", new { gameId = @Model.MyTeam.HomeSchedule.First().Id })';
                 var seasonId = @Model.MyTeam.SeasonId;
@@ -64,24 +67,29 @@
                                 center: 'title',
                                 right: 'dayGridMonth,timeGridWeek,timeGridDay'
                             },
+                            loading: function (isLoading, view) {
+                                if (!isLoading) {
+                                    $("#spinner").hide()
+                                }
+                            },
                             initialDate: '2020-11-03',
                             navLinks: true, // can click day/week names to navigate views
                             selectable: true,
                             selectMirror: true,
                             eventColor: '#378006',
                             select: function (arg) {
+                                $("#simSpinner").show()
                                 $.ajax({
-                                    url: '/Season/SimToDate',
                                     type: "GET",
-                                    dataType: "JSON",
+                                    url: "https://localhost:44375/Season/SimToDate",
                                     data: {
                                         seasonId: seasonId,
                                         toDate: arg.startStr
                                     },
-                                    success: function (result) {
-                                        
-                                    }
+                                }).done(function () {
+                                    location.reload();
                                 });
+                               
                             },
                             eventClick: function (arg) {
                                 //Date click logic
@@ -96,10 +104,10 @@
                                         if (isPlayable) {
                                            window.location.href = 'https://localhost:44375/Season/SimGame?gameId=' + arg.event.id
                                         }
-                                        
+
                                     }
                                 });
-                                
+
                             },
                             editable: true,
                             dayMaxEvents: true, // allow "more" link when too many events
@@ -107,6 +115,7 @@
                         });
 
                         calendar.render();
+
                     }
                 });
 
@@ -125,9 +134,9 @@
                                 $("#standingsTable").html(result);
                             }
                         });
-                       
-                    });
 
+                    });
+                });
             </script>
             <style>
                 #calendar {
@@ -167,13 +176,22 @@
                             </tr>
                         </thead>
                         <tbody id="standingsTable">
-
+                            <partial name="_Standings" model="Model.Teams" />
                         </tbody>
                     </table>
                 </div>
                 <div class="col-5">
                     <h3>Schedule</h3>
+                    <div class="spinner-border" style="width: 5cm; height: 5cm;" id="spinner">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+
                     <div id='calendar'></div>
+
+                    <div class="spinner-grow" style="width: 3rem; height: 3rem;" id="simSpinner">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+
                 </div>
                 <div class="col">
                     <h3>My Roster</h3>

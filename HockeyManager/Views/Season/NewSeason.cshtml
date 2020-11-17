@@ -2,6 +2,10 @@
 
 <script src="~/lib/jquery/dist/jquery.js"></script>
 <script>
+
+    $(document).ready(function () {
+        $("#spinner").hide();
+
     $(document).ready(function () {
         $("#teamBuilder").hide()
         var teamsSelected = 0;
@@ -45,6 +49,8 @@
         });
 
         $(document).on('click', '#addTeam', function () {
+
+            $("#spinner").show();
 
             var teamName = "@Context.Request.Query["teamName"]";
             var teamAbbreviation = $("#abbreviation").val();
@@ -101,6 +107,7 @@
 
                 } else {
                     alert(resultMessage);
+                    $("#spinner").hide();
                 }
 
             }).fail(function (x) {
@@ -109,6 +116,7 @@
             });
         });
 
+    });
     });
 </script>
 <div class="container">

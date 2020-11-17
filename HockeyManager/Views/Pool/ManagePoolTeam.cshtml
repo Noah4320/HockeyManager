@@ -5,7 +5,7 @@
 
 <script>
     $(document).ready(function () {
-
+         $("#spinner").hide();
          var poolId = @Context.Request.Query["id"];
 
         $.ajax({
@@ -35,6 +35,8 @@
         $(document).on('click', '#addTeam', function () {
             //ToDo: Check and see if we should care about user changing the url to a string and crashing this line
 
+            $("#spinner").show();
+
             var teamName = $("#teamName").val();
             var playerIds = [];
             $('#drafted tr').each(function () {
@@ -56,6 +58,7 @@
 
                 } else {
                     alert(resultMessage);
+                    $("#spinner").hide();
                 }
 
             }).fail(function (x) {

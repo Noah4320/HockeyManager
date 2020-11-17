@@ -3,6 +3,10 @@
 <script src="~/lib/jquery/dist/jquery.js"></script>
 
 <script>
+    $(document).ready(function () {
+
+   
+    $("#spinner").hide();
 
     $(document).on("[name='filterDropdown']")
         .change(function () {
@@ -44,6 +48,7 @@
     $(document).on('click', '.rosterData', function () {
         var p = $(this).closest('tr');
         p.remove();
+    });
     });
 </script>
 
@@ -112,7 +117,10 @@
                 <tbody id="refRosterTable">
                 </tbody>
             </table>
-            <button class="btn btn-success" id="addTeam">Add Team</button>
+            <button class="btn btn-success" id="addTeam">
+                <span class="spinner-border spinner-border-sm" id="spinner" aria-hidden="true"></span>
+                Add Team
+            </button>
 
             <div>
                 <h4>Roster Limits:</h4>
