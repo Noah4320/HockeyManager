@@ -41,36 +41,37 @@
 
                 <div class="col-md-6">
 
-                    @if (@Model.Seasons.FirstOrDefault() == null)
+                    @if (Model.Seasons.FirstOrDefault() == null)
                     {
-                        <h4>No season recorded</h4>
+                        <h4>No seasons recorded</h4>
                     }
                     else
                     {
-                        <h4>@Model.Seasons.FirstOrDefault().Teams.Where(x => x.UserId == Model.Id).Select(x => x.TeamInfo.Name).FirstOrDefault() Season</h4>
+                        <h4>Seasons</h4>
 
-                        <table class="table table-striped">
+                        <table class="table table-striped" id="InteractiveTable">
                             <thead>
                                 <tr>
-                                    <th>Position</th>
-                                    <th>Name</th>
-                                    <th>G</th>
-                                    <th>A</th>
-                                    <th>P</th>
-                                    <th>Ovr</th>
+                                    <th>Team Name</th>
+                                    <th>Games Played</th>
+                                    <th>Wins</th>
+                                    <th>Loses</th>
+                                    <th>Points</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach (var player in Model.Seasons.FirstOrDefault().Teams.Where(x => x.UserId == Model.Id).FirstOrDefault().Players)
+                                @foreach (var team in Model.Seasons.SelectMany(x => x.Teams))
                                 {
-                                    <tr>
-                                        <td>@player.Position</td>
-                                        <td>@player.PlayerInfo.Name</td>
-                                        <td>@player.Goals</td>
-                                        <td>@player.Assists</td>
-                                        <td>@player.Points</td>
-                                        <td>@player.Overall</td>
-                                    </tr>
+                                    if (team.UserId == Model.Id)
+                                    {
+                                        <tr onclick="location.href = 'https://localhost:44375/Season/Hub/@team.SeasonId'">
+                                            <td>@team.TeamInfo.Name</td>
+                                            <td>@team.GamesPlayed</td>
+                                            <td>@team.Wins</td>
+                                            <td>@team.Loses</td>
+                                            <td>@team.Points</td>
+                                        </tr>
+                                    }
                                 }
                             </tbody>
                         </table>

@@ -317,7 +317,7 @@ namespace HockeyManager.Controllers
         public ActionResult Hub(int id)
         {
             var teams = _context.Teams.Include(x => x.TeamInfo).Include(x => x.Players).ThenInclude(x => x.PlayerInfo).Where(x => x.SeasonId == id).OrderByDescending(x => x.Points).ToList();
-            var myTeam = _context.Teams.Include(x => x.HomeSchedule).Where(x => x.SeasonId == id && x.UserId == _userManager.GetUserId(User)).FirstOrDefault();
+            var myTeam = _context.Teams.Include(x => x.HomeSchedule).Where(x => x.SeasonId == id && x.UserId != null).FirstOrDefault();
 
             SeasonsViewModel VMteams = new SeasonsViewModel();
             VMteams.Teams = teams;
@@ -380,6 +380,12 @@ namespace HockeyManager.Controllers
         [HttpGet]
         public async Task SimToDate(int seasonId, string toDate)
         {
+            //Check if it's their season
+            if (!_context.Seasons.Where(x => x.Id == seasonId && x.UserId == _userManager.GetUserId(User)).Any())
+            {
+                return;
+            }
+
             var dateClicked = DateTime.Parse(toDate);
             var games = await _context.Games.Include(x => x.GameEvents).Include(x => x.HomeTeam.TeamInfo).Include(x => x.AwayTeam.TeamInfo).Where(x => x.HomeTeam.SeasonId == seasonId && x.Date < dateClicked).OrderBy(x => x.Date).ToListAsync();
            
@@ -533,6 +539,12 @@ namespace HockeyManager.Controllers
             //get team instances
             var homeTeam = await _context.Games.Where(x => x.Id == gameId).Select(x => x.HomeTeam).Include(x => x.Players).ThenInclude(x => x.PlayerInfo).Include(x => x.TeamInfo).FirstOrDefaultAsync();
             var awayTeam = await _context.Games.Where(x => x.Id == gameId).Select(x => x.AwayTeam).Include(x => x.Players).ThenInclude(x => x.PlayerInfo).Include(x => x.TeamInfo).FirstOrDefaultAsync();
+
+            //Check if it's their season
+            if (!_context.Seasons.Where(x => x.Id == homeTeam.SeasonId && x.UserId == _userManager.GetUserId(User)).Any())
+            {
+                return;
+            }
 
             //randomly choose goalies
             Random r = new Random();

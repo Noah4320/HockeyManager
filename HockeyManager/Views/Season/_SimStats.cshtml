@@ -1,10 +1,13 @@
 ﻿@model Game
+@using Microsoft.AspNetCore.Identity
+@using HockeyManager.Areas.Identity.Data
+@inject UserManager<User> UserManager
 
 <script src="~/lib/jquery/dist/jquery.js"></script>
 <script>
     $(document).ready(function () {
 
-        @if (Model.GameEvents.Count > 0)
+        @if (Model.GameEvents.Count > 0 || !UserManager.Users.Where(x => x.Seasons.Where(y => y.Id == Model.HomeTeam.SeasonId).FirstOrDefault().UserId == x.Id && x.Id == UserManager.GetUserId(User)).Any())
         {
             <text>
         $('#simGame').prop("disabled", true);
@@ -147,22 +150,22 @@ x.Player.TeamId == Model.HomeTeamId).Count()
                     }
                     else
                     {
-                <tr>
-                    <td>Shots</td>
-                    <td>@Model.GameEvents.Where(x => x.Event == "Shot" && x.Player.Team.Id == Model.AwayTeamId).Count()</td>
-                    <td>@Model.GameEvents.Where(x => x.Event == "Shot" && x.Player.Team.Id == Model.HomeTeamId).Count()</td>
-                </tr>
+                        <tr>
+                            <td>Shots</td>
+                            <td>@Model.GameEvents.Where(x => x.Event == "Shot" && x.Player.Team.Id == Model.AwayTeamId).Count()</td>
+                            <td>@Model.GameEvents.Where(x => x.Event == "Shot" && x.Player.Team.Id == Model.HomeTeamId).Count()</td>
+                        </tr>
 
-                <tr>
-                    <td>Goals</td>
-                    <td>@Model.GameEvents.Where(x => x.Event == "Goal" && x.Player.Team.Id == Model.AwayTeamId).Count()</td>
-                    <td>@Model.GameEvents.Where(x => x.Event == "Goal" && x.Player.Team.Id == Model.HomeTeamId).Count()</td>
-                </tr>
+                        <tr>
+                            <td>Goals</td>
+                            <td>@Model.GameEvents.Where(x => x.Event == "Goal" && x.Player.Team.Id == Model.AwayTeamId).Count()</td>
+                            <td>@Model.GameEvents.Where(x => x.Event == "Goal" && x.Player.Team.Id == Model.HomeTeamId).Count()</td>
+                        </tr>
                     }
 
 
-                    </tbody>
-                </table>
+                </tbody>
+            </table>
 
             <input type="submit" class="btn btn-warning" id="simPeriod" value="Simulate Period" />
             <input type="submit" class="btn btn-success" id="simGame" value="Finish Game" />
