@@ -118,6 +118,9 @@ namespace HockeyManager.Controllers
 
             //Create users team and players
             var season = new Season();
+            DateTime startDate = new DateTime(DateTime.Now.Year, 10, 15);
+
+            season.Date = startDate;
             season.UserId = _userManager.GetUserId(User);
 
             await _context.Seasons.AddAsync(season);
@@ -291,7 +294,7 @@ namespace HockeyManager.Controllers
                 {
                     AwayTeamId = teams[teamIdx].Id,
                     HomeTeamId = allTeams[0].Id,
-                    Date = DateTime.Now.AddDays(day)
+                    Date = startDate.AddDays(day)
                 });
 
                 for (int idx = 1; idx < halfSize; idx++)
@@ -302,7 +305,7 @@ namespace HockeyManager.Controllers
                     {
                         AwayTeamId = teams[firstTeam].Id,
                         HomeTeamId = teams[secondTeam].Id,
-                        Date = DateTime.Now.AddDays(day)
+                        Date = startDate.AddDays(day)
                     });
                 }
             }
@@ -318,10 +321,17 @@ namespace HockeyManager.Controllers
         {
             var teams = _context.Teams.Include(x => x.TeamInfo).Include(x => x.Players).ThenInclude(x => x.PlayerInfo).Where(x => x.SeasonId == id).OrderByDescending(x => x.Points).ToList();
             var myTeam = _context.Teams.Include(x => x.HomeSchedule).Where(x => x.SeasonId == id && x.UserId != null).FirstOrDefault();
+            var season = _context.Seasons.FirstOrDefault(x => x.Id == id);
 
             SeasonsViewModel VMteams = new SeasonsViewModel();
             VMteams.Teams = teams;
             VMteams.MyTeam = myTeam;
+            VMteams.Season = season;
+
+            if (VMteams.Season == null)
+            {
+                return RedirectToAction("Index", "Season");
+            }
 
             return View(VMteams);
         }
@@ -422,15 +432,29 @@ namespace HockeyManager.Controllers
 
             var dateClicked = DateTime.Parse(toDate);
             var games = await _context.Games.Include(x => x.GameEvents).Include(x => x.HomeTeam.TeamInfo).Include(x => x.AwayTeam.TeamInfo).Where(x => x.HomeTeam.SeasonId == seasonId && x.Date < dateClicked).OrderBy(x => x.Date).ToListAsync();
-           
-            foreach (var game in games)
+
+            //Check if there are any games
+            if (games.Count > 0)
             {
-                if (game.GameEvents.Count == 0)
+                foreach (var game in games)
                 {
-                    await FinishGame(game.Id);
+                    if (game.GameEvents.Count == 0)
+                    {
+                        await FinishGame(game.Id);
+                    }
+
                 }
+                var currentSeason = _context.Seasons.Where(x => x.Id == seasonId).FirstOrDefault();
                 
+                //only update the date if they clicked a future date and not a past date
+                if (dateClicked > currentSeason.Date)
+                {
+                    currentSeason.Date = games.Last().Date.AddDays(1);
+                    await _context.SaveChangesAsync();
+                }
             }
+
+            
         }
 
         [HttpGet]
@@ -438,10 +462,10 @@ namespace HockeyManager.Controllers
         {
             var dateClicked = DateTime.Parse(date);
 
-            var gamesToDate = _context.Games.Include(x => x.HomeTeam).Include(x => x.GameEvents).Where(x => x.HomeTeam.SeasonId == seasonId && x.Date <= dateClicked).ToList();
+            var gamesToDate = _context.Games.Include(x => x.HomeTeam).Include(x => x.GameEvents).Where(x => x.HomeTeam.SeasonId == seasonId && x.Date < dateClicked).ToList();
             var gamesPlayed = _context.Games.Include(x => x.HomeTeam).Include(x => x.GameEvents).Where(x => x.HomeTeam.SeasonId == seasonId && x.Date <= dateClicked && x.GameEvents.Count > 0).ToList();
 
-            return gamesPlayed.Count() == gamesToDate.Count();
+            return gamesPlayed.Count() >= gamesToDate.Count();
         }
 
         // GET: SeasonController/SimGame/
@@ -455,6 +479,11 @@ namespace HockeyManager.Controllers
                 .Include(x => x.GameEvents).ThenInclude(x => x.Player.PlayerInfo)
                 .Include(x => x.GameEvents).ThenInclude(x => x.Player).ThenInclude(x => x.Team.TeamInfo)
                 .Where(x => x.Id == gameId).FirstOrDefault();
+
+            if (game == null)
+            {
+                return RedirectToAction("Index", "Season");
+            }
 
             //Has this game been played?
             if (game.GameEvents.Count > 0)

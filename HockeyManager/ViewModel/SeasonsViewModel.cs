@@ -10,5 +10,6 @@ namespace HockeyManager.ViewModel
     {
         public IEnumerable<HMTeam> Teams { get; set; }
         public HMTeam MyTeam { get; set; }
+        public virtual Season Season { get; set; }
     }
 }

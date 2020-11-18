@@ -10,9 +10,10 @@
                 $(document).ready(function () {
                     $("#simSpinner").hide()
 
-                var gameEvents = [];
-                var actionUrl = '@Url.Action("SimGame", "Season", new { gameId = @Model.MyTeam.HomeSchedule.First().Id })';
-                var seasonId = @Model.MyTeam.SeasonId;
+                    var gameEvents = [];
+                    var actionUrl = '@Url.Action("SimGame", "Season", new { gameId = @Model.MyTeam.HomeSchedule.FirstOrDefault().Id })';
+                    var seasonId = @Model.MyTeam.SeasonId;
+
                 $.ajax({
                     url: '/Season/GetCalendarData',
                     type: "GET",
@@ -72,7 +73,7 @@
                                     $("#spinner").hide()
                                 }
                             },
-                            initialDate: '2020-11-03',
+                            initialDate: moment('@Model.Season.Date').format('YYYY-MM-DD'),
                             navLinks: true, // can click day/week names to navigate views
                             selectable: true,
                             selectMirror: true,
@@ -89,7 +90,7 @@
                                 }).done(function () {
                                     location.reload();
                                 });
-                               
+
                             },
                             eventClick: function (arg) {
                                 //Date click logic
