@@ -212,6 +212,7 @@ namespace HockeyManager.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Date = table.Column<DateTime>(nullable: false),
                     UserId = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
@@ -289,7 +290,6 @@ namespace HockeyManager.Migrations
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     Division = table.Column<string>(nullable: true),
                     Conference = table.Column<string>(nullable: true),
-                    Place = table.Column<string>(nullable: true),
                     GamesPlayed = table.Column<int>(nullable: false),
                     Wins = table.Column<int>(nullable: false),
                     Loses = table.Column<int>(nullable: false),
@@ -433,6 +433,7 @@ namespace HockeyManager.Migrations
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     Event = table.Column<string>(nullable: true),
+                    Period = table.Column<string>(nullable: true),
                     PlayerId = table.Column<int>(nullable: true),
                     GameId = table.Column<int>(nullable: true)
                 },

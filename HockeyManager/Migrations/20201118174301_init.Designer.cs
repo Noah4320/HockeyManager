@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HockeyManager.Migrations
 {
     [DbContext(typeof(HockeyContext))]
-    [Migration("20201103143012_init")]
+    [Migration("20201118174301_init")]
     partial class init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -128,6 +128,8 @@ namespace HockeyManager.Migrations
 
                     b.Property<int?>("GameId");
 
+                    b.Property<string>("Period");
+
                     b.Property<int?>("PlayerId");
 
                     b.HasKey("Id");
@@ -230,8 +232,6 @@ namespace HockeyManager.Migrations
                     b.Property<int>("Loses");
 
                     b.Property<int>("OvertimeLoses");
-
-                    b.Property<string>("Place");
 
                     b.Property<int>("Points");
 
@@ -355,6 +355,8 @@ namespace HockeyManager.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("Date");
 
                     b.Property<string>("UserId");
 
@@ -545,7 +547,7 @@ namespace HockeyManager.Migrations
             modelBuilder.Entity("HockeyManager.Models.Pool", b =>
                 {
                     b.HasOne("HockeyManager.Areas.Identity.Data.User", "Owner")
-                        .WithMany("PoolsOwned")
+                        .WithMany()
                         .HasForeignKey("OwnerId");
 
                     b.HasOne("HockeyManager.Models.RuleSet", "RuleSet")
@@ -561,14 +563,14 @@ namespace HockeyManager.Migrations
                         .HasForeignKey("PoolId");
 
                     b.HasOne("HockeyManager.Areas.Identity.Data.User", "User")
-                        .WithMany()
+                        .WithMany("PoolsOwned")
                         .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("HockeyManager.Models.Season", b =>
                 {
                     b.HasOne("HockeyManager.Areas.Identity.Data.User", "User")
-                        .WithMany()
+                        .WithMany("Seasons")
                         .HasForeignKey("UserId");
                 });
 

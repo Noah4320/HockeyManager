@@ -65,6 +65,7 @@ namespace HockeyManager
 
             app.UseHangfireDashboard();
             RecurringJob.AddOrUpdate(() => dbInitializer.FetchUpdatedStats(), "0 23 * * *", TimeZoneInfo.Local);
+            RecurringJob.AddOrUpdate(() => dbInitializer.ConfigurePlayerRanks(), "0 23 * * 3", TimeZoneInfo.Local);
 
             if (env.IsDevelopment())
             {
