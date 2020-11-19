@@ -27,7 +27,7 @@
                 var teamId = (this.id);
             $.ajax({
                 type: "GET",
-                url: "https://localhost:44375/Pool/GetTeamRoster",
+                url: "/Pool/GetTeamRoster",
                 data: {
                     id: teamId
                 }
@@ -64,7 +64,7 @@
             var poolId = @Model.Id;
             $.ajax({
                 type: "DELETE",
-                url: "https://localhost:44375/Pool/LeavePool",
+                url: "/Pool/LeavePool",
                 data: {
                     id: poolId
                 }

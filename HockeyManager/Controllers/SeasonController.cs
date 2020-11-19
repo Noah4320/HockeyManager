@@ -442,7 +442,11 @@ namespace HockeyManager.Controllers
                 {
                     if (game.GameEvents.Count == 0)
                     {
-                        await Simulate(game.Id, 8, 20, 48);
+                        bool isFinished = false;
+                        while (!isFinished)
+                        {
+                            isFinished = await Simulate(game.Id, 3, 1, 15);
+                        }
                     }
 
                 }

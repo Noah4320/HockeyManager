@@ -11,7 +11,7 @@
             var radioValue = $("input[id='rules']:checked").val();
             $.ajax({
                 type: "POST",
-                url: "https://localhost:44375/Pool/GetRule",
+                url: "/Pool/GetRule",
                 traditional: true,
                 data: {
                     id: radioValue

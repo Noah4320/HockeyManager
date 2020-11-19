@@ -9,7 +9,7 @@
             $(document).ready(function () {
                 $.ajax(
                     {
-                        url: "https://localhost:44375/Search/GetUsers",
+                        url: "/Search/GetUsers",
                         success: function (result) {
                             $("#users").autocomplete({
                                 source: result

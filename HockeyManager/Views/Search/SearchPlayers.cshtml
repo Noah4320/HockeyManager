@@ -10,7 +10,7 @@
     $(document).ready(function () {
         $.ajax(
             {
-                url: "https://localhost:44375/Search/getFavourites",
+                url: "/Search/getFavourites",
                 success: function (result) {
                     $('input[id="player"]').each(function () {
                         if (result.includes($(this).val())) {
@@ -33,7 +33,7 @@
 
             $.ajax({
                 type: "POST",
-                url: "https://localhost:44375/Search/Post",
+                url: "/Search/Post",
                 traditional: true,
                 dataType: 'application/json',
                 data: {

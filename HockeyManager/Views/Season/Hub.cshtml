@@ -35,7 +35,7 @@
                                         textColor: "black",
                                         backgroundColor: "#e8fa8e",
                                         borderColor: "#e8fa8e",
-                                        url: 'https://localhost:44375/Season/SimGame?gameId=' + data.id
+                                        url: '/Season/SimGame?gameId=' + data.id
                                     });
                                 gameEvents.push(
                                     {
@@ -82,7 +82,7 @@
                                 $("#simSpinner").show()
                                 $.ajax({
                                     type: "GET",
-                                    url: "https://localhost:44375/Season/SimToDate",
+                                    url: "/Season/SimToDate",
                                     data: {
                                         seasonId: seasonId,
                                         toDate: arg.startStr
@@ -103,7 +103,7 @@
                                     },
                                     success: function (isPlayable) {
                                         if (isPlayable) {
-                                           window.location.href = 'https://localhost:44375/Season/SimGame?gameId=' + arg.event.id
+                                           window.location.href = '/Season/SimGame?gameId=' + arg.event.id
                                         }
 
                                     }

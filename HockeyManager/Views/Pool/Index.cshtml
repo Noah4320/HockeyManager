@@ -12,7 +12,7 @@
             $(document).ready(function () {
                 $.ajax(
                     {
-                        url: "https://localhost:44375/Pool/GetPools",
+                        url: "/Pool/GetPools",
                         success: function (result) {
                             $("#pools").autocomplete({
                                 source: result
@@ -23,7 +23,7 @@
                     var name = $("#pools").val();
                     $.ajax({
                         type: "POST",
-                        url: "https://localhost:44375/Pool/JoinPool",
+                        url: "/Pool/JoinPool",
                         data: {
                             poolName: name
                         }

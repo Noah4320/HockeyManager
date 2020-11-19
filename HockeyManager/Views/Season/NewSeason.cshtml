@@ -88,7 +88,7 @@
 
             $.ajax({
                 type: "POST",
-                url: "https://localhost:44375/Season/CreateSeason",
+                url: "/Season/CreateSeason",
                 data: {
                     name: teamName,
                     abbreviation: teamAbbreviation,
@@ -103,7 +103,7 @@
                 var seasonId = Number(resultMessage);
 
                 if (!isNaN(seasonId)) {
-                    location.href = 'https://localhost:44375/Season/Hub/' + seasonId;
+                    location.href = '/Season/Hub/' + seasonId;
 
                 } else {
                     alert(resultMessage);
