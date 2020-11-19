@@ -103,6 +103,8 @@ namespace HockeyManager.Migrations
 
                     b.Property<int?>("AwayTeamId");
 
+                    b.Property<bool>("Complete");
+
                     b.Property<DateTime>("Date");
 
                     b.Property<int?>("HomeTeamId");

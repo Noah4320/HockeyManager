@@ -338,6 +338,7 @@ namespace HockeyManager.Migrations
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     Date = table.Column<DateTime>(nullable: false),
+                    Complete = table.Column<bool>(nullable: false),
                     HomeTeamId = table.Column<int>(nullable: true),
                     AwayTeamId = table.Column<int>(nullable: true)
                 },

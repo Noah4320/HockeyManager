@@ -12,6 +12,7 @@ namespace HockeyManager.Models
         [Key]
         public int Id { get; set; }
         public DateTime Date { get; set; }
+        public bool Complete { get; set; }
 
         public int? HomeTeamId { get; set; }
         [ForeignKey("HomeTeamId")]

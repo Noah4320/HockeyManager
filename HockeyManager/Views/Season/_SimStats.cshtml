@@ -16,20 +16,45 @@
         $('#simGame').prop("disabled", true);
             </text>
         }
-
-
-    @if (Model.GameEvents.Count > 0 || !UserManager.Users.Where(x => x.Seasons.Where(y => y.Id == Model.HomeTeam.SeasonId).FirstOrDefault().UserId == x.Id && x.Id == UserManager.GetUserId(User)).Any())
+        else
         {
+             @if (Model.Complete || !UserManager.Users.Where(x => x.Seasons.Where(y => y.Id == Model.HomeTeam.SeasonId).FirstOrDefault().UserId == x.Id && x.Id == UserManager.GetUserId(User)).Any())
+             {
             <text>
         $('#simPeriod').prop("disabled", true);
         $('#simGame').prop("disabled", true);
             </text>
-        }
+             }
+            }
 
         var gameId = @Context.Request.Query["gameId"];
         $("#awayRoster").hide();
 
         $(document).on("[name='filterDropdown']")
+            .change(function () {
+
+                var team = $("#teamFilter").val();
+                var gameEvent = $("#gameEventFilter").val();
+                var period = parseInt($("#periodFilter").val());
+                var gameId = @Context.Request.Query["gameId"];
+
+                $.ajax({
+                    url: '/Season/ApplyEventFilter',
+                    type: "GET",
+                    data: {
+                        gameId: gameId,
+                        team: team,
+                        gameEvent: gameEvent,
+                        period: period
+                    },
+                    success: function (gameEventsResult) {
+                        $("#eventFilter").html(gameEventsResult);
+                    }
+                });
+            })
+
+
+        $(document).on("[name='rosterDropdown']")
             .change(function () {
 
                 var team = $("#Team").val();
@@ -67,7 +92,7 @@
         $('#simGame').click(function () {
             $('#simPeriod').prop("disabled", true);
             $("#finishSpinner").show();
-             var gameId = @Context.Request.Query["gameId"];
+            var gameId = @Context.Request.Query["gameId"];
             $.ajax({
                 url: '/Season/GetSimulatedGame',
                 type: "GET",
@@ -88,204 +113,217 @@
     <h1>@Model.Date</h1>
     <div class="row">
         <div class="col">
-            <h3>Events</h3>
 
-            <select class="form-control">
-                <option value="End">End</option>
-                <option value="1st Period">1st Period</option>
-                <option value="2nd Period">2nd Period</option>
-            </select>
+            <div class="row">
+                <div class="col">
+                    <h3>Team</h3>
 
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th>Period</th>
-                        <th>Event</th>
-                        <th>Team</th>
-                        <th>Player</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @if (Model.GameEvents != null)
-                    {
-                        foreach (var gameEvent in Model.GameEvents)
-                        {
+                    <select class="form-control" name="filterDropdown" id="teamFilter">
+                        <option value="">All</option>
+                        <option value=@Model.HomeTeam.TeamInfo.Name>@Model.HomeTeam.TeamInfo.Abbreviation</option>
+                        <option value=@Model.AwayTeam.TeamInfo.Name>@Model.AwayTeam.TeamInfo.Abbreviation</option>
+                    </select>
+                </div>
+                <div class="col">
+                    <h3>Events</h3>
+
+                    <select class="form-control" name="filterDropdown" id="gameEventFilter">
+                        <option value="">All</option>
+                        <option value="Shot">Shots</option>
+                        <option value="Goal">Goals</option>
+                        <option value="Assist">Assists</option>
+                    </select>
+                </div>
+                <div class="col">
+                    <h3>Period</h3>
+
+                    <select class="form-control" name="filterDropdown" id="periodFilter">
+                        <option value="">End</option>
+                        <option value="1">1st Period</option>
+                        <option value="2">2nd Period</option>
+                        <option value="3">3rd Period</option>
+                    </select>
+                </div>
+            </div>
+
+                    <table class="table table-striped">
+                        <thead>
                             <tr>
-                                <td>Period @gameEvent.Period</td>
-                                <td>@gameEvent.Event</td>
-                                <td>@gameEvent.Player.Team.TeamInfo.Abbreviation</td>
-                                <td>@gameEvent.Player.PlayerInfo.Name</td>
+                                <th>Period</th>
+                                <th>Event</th>
+                                <th>Team</th>
+                                <th>Player</th>
                             </tr>
-                        }
-                    }
-
-                </tbody>
-            </table>
-        </div>
-        <div class="col">
-            @if (Model.GameEvents == null)
-            {
-                <h3>
-                    @Model.AwayTeam.TeamInfo.Abbreviation: 0 @Model.HomeTeam.TeamInfo.Abbreviation: 0
-                </h3>
-            }
-            else
-            {
-                <h3>
-                    @Model.AwayTeam.TeamInfo.Abbreviation: @Model.GameEvents.Where(x => x.GameId == int.Parse(Context.Request.Query["gameId"]) &&
-x.Event == "Goal" &&
-x.Player.TeamId == Model.AwayTeamId).Count()
-                    @Model.HomeTeam.TeamInfo.Abbreviation: @Model.GameEvents.Where(x => x.GameId == int.Parse(Context.Request.Query["gameId"]) &&
-x.Event == "Goal" &&
-x.Player.TeamId == Model.HomeTeamId).Count()
-                </h3>
-            }
-
-            @if (@Model.GameEvents.LastOrDefault() == null)
-            {
-                <h4>Start Game</h4>
-            }
-            else
-            {
-                <h4>End of period @Model.GameEvents.LastOrDefault().Period</h4>
-            }
-
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th></th>
-                        <th>@Model.AwayTeam.TeamInfo.Name</th>
-                        <th> @Model.HomeTeam.TeamInfo.Name</th>
-                    </tr>
-                </thead>
-                <tbody>
-
+                        </thead>
+                        <tbody id="eventFilter">
+                            <partial name="_GameEvents" model="Model.GameEvents" />
+                        </tbody>
+                    </table>
+                </div>
+                <div class="col">
                     @if (Model.GameEvents == null)
                     {
-                        <tr>
-                            <td>Shots</td>
-                            <td>0</td>
-                            <td>0</td>
-                        </tr>
-                        <tr>
-                            <td>Goals</td>
-                            <td>0</td>
-                            <td>0</td>
-                        </tr>
+                        <h3>
+                            @Model.AwayTeam.TeamInfo.Abbreviation: 0 @Model.HomeTeam.TeamInfo.Abbreviation: 0
+                        </h3>
                     }
                     else
                     {
-                        <tr>
-                            <td>Shots</td>
-                            <td>@Model.GameEvents.Where(x => x.Event == "Shot" && x.Player.Team.Id == Model.AwayTeamId).Count()</td>
-                            <td>@Model.GameEvents.Where(x => x.Event == "Shot" && x.Player.Team.Id == Model.HomeTeamId).Count()</td>
-                        </tr>
-
-                        <tr>
-                            <td>Goals</td>
-                            <td>@Model.GameEvents.Where(x => x.Event == "Goal" && x.Player.Team.Id == Model.AwayTeamId).Count()</td>
-                            <td>@Model.GameEvents.Where(x => x.Event == "Goal" && x.Player.Team.Id == Model.HomeTeamId).Count()</td>
-                        </tr>
+                        <h3>
+                            @Model.AwayTeam.TeamInfo.Abbreviation: @Model.GameEvents.Where(x => x.GameId == int.Parse(Context.Request.Query["gameId"]) &&
+x.Event == "Goal" &&
+x.Player.TeamId == Model.AwayTeamId).Count()
+                            @Model.HomeTeam.TeamInfo.Abbreviation: @Model.GameEvents.Where(x => x.GameId == int.Parse(Context.Request.Query["gameId"]) &&
+x.Event == "Goal" &&
+x.Player.TeamId == Model.HomeTeamId).Count()
+                        </h3>
                     }
 
+                    @if (@Model.GameEvents.LastOrDefault() == null)
+                    {
+                        <h4>Start Game</h4>
+                    }
+                    else
+                    {
+                        <h4>End of period @Model.GameEvents.LastOrDefault().Period</h4>
+                    }
 
-                </tbody>
-            </table>
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>@Model.AwayTeam.TeamInfo.Name</th>
+                                <th> @Model.HomeTeam.TeamInfo.Name</th>
+                            </tr>
+                        </thead>
+                        <tbody>
 
-            <button class="btn btn-warning" type="button" id="simPeriod">
-                <span class="spinner-border spinner-border-sm" id="periodSpinner" aria-hidden="true"></span>
-                Simulate Period
-            </button>
-            <button class="btn btn-success" type="button" id="simGame">
-                <span class="spinner-border spinner-border-sm" id="finishSpinner" aria-hidden="true"></span>
-                Finish Game
-            </button>
+                            @if (Model.GameEvents == null)
+                            {
+                                <tr>
+                                    <td>Shots</td>
+                                    <td>0</td>
+                                    <td>0</td>
+                                </tr>
+                                <tr>
+                                    <td>Goals</td>
+                                    <td>0</td>
+                                    <td>0</td>
+                                </tr>
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td>Shots</td>
+                                    <td>@Model.GameEvents.Where(x => x.Event == "Shot" && x.Player.Team.Id == Model.AwayTeamId).Count()</td>
+                                    <td>@Model.GameEvents.Where(x => x.Event == "Shot" && x.Player.Team.Id == Model.HomeTeamId).Count()</td>
+                                </tr>
 
-        </div>
-        <div class="col">
-            <h3>Rosters</h3>
-
-            <select class="form-control" name="filterDropdown" id="Team">
-                <option value="HomeTeam">@Model.HomeTeam.TeamInfo.Abbreviation</option>
-                <option value="AwayTeam">@Model.AwayTeam.TeamInfo.Abbreviation</option>
-            </select>
-            <div id="homeRoster">
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>Position</th>
-                            <th>Name</th>
-                            <th>Saves</th>
-                            <th>GA</th>
-                            <th>S%</th>
-                            <th>Shutouts</th>
-                            <th>OVR</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <partial name="_GoalieRoster" model="Model.HomeTeam.Players" />
-                    </tbody>
-                </table>
+                                <tr>
+                                    <td>Goals</td>
+                                    <td>@Model.GameEvents.Where(x => x.Event == "Goal" && x.Player.Team.Id == Model.AwayTeamId).Count()</td>
+                                    <td>@Model.GameEvents.Where(x => x.Event == "Goal" && x.Player.Team.Id == Model.HomeTeamId).Count()</td>
+                                </tr>
+                            }
 
 
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>Position</th>
-                            <th>Name</th>
-                            <th>S</th>
-                            <th>G</th>
-                            <th>A</th>
-                            <th>P</th>
-                            <th>H</th>
-                            <th>+/-</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <partial name="_GameRoster" model="Model.HomeTeam.Players" />
-                    </tbody>
-                </table>
+                        </tbody>
+                    </table>
+
+                    <button class="btn btn-warning" type="button" id="simPeriod">
+                        <span class="spinner-border spinner-border-sm" id="periodSpinner" aria-hidden="true"></span>
+                        Simulate Period
+                    </button>
+                    <button class="btn btn-success" type="button" id="simGame">
+                        <span class="spinner-border spinner-border-sm" id="finishSpinner" aria-hidden="true"></span>
+                        Finish Game
+                    </button>
+
+                </div>
+                <div class="col">
+                    <h3>Rosters</h3>
+
+                    <select class="form-control" name="rosterDropdown" id="Team">
+                        <option value="HomeTeam">@Model.HomeTeam.TeamInfo.Abbreviation</option>
+                        <option value="AwayTeam">@Model.AwayTeam.TeamInfo.Abbreviation</option>
+                    </select>
+                    <div id="homeRoster">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Position</th>
+                                    <th>Name</th>
+                                    <th>Saves</th>
+                                    <th>GA</th>
+                                    <th>S%</th>
+                                    <th>Shutouts</th>
+                                    <th>OVR</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <partial name="_GoalieRoster" model="Model.HomeTeam.Players" />
+                            </tbody>
+                        </table>
+
+
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Position</th>
+                                    <th>Name</th>
+                                    <th>S</th>
+                                    <th>G</th>
+                                    <th>A</th>
+                                    <th>P</th>
+                                    <th>H</th>
+                                    <th>+/-</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <partial name="_GameRoster" model="Model.HomeTeam.Players" />
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="awayRoster">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Position</th>
+                                    <th>Name</th>
+                                    <th>Saves</th>
+                                    <th>GA</th>
+                                    <th>S%</th>
+                                    <th>Shutouts</th>
+                                    <th>OVR</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <partial name="_GoalieRoster" model="Model.AwayTeam.Players" />
+                            </tbody>
+                        </table>
+
+
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Position</th>
+                                    <th>Name</th>
+                                    <th>S</th>
+                                    <th>G</th>
+                                    <th>A</th>
+                                    <th>P</th>
+                                    <th>H</th>
+                                    <th>+/-</th>
+                                    <th>OVR</th>
+
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <partial name="_GameRoster" model="Model.AwayTeam.Players" />
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
-            <div id="awayRoster">
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>Position</th>
-                            <th>Name</th>
-                            <th>Saves</th>
-                            <th>GA</th>
-                            <th>S%</th>
-                            <th>Shutouts</th>
-                            <th>OVR</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <partial name="_GoalieRoster" model="Model.AwayTeam.Players" />
-                    </tbody>
-                </table>
-
-
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>Position</th>
-                            <th>Name</th>
-                            <th>S</th>
-                            <th>G</th>
-                            <th>A</th>
-                            <th>P</th>
-                            <th>H</th>
-                            <th>+/-</th>
-                            <th>OVR</th>
-
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <partial name="_GameRoster" model="Model.AwayTeam.Players" />
-                    </tbody>
-                </table>
-            </div>
         </div>
-    </div>
-</div>
 

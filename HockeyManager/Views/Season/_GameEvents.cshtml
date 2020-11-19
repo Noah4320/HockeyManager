@@ -1,0 +1,14 @@
+﻿@model IEnumerable<HockeyManager.Models.GameEvent>
+
+@if (Model != null)
+{
+    foreach (var gameEvent in Model)
+    {
+        <tr>
+            <td>Period @gameEvent.Period</td>
+            <td>@gameEvent.Event</td>
+            <td>@gameEvent.Player.Team.TeamInfo.Abbreviation</td>
+            <td>@gameEvent.Player.PlayerInfo.Name</td>
+        </tr>
+    }
+}

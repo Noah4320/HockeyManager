@@ -292,9 +292,10 @@ namespace HockeyManager.Controllers
 
                 games.Add(new Game
                 {
+                    Date = startDate.AddDays(day),
+                    Complete = false,
                     AwayTeamId = teams[teamIdx].Id,
-                    HomeTeamId = allTeams[0].Id,
-                    Date = startDate.AddDays(day)
+                    HomeTeamId = allTeams[0].Id               
                 });
 
                 for (int idx = 1; idx < halfSize; idx++)
@@ -303,9 +304,10 @@ namespace HockeyManager.Controllers
                     int secondTeam = (day + teamsSize - idx) % teamsSize;
                     games.Add(new Game
                     {
+                        Date = startDate.AddDays(day),
+                        Complete = false,
                         AwayTeamId = teams[firstTeam].Id,
-                        HomeTeamId = teams[secondTeam].Id,
-                        Date = startDate.AddDays(day)
+                        HomeTeamId = teams[secondTeam].Id                 
                     });
                 }
             }
@@ -561,7 +563,7 @@ namespace HockeyManager.Controllers
             finishedGame.AwayTeamId = awayTeam.Id;
             finishedGame.AwayTeam = awayTeam;
             finishedGame.GameEvents = gameEvents;
-
+            finishedGame.Complete = isFinished;
 
             finishedGame.HomeTeam.Players.ForEach(x => x.Goals = gameEvents.Where(y => y.Event == "Goal" && y.PlayerId == x.Id && y.GameId == gameId).Count());
             finishedGame.AwayTeam.Players.ForEach(x => x.Goals = gameEvents.Where(y => y.Event == "Goal" && y.PlayerId == x.Id && y.GameId == gameId).Count());
@@ -600,8 +602,6 @@ namespace HockeyManager.Controllers
                 awayBackup.GoalsAgainst = 0;
             }
 
-            ViewBag.isFinished = isFinished;
-
             return PartialView("_SimStats", finishedGame);
         }
 
@@ -610,6 +610,8 @@ namespace HockeyManager.Controllers
             //get team instances
             var homeTeam = await _context.Games.Where(x => x.Id == gameId).Select(x => x.HomeTeam).Include(x => x.Players).ThenInclude(x => x.PlayerInfo).Include(x => x.TeamInfo).FirstOrDefaultAsync();
             var awayTeam = await _context.Games.Where(x => x.Id == gameId).Select(x => x.AwayTeam).Include(x => x.Players).ThenInclude(x => x.PlayerInfo).Include(x => x.TeamInfo).FirstOrDefaultAsync();
+
+            var game = _context.Games.Where(x => x.Id == gameId).FirstOrDefault();
 
             //Check if it's their season
             if (!_context.Seasons.Where(x => x.Id == homeTeam.SeasonId && x.UserId == _userManager.GetUserId(User)).Any())
@@ -921,6 +923,8 @@ namespace HockeyManager.Controllers
 
                 homeTeam.Players.ForEach(x => x.GamesPlayed += 1);
                 awayTeam.Players.ForEach(x => x.GamesPlayed += 1);
+
+                game.Complete = true;
             }
 
             await _context.SaveChangesAsync();
@@ -1068,46 +1072,42 @@ namespace HockeyManager.Controllers
             return gameEvents;
         }
 
-        // GET: SeasonController/Edit/5
-        public ActionResult Edit(int id)
+        [HttpGet]
+        public async Task<ActionResult> ApplyEventFilter(int gameId, string team, string gameEvent, int period)
         {
-            return View();
-        }
+            if (team == null)
+            {
+                team = "";
+            }
 
-        // POST: SeasonController/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
-        {
-            try
+            if (gameEvent == null)
             {
-                return RedirectToAction(nameof(Index));
+                gameEvent = "";
             }
-            catch
-            {
-                return View();
-            }
-        }
 
-        // GET: SeasonController/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
 
-        // POST: SeasonController/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
-        {
-            try
+            var test = await _context.GameEvents.Include(x => x.Player.PlayerInfo)
+                .Include(x => x.Player.Team.TeamInfo)
+                .Where(x => x.GameId == gameId && x.Player.Team.TeamInfo.Name.Contains(team) && x.Event.Contains(gameEvent)).ToListAsync();
+
+
+            if (period > 0)
             {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
+                var filteredGameEvents = await _context.GameEvents.Include(x => x.Player.PlayerInfo)
+                    .Include(x => x.Player.Team.TeamInfo)
+                    .Where(x => x.GameId == gameId && x.Player.Team.TeamInfo.Name.Contains(team) && x.Event.Contains(gameEvent) && x.Period == period).ToListAsync();
+
+                return PartialView("_GameEvents", filteredGameEvents);
+            } else
             {
-                return View();
+                var filteredGameEvents = await _context.GameEvents.Include(x => x.Player.PlayerInfo)
+                    .Include(x => x.Player.Team.TeamInfo)
+                    .Where(x => x.GameId == gameId && x.Player.Team.TeamInfo.Name.Contains(team) && x.Event.Contains(gameEvent)).ToListAsync();
+
+                return PartialView("_GameEvents", filteredGameEvents);
             }
+
+           
         }
     }
 }
