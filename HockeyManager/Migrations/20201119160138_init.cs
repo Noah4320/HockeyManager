@@ -433,7 +433,7 @@ namespace HockeyManager.Migrations
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     Event = table.Column<string>(nullable: true),
-                    Period = table.Column<string>(nullable: true),
+                    Period = table.Column<int>(nullable: false),
                     PlayerId = table.Column<int>(nullable: true),
                     GameId = table.Column<int>(nullable: true)
                 },

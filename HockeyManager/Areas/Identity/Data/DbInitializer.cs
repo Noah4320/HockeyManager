@@ -351,12 +351,20 @@ namespace HockeyManager.Areas.Identity.Data
                 }
             }
 
-           
-
-
         }
 
         public async Task ConfigurePlayerRanks()
+        {
+            var anyOveralls = await _context.Players.Where(x => x.Overall > 0).AnyAsync();
+
+            if (anyOveralls)
+            {
+                return;
+            }
+            await FetchUpdatedOveralls();
+        }
+
+        public async Task FetchUpdatedOveralls()
         {
             //Set minimum games played
             int skaterMinGames = 10;
@@ -390,7 +398,6 @@ namespace HockeyManager.Areas.Identity.Data
             await UpdateOveralls(allRookieRightWingers, true);
             await UpdateOveralls(allRookieDefencemen, true);
             await UpdateOveralls(allRookieGoalies, true);
-
         }
 
         public async Task UpdateOveralls(List<HMPlayer> players, bool isRookie)

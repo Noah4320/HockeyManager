@@ -126,7 +126,7 @@ namespace HockeyManager.Migrations
 
                     b.Property<int?>("GameId");
 
-                    b.Property<string>("Period");
+                    b.Property<int>("Period");
 
                     b.Property<int?>("PlayerId");
 

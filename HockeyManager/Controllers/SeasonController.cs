@@ -440,7 +440,7 @@ namespace HockeyManager.Controllers
                 {
                     if (game.GameEvents.Count == 0)
                     {
-                        await FinishGame(game.Id);
+                        await Simulate(game.Id, 8, 20, 48);
                     }
 
                 }
@@ -527,17 +527,23 @@ namespace HockeyManager.Controllers
             return View(game);
         }
 
-        [HttpGet]
-        public void SimPeriod(int gameId)
-        {
-
-        }
-
 
         [HttpGet]
-        public async Task<ActionResult> GetSimulatedGame(int gameId)
+        public async Task<ActionResult> GetSimulatedGame(int gameId, bool simFull)
         {
-            await FinishGame(gameId);
+            bool isFinished = false;
+
+            if (simFull)
+            {
+                while (!isFinished)
+                {
+                    isFinished = await Simulate(gameId, 3, 1, 15);
+                }
+            }
+            else
+            {
+                isFinished = await Simulate(gameId, 3, 1, 15);
+            }
 
             //get team instances
             var homeTeam = await _context.Games.Where(x => x.Id == gameId).Select(x => x.HomeTeam).Include(x => x.Players).ThenInclude(x => x.PlayerInfo).Include(x => x.TeamInfo).FirstOrDefaultAsync();
@@ -548,6 +554,7 @@ namespace HockeyManager.Controllers
 
             var gameEvents = await _context.GameEvents.Where(x => x.GameId == gameId).ToListAsync();
 
+            //Gather game stats
             Game finishedGame = new Game();
             finishedGame.HomeTeamId = homeTeam.Id;
             finishedGame.HomeTeam = homeTeam;
@@ -593,11 +600,12 @@ namespace HockeyManager.Controllers
                 awayBackup.GoalsAgainst = 0;
             }
 
+            ViewBag.isFinished = isFinished;
+
             return PartialView("_SimStats", finishedGame);
         }
 
-
-        public async Task FinishGame(int gameId)
+        public async Task<bool> Simulate(int gameId, int maxGoals, int minShots, int maxShots)
         {
             //get team instances
             var homeTeam = await _context.Games.Where(x => x.Id == gameId).Select(x => x.HomeTeam).Include(x => x.Players).ThenInclude(x => x.PlayerInfo).Include(x => x.TeamInfo).FirstOrDefaultAsync();
@@ -606,7 +614,16 @@ namespace HockeyManager.Controllers
             //Check if it's their season
             if (!_context.Seasons.Where(x => x.Id == homeTeam.SeasonId && x.UserId == _userManager.GetUserId(User)).Any())
             {
-                return;
+                return true;
+            }
+
+            //Period check
+            int period = 1;
+            var wholeGameEvent = _context.GameEvents.Where(x => x.GameId == gameId);
+
+            if (wholeGameEvent.LastOrDefault() != null)
+            {
+                period += wholeGameEvent.LastOrDefault().Period;
             }
 
             //randomly choose goalies
@@ -702,20 +719,18 @@ namespace HockeyManager.Controllers
 
             }
 
-
-
-
             List<GameEvent> gameEvents = new List<GameEvent>();
 
+            //Randomize scores
             var randomizer1 = new Random();
             var randomDouble1 = randomizer1.NextDouble();
 
-            var result1 = Math.Floor(0 + (8 + 1 - 0) * (Math.Pow(randomDouble1, 2)));
+            var result1 = Math.Floor(0 + (maxGoals + 1 - 0) * (Math.Pow(randomDouble1, 2)));
 
             var randomizer2 = new Random();
             var randomDouble2 = randomizer2.NextDouble();
 
-            var result2 = Math.Floor(0 + (8 + 1 - 0) * (Math.Pow(randomDouble2, 2)));
+            var result2 = Math.Floor(0 + (maxGoals + 1 - 0) * (Math.Pow(randomDouble2, 2)));
 
             double winnerScore = 0;
             double loserScore = 0;
@@ -732,8 +747,8 @@ namespace HockeyManager.Controllers
             }
 
             //Randomize shot totals
-            int shotResult1 = randomizer1.Next(20, 40);
-            int shotResult2 = randomizer1.Next(20, 40);
+            int shotResult1 = randomizer1.Next(minShots, maxShots);
+            int shotResult2 = randomizer1.Next(minShots, maxShots);
 
             int winnerShots = 0;
             int loserShots = 0;
@@ -752,33 +767,37 @@ namespace HockeyManager.Controllers
             //Process game scores
             if (winner == homeTeam.TeamInfo.Name)
             {
-                homeTeam.GamesPlayed += 1;
-                homeTeam.Wins += 1;
-                homeTeam.RegulationWins += 1;
-                homeTeam.Points += 2;
-
-                awayTeam.GamesPlayed += 1;
-                awayTeam.Loses += 1;
+                bool isDone = false;
 
                 for (int i = 0; i < winnerScore; i++)
                 {
-                    gameEvents = PredictGoal(gameId, homeTeam.Players, awayTeam.Players, homeRoster, homeGPGSum, gameEvents, awayGoalieId);
+                    gameEvents = PredictGoal(gameId, homeTeam.Players, awayTeam.Players, homeRoster, homeGPGSum, gameEvents, awayGoalieId, period);
+
+                    if (period > 3)
+                    {
+                        isDone = true;
+                        break;
+                    }
                 }
 
                 for (int i = 0; i < loserScore; i++)
                 {
-                    gameEvents = PredictGoal(gameId, awayTeam.Players, homeTeam.Players, awayRoster, awayGPGSum, gameEvents, homeGoalieId);
+                    if (isDone)
+                    {
+                        break;
+                    }
+                    gameEvents = PredictGoal(gameId, awayTeam.Players, homeTeam.Players, awayRoster, awayGPGSum, gameEvents, homeGoalieId, period);
                 }
 
 
                 for (int i = 0; i < winnerShots; i++)
                 {
-                    gameEvents = PredictShot(gameId, homeTeam.Players, awayTeam.Players, homeRoster, homeSPGSum, gameEvents, awayGoalieId);
+                    gameEvents = PredictShot(gameId, homeTeam.Players, awayTeam.Players, homeRoster, homeSPGSum, gameEvents, awayGoalieId, period);
                 }
 
                 for (int i = 0; i < loserShots; i++)
                 {
-                    gameEvents = PredictShot(gameId, awayTeam.Players, homeTeam.Players, awayRoster, awaySPGSum, gameEvents, homeGoalieId);
+                    gameEvents = PredictShot(gameId, awayTeam.Players, homeTeam.Players, awayRoster, awaySPGSum, gameEvents, homeGoalieId, period);
                 }
 
                 await _context.GameEvents.AddRangeAsync(gameEvents);
@@ -786,79 +805,130 @@ namespace HockeyManager.Controllers
             }
             else if (winner == awayTeam.TeamInfo.Name)
             {
-                awayTeam.GamesPlayed += 1;
-                awayTeam.Wins += 1;
-                awayTeam.RegulationWins += 1;
-                awayTeam.Points += 2;
-
-                homeTeam.GamesPlayed += 1;
-                homeTeam.Loses += 1;
+                bool isDone = false;
 
                 for (int i = 0; i < winnerScore; i++)
                 {
-                    gameEvents = PredictGoal(gameId, awayTeam.Players, homeTeam.Players, awayRoster, awayGPGSum, gameEvents, homeGoalieId);
+                    gameEvents = PredictGoal(gameId, awayTeam.Players, homeTeam.Players, awayRoster, awayGPGSum, gameEvents, homeGoalieId, period);
+
+                    if (period > 3)
+                    {
+                        isDone = true;
+                        break;
+                    }
                 }
 
                 for (int i = 0; i < loserScore; i++)
                 {
-                    gameEvents = PredictGoal(gameId, homeTeam.Players, awayTeam.Players, homeRoster, homeGPGSum, gameEvents, awayGoalieId);
+                    if (isDone)
+                    {
+                        break;
+                    }
+
+                    gameEvents = PredictGoal(gameId, homeTeam.Players, awayTeam.Players, homeRoster, homeGPGSum, gameEvents, awayGoalieId, period);
                 }
 
 
                 for (int i = 0; i < winnerShots; i++)
                 {
-                    gameEvents = PredictShot(gameId, awayTeam.Players, homeTeam.Players, awayRoster, awaySPGSum, gameEvents, homeGoalieId);
+                    gameEvents = PredictShot(gameId, awayTeam.Players, homeTeam.Players, awayRoster, awaySPGSum, gameEvents, homeGoalieId, period);
                 }
 
                 for (int i = 0; i < loserShots; i++)
                 {
-                    gameEvents = PredictShot(gameId, homeTeam.Players, awayTeam.Players, homeRoster, homeSPGSum, gameEvents, awayGoalieId);
+                    gameEvents = PredictShot(gameId, homeTeam.Players, awayTeam.Players, homeRoster, homeSPGSum, gameEvents, awayGoalieId, period);
                 }
 
                 await _context.GameEvents.AddRangeAsync(gameEvents);
             }
-            else //TIED
+
+            //Check if game is over
+            int homeTotalGoals = gameEvents.Where(x => x.Event == "Goal" && x.Player.TeamId == homeTeam.Id).Count() + wholeGameEvent.Where(x => x.Event == "Goal" && x.Player.TeamId == homeTeam.Id).Count();
+            int awayTotalGoals = gameEvents.Where(x => x.Event == "Goal" && x.Player.TeamId == awayTeam.Id).Count() + wholeGameEvent.Where(x => x.Event == "Goal" && x.Player.TeamId == awayTeam.Id).Count();
+            int currentPeriod = gameEvents.Last().Period;
+
+            bool isFinished = homeTotalGoals != awayTotalGoals && currentPeriod >= 3;
+
+            if (isFinished)
             {
-                Game game = new Game();
-                game.HomeTeamId = homeTeam.Id;
-                game.HomeTeam = homeTeam;
-                game.AwayTeamId = awayTeam.Id;
-                game.AwayTeam = awayTeam;
-                game.GameEvents = gameEvents;
+                //Did the game go in overtime
+                if (currentPeriod > 3)
+                {
+                    if (homeTotalGoals > awayTotalGoals)
+                    {
+                        homeTeam.GamesPlayed += 1;
+                        homeTeam.Wins += 1;
+                        homeTeam.Points += 2;
 
-                game.HomeTeam.Players.ForEach(x => x.Goals = gameEvents.Where(y => y.Event == "Goal" && y.PlayerId == x.Id).Count());
-                game.AwayTeam.Players.ForEach(x => x.Goals = gameEvents.Where(y => y.Event == "Goal" && y.PlayerId == x.Id).Count());
+                        awayTeam.GamesPlayed += 1;
+                        awayTeam.Loses += 1;
+                        awayTeam.Points += 1;
+                        awayTeam.OvertimeLoses += 1;
 
-                game.HomeTeam.Players.ForEach(x => x.Points = gameEvents.Where(y => (y.Event == "Goal" || y.Event == "Assist") && y.PlayerId == x.Id).Count());
-                game.AwayTeam.Players.ForEach(x => x.Points = gameEvents.Where(y => (y.Event == "Goal" || y.Event == "Assist") && y.PlayerId == x.Id).Count());
+                    }
+                    else
+                    {
+                        awayTeam.GamesPlayed += 1;
+                        awayTeam.Wins += 1;
+                        awayTeam.RegulationWins += 1;
+                        awayTeam.Points += 2;
 
-                game.HomeTeam.Players.ForEach(x => x.Shots = gameEvents.Where(y => y.Event == "Shot" && y.PlayerId == x.Id).Count());
-                game.AwayTeam.Players.ForEach(x => x.Shots = gameEvents.Where(y => y.Event == "Shot" && y.PlayerId == x.Id).Count());
+                        homeTeam.GamesPlayed += 1;
+                        homeTeam.Loses += 1;
+                        homeTeam.Points += 1;
+                        homeTeam.OvertimeLoses += 1;
+                    }
+                }
+                else
+                {
+                    if (homeTotalGoals > awayTotalGoals)
+                    {
+                        homeTeam.GamesPlayed += 1;
+                        homeTeam.Wins += 1;
+                        homeTeam.RegulationWins += 1;
+                        homeTeam.Points += 2;
 
+                        awayTeam.GamesPlayed += 1;
+                        awayTeam.Loses += 1;
+
+                    }
+                    else
+                    {
+                        awayTeam.GamesPlayed += 1;
+                        awayTeam.Wins += 1;
+                        awayTeam.RegulationWins += 1;
+                        awayTeam.Points += 2;
+
+                        homeTeam.GamesPlayed += 1;
+                        homeTeam.Loses += 1;
+                    }
+                }
+
+               
+
+                var homeGoalie = homeTeam.Players.Find(x => x.Id == homeGoalieId);
+                var awayGoalie = awayTeam.Players.Find(x => x.Id == awayGoalieId);
+
+                if (gameEvents.Where(x => x.Event == "Goal" && x.Player.TeamId == homeGoalie.TeamId && x.GameId == gameId).Count() == 0)
+                {
+                    awayGoalie.Shutouts += 1;
+                }
+
+                if (gameEvents.Where(x => x.Event == "Goal" && x.Player.TeamId == awayGoalie.TeamId && x.GameId == gameId).Count() == 0)
+                {
+                    homeGoalie.Shutouts += 1;
+                }
+
+                homeTeam.Players.ForEach(x => x.GamesPlayed += 1);
+                awayTeam.Players.ForEach(x => x.GamesPlayed += 1);
             }
-
-
-            var homeGoalie = homeTeam.Players.Find(x => x.Id == homeGoalieId);
-            var awayGoalie = awayTeam.Players.Find(x => x.Id == awayGoalieId);
-
-            if (gameEvents.Where(x => x.Event == "Goal" && x.Player.TeamId == homeGoalie.TeamId && x.GameId == gameId).Count() == 0)
-            {
-                awayGoalie.Shutouts += 1;
-            }
-
-            if (gameEvents.Where(x => x.Event == "Goal" && x.Player.TeamId == awayGoalie.TeamId && x.GameId == gameId).Count() == 0)
-            {
-                homeGoalie.Shutouts += 1;
-            }
-
-            homeTeam.Players.ForEach(x => x.GamesPlayed += 1);
-            awayTeam.Players.ForEach(x => x.GamesPlayed += 1);
 
             await _context.SaveChangesAsync();
+            return isFinished;
         }
 
 
-        public List<GameEvent> PredictGoal(int gameId, List<HMPlayer> teamPlayers, List<HMPlayer> opponents, List<HMPlayer> oldRoster, decimal teamGPGSum, List<GameEvent> gameEvents, int opponentGoalieId)
+        public List<GameEvent> PredictGoal(int gameId, List<HMPlayer> teamPlayers, List<HMPlayer> opponents, List<HMPlayer> oldRoster, decimal teamGPGSum, List<GameEvent> gameEvents, int opponentGoalieId, int period)
         {
             Random r = new Random();
             double rnd = r.NextDouble();
@@ -901,6 +971,7 @@ namespace HockeyManager.Controllers
                         gameEvents.Add(new GameEvent
                         {
                             Event = "Goal",
+                            Period = period,
                             GameId = gameId,
                             PlayerId = player.Id
                         });
@@ -914,6 +985,7 @@ namespace HockeyManager.Controllers
                             gameEvents.Add(new GameEvent
                             {
                                 Event = "Assist",
+                                Period = period,
                                 GameId = gameId,
                                 PlayerId = nearestPlayerSkill[primaryAssist].Id
                             });
@@ -926,6 +998,7 @@ namespace HockeyManager.Controllers
                                 gameEvents.Add(new GameEvent
                                 {
                                     Event = "Assist",
+                                    Period = period,
                                     GameId = gameId,
                                     PlayerId = nearestPlayerSkill[secondaryAssist].Id
                                 });
@@ -950,7 +1023,7 @@ namespace HockeyManager.Controllers
             return gameEvents;
         }
 
-        public List<GameEvent> PredictShot(int gameId, List<HMPlayer> teamPlayers, List<HMPlayer> opponents, List<HMPlayer> oldRoster, decimal teamSPGSum, List<GameEvent> gameEvents, int opponentGoalieId)
+        public List<GameEvent> PredictShot(int gameId, List<HMPlayer> teamPlayers, List<HMPlayer> opponents, List<HMPlayer> oldRoster, decimal teamSPGSum, List<GameEvent> gameEvents, int opponentGoalieId, int period)
         {
             Random r = new Random();
             double rnd = r.NextDouble();
@@ -975,6 +1048,7 @@ namespace HockeyManager.Controllers
                         gameEvents.Add(new GameEvent
                         {
                             Event = "Shot",
+                            Period = period,
                             GameId = gameId,
                             PlayerId = player.Id
                         });

@@ -12,7 +12,7 @@ namespace HockeyManager.Models
         public int Id { get; set; }
 
         public string Event { get; set; }
-        public string Period { get; set; }
+        public int Period { get; set; }
 
         public int? PlayerId { get; set; }
         public virtual HMPlayer Player { get; set; }

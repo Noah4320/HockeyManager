@@ -6,10 +6,22 @@
 <script src="~/lib/jquery/dist/jquery.js"></script>
 <script>
     $(document).ready(function () {
+        $("#periodSpinner").hide();
+        $("#finishSpinner").hide();
 
-        @if (Model.GameEvents.Count > 0 || !UserManager.Users.Where(x => x.Seasons.Where(y => y.Id == Model.HomeTeam.SeasonId).FirstOrDefault().UserId == x.Id && x.Id == UserManager.GetUserId(User)).Any())
+        @if (ViewBag.isFinished == true)
         {
             <text>
+        $('#simPeriod').prop("disabled", true);
+        $('#simGame').prop("disabled", true);
+            </text>
+        }
+
+
+    @if (Model.GameEvents.Count > 0 || !UserManager.Users.Where(x => x.Seasons.Where(y => y.Id == Model.HomeTeam.SeasonId).FirstOrDefault().UserId == x.Id && x.Id == UserManager.GetUserId(User)).Any())
+        {
+            <text>
+        $('#simPeriod').prop("disabled", true);
         $('#simGame').prop("disabled", true);
             </text>
         }
@@ -17,57 +29,59 @@
         var gameId = @Context.Request.Query["gameId"];
         $("#awayRoster").hide();
 
-     });
-    $(document).on("[name='filterDropdown']")
-        .change(function () {
+        $(document).on("[name='filterDropdown']")
+            .change(function () {
 
-            var team = $("#Team").val();
+                var team = $("#Team").val();
+                var gameId = @Context.Request.Query["gameId"];
+
+                if (team == "HomeTeam") {
+
+                    $("#homeRoster").show();
+                    $("#awayRoster").hide();
+
+                } else {
+                    $("#homeRoster").hide();
+                    $("#awayRoster").show();
+                }
+            })
+
+        $('#simPeriod').click(function () {
+            $("#periodSpinner").show();
             var gameId = @Context.Request.Query["gameId"];
-
-            if (team == "HomeTeam") {
-
-                $("#homeRoster").show();
-                $("#awayRoster").hide();
-
-            } else {
-                $("#homeRoster").hide();
-                $("#awayRoster").show();
-            }
-        })
-
-    $(document).on('click', '#simPeriod', function () {
-        var gameId = @Context.Request.Query["gameId"];
-        $.ajax({
-            type: "GET",
-            url: "https://localhost:44375/Season/SimPeriod",
-            data: {
-                gameId: gameId
-            }
-        }).done(function (x) {
-            location.reload();
-        }).fail(function (x) {
-            alert(x.responseText);
+            $.ajax({
+                url: '/Season/GetSimulatedGame',
+                type: "GET",
+                data: {
+                    gameId: gameId,
+                    simFull: false
+                },
+                success: function (gameResult) {
+                    $("#main").html(gameResult);
+                    $("#periodSpinner").hide();
+                }
+            });
 
         });
-    });
 
-     $(document).on('click', '#simGame', function () {
-        var gameId = @Context.Request.Query["gameId"];
-        $.ajax({
-            type: "GET",
-            url: "https://localhost:44375/Season/GetSimulatedGame",
-            data: {
-                gameId: gameId
-            }
-        }).done(function (gameResult) {
-            $("#main").html(gameResult);
-        }).fail(function (x) {
-            alert(x.responseText);
-
+        $('#simGame').click(function () {
+            $('#simPeriod').prop("disabled", true);
+            $("#finishSpinner").show();
+             var gameId = @Context.Request.Query["gameId"];
+            $.ajax({
+                url: '/Season/GetSimulatedGame',
+                type: "GET",
+                data: {
+                    gameId: gameId,
+                    simFull: true
+                },
+                success: function (gameResult) {
+                    $("#main").html(gameResult);
+                    $("#finishSpinner").hide();
+                }
+            });
         });
-         this.prop("disabled", true);
     });
-
 </script>
 
 <div class="text-center" id="main">
@@ -85,7 +99,9 @@
             <table class="table table-striped">
                 <thead>
                     <tr>
+                        <th>Period</th>
                         <th>Event</th>
+                        <th>Team</th>
                         <th>Player</th>
                     </tr>
                 </thead>
@@ -95,7 +111,9 @@
                         foreach (var gameEvent in Model.GameEvents)
                         {
                             <tr>
+                                <td>Period @gameEvent.Period</td>
                                 <td>@gameEvent.Event</td>
+                                <td>@gameEvent.Player.Team.TeamInfo.Abbreviation</td>
                                 <td>@gameEvent.Player.PlayerInfo.Name</td>
                             </tr>
                         }
@@ -123,7 +141,14 @@ x.Player.TeamId == Model.HomeTeamId).Count()
                 </h3>
             }
 
-            <h4>1st Period</h4>
+            @if (@Model.GameEvents.LastOrDefault() == null)
+            {
+                <h4>Start Game</h4>
+            }
+            else
+            {
+                <h4>End of period @Model.GameEvents.LastOrDefault().Period</h4>
+            }
 
             <table class="table table-striped">
                 <thead>
@@ -167,10 +192,14 @@ x.Player.TeamId == Model.HomeTeamId).Count()
                 </tbody>
             </table>
 
-            <button class="btn btn-warning" type="button" id="simPeriod" disabled>
+            <button class="btn btn-warning" type="button" id="simPeriod">
+                <span class="spinner-border spinner-border-sm" id="periodSpinner" aria-hidden="true"></span>
                 Simulate Period
             </button>
-            <input type="submit" class="btn btn-success" id="simGame" value="Finish Game" />
+            <button class="btn btn-success" type="button" id="simGame">
+                <span class="spinner-border spinner-border-sm" id="finishSpinner" aria-hidden="true"></span>
+                Finish Game
+            </button>
 
         </div>
         <div class="col">
