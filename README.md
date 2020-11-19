@@ -13,8 +13,8 @@ Capstone Project Roadmap
 - [x] Populate pool manage page. Implement and write logic for managing pool settings. Test all circumstances.
 - [x] Final testing for hockey pools feature.
 - [x] Create all season creation pages. Fully implement season setup logic. Test different scenarios.
-- [ ] Create game simulation page. Fully implement game simulation logic. Test with 2 hard coded teams, expect events table and team rosters table to generate with data.
-- [ ] Create season hub page. Fully implement season schedule. Test game simulation, expect data to populate standings table and team roster table.
-- [ ] Final testing for seasons mode.
-- [ ] Create search users page. Fully implement search players feature. Test functionality.
+- [x] Create game simulation page. Fully implement game simulation logic. Test with 2 hard coded teams, expect events table and team rosters table to generate with data.
+- [x] Create season hub page. Fully implement season schedule. Test game simulation, expect data to populate standings table and team roster table.
+- [x] Final testing for seasons mode.
+- [x] Create search users page. Fully implement search players feature. Test functionality.
 - [ ] Work on presentation
