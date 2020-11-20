@@ -47,6 +47,11 @@ namespace HockeyManager.Areas.Identity.Pages.Account
 
             [Required]
             [DataType(DataType.Text)]
+            [Display(Name = "User Name")]
+            public string UserName { get; set; }
+
+            [Required]
+            [DataType(DataType.Text)]
             [Display(Name = "First Name")]
             public string FirstName { get; set; }
 
@@ -77,7 +82,7 @@ namespace HockeyManager.Areas.Identity.Pages.Account
             returnUrl = returnUrl ?? Url.Content("~/");
             if (ModelState.IsValid)
             {
-                var user = new User { UserName = Input.Email, Email = Input.Email, FirstName = Input.FirstName, LastName = Input.LastName };
+                var user = new User { UserName = Input.UserName, Email = Input.Email, FirstName = Input.FirstName, LastName = Input.LastName };
                 var result = await _userManager.CreateAsync(user, Input.Password);
                 if (result.Succeeded)
                 {
