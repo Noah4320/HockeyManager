@@ -1113,5 +1113,44 @@ namespace HockeyManager.Controllers
 
            
         }
+
+        [HttpDelete]
+        public async Task DeleteSeason(int seasonId)
+        {
+            string userId = _userManager.GetUserId(User);
+            var seasonOwner = _context.Seasons.Where(x => x.Id == seasonId && x.UserId == userId).Any();
+            
+
+            if (!seasonOwner)
+            {
+                return;
+            }
+
+            var allEvents = await _context.GameEvents.Include(x => x.Player.Team).Where(x => x.Player.Team.SeasonId == seasonId).ToListAsync();
+            var allGames = await _context.Games.Include(x => x.HomeTeam).Where(x => x.HomeTeam.SeasonId == seasonId).ToListAsync();
+            var allPlayers = await _context.Players.Include(x => x.Team).Where(x => x.Team.SeasonId == seasonId).ToListAsync();
+            var allTeams = await _context.Teams.Where(x => x.SeasonId == seasonId).ToListAsync();
+            var teamInfo = await _context.Teams.Where(x => x.SeasonId == seasonId && x.UserId == userId).Select(x => x.TeamInfo).FirstOrDefaultAsync();
+            var season = await _context.Seasons.FirstOrDefaultAsync(x => x.Id == seasonId);
+
+            _context.GameEvents.RemoveRange(allEvents);
+            await _context.SaveChangesAsync();
+
+            _context.Games.RemoveRange(allGames);
+            await _context.SaveChangesAsync();
+
+            _context.Players.RemoveRange(allPlayers);
+            await _context.SaveChangesAsync();
+
+            _context.Teams.RemoveRange(allTeams);
+            await _context.SaveChangesAsync();
+
+            _context.TeamInfo.Remove(teamInfo);
+            await _context.SaveChangesAsync();
+
+            _context.Seasons.Remove(season);
+            await _context.SaveChangesAsync();
+
+        }
     }
 }
