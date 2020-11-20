@@ -126,8 +126,9 @@
                 </thead>
                 <tbody id="refTable"></tbody>
             </table>
+            <input type="button" class="btn btn-success" id="manageTeam" value="Add or Update Team" onclick="location.href='@Url.Action("ManagePoolTeam", "Pool", new { id = Model.Id})?id=' + @Model.Id" />
+            <button id="leavePool" type="button" class="btn btn-danger" disabled>Leave Pool</button>
         </div>
     </div>
-    <input type="button" class="btn btn-success" id="manageTeam" value="Add or Update Team" onclick="location.href='@Url.Action("ManagePoolTeam", "Pool", new { id = Model.Id})?id=' + @Model.Id" />
-    <button id="leavePool" type="button" class="btn btn-danger" disabled>Leave Pool</button>
+    
 </div>

@@ -87,3 +87,11 @@ table {
 #drafted tr:hover {
     background-color: #D2DEE8 !important;
 }
+
+.img {
+    color: white;
+    margin: auto;
+    max-width: 400px;
+    max-height: 400px;
+    margin-bottom: 150px;
+}
