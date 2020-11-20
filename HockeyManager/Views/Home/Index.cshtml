@@ -1,9 +1,269 @@
 ﻿@{
     ViewData["Title"] = "Home Page";
 }
-<div class="container">
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="description" content="" />
+    <meta name="author" content="" />
+    <link href="https://fonts.googleapis.com/css?family=Lato:100,300,400,700,900"
+          rel="stylesheet" />
+
+    <title>Reflux HTML CSS Template</title>
+    <!--
+    Reflux Template
+    https://templatemo.com/tm-531-reflux
+    -->
+    <!-- Bootstrap core CSS -->
+    <link href="~/lib/bootstrap/dist/css/bootstrap.css" rel="stylesheet" />
+
+    <!-- Additional CSS Files -->
+    <link href="~/css/fontawesome.css" rel="stylesheet" />
+    <link href="~/css/lightbox.css" rel="stylesheet" />
+    <link href="~/css/owl.css" rel="stylesheet" />
+    <link href="~/css/templatemo-style.css" rel="stylesheet" />
+</head>
+
+<body>
+    <div id="page-wraper">
+        <!-- Sidebar Menu -->
+        <div class="responsive-nav">
+            <i class="fa fa-bars" id="menu-toggle"></i>
+            <div id="menu" class="menu">
+                <i class="fa fa-times" id="menu-close"></i>
+                <div class="container">
+                    <div class="author-content">
+                        <h4>Quick Access</h4>
+                    </div>
+                    <nav class="main-nav" role="navigation">
+                        <ul class="main-menu">
+                            <li><a href="#section1">About</a></li>
+                            <li><a href="#section2">Hockey Pools</a></li>
+                            <li><a href="#section3">Season Mode</a></li>
+                            <li><a href="#section4">Search Player</a></li>
+                            <li><a href="#section5">Favourites</a></li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+
+        <section class="section about-me" data-section="section1">
+            <div class="container">
+                <div class="section-heading">
+                    <h2>Hockey Manager?</h2>
+                    <div class="line-dec"></div>
+                </div>
+                <div class="left-image-post">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="left-image">
+                                <img src="~/images/About.jpg" />
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="right-text">
+                                <p>
+                                    Yes, an actual hockey manager. Well, kind of. This site is your number one place for managing teams, whether it be
+                                    a hockey pool squad or an NHL team, being ran in a real season. The choice is yours. Have you ever had to check multiple
+                                    sites for just  a few things? Well no fear, this site fixes that problem for you.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section about-me" data-section="section2">
+            <div class="container">
+                <div class="section-heading">
+                    <h2>Hockey Pools</h2>
+                    <div class="line-dec"></div>
+                </div>
+                <div class="right-image-post">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="left-text">
+                                <p>
+                                    Hosting your own hockey pool has never been easier. Create your own pools with a variety of settings that include
+                                    the ruleset, the max number of players allowed and your pool privacy. You can also edit the pools stipulations
+                                    on the fly. Had a somthing you wanted to change, no worries. Pools can also be archived so nobody can join or leave.
+                                    The pool stats at the time will remain the same. lastly you can delete any pool you own as you wish.
+                                </p>
+                                <div class="white-button">
+                                    <a href="/pool">Take me there!</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="right-image">
+                                <img src="~/images/pool.jpg" alt="" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section about-me" data-section="section3">
+            <div class="container">
+                <div class="section-heading">
+                    <h2>Season Mode</h2>
+                    <div class="line-dec"></div>
+                </div>
+                <div class="left-image-post">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="left-image">
+                                <img src="~/images/season.jpeg" />
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="right-text">
+                                <p>
+                                    You think you have the knowledge to build a competent team that will survive in the NHL? Lets put that
+                                    to the test, shall we. Start off with creating your organization, the 32nd team in the league. By default,
+                                    your team will be in the central division. You have the ability to swap positions with another team. This can lead
+                                    to interesting rivalries. After selecting your division and building the dream team, you are ready to compete for
+                                    Lord's Stanley. You will have access to the hub screen which will show you whats happening around the league with a
+                                    an interactable calendar. Then the simulation page, where you can full simulate games or by period at your pace and
+                                    watch two teams go at it, live!
+                                </p>
+                                <div class="white-button">
+                                    <a href="/season">Take me there!</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section about-me" data-section="section4">
+            <div class="container">
+                <div class="section-heading">
+                    <h2>Search Teams and Players</h2>
+                    <div class="line-dec"></div>
+                </div>
+                <div class="right-image-post">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="left-text">
+                                <p>
+                                    Exit out of those tabs to hockeydb or nhl dotcom! We have your stats covered, at no charge of an account!
+                                    You have the choice to browse the NHL teams and their respective players or you can do an advanced search
+                                    with filters you can apply!
+                                </p>
+                                <div class="white-button">
+                                    <a href="/search/teams">Take me there!</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="right-image">
+                                <img src="~/images/search.jpg" alt="" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section about-me" data-section="section5">
+            <div class="container">
+                <div class="section-heading">
+                    <h2>Favourites</h2>
+                    <div class="line-dec"></div>
+                </div>
+                <div class="left-image-post">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="left-image">
+                                <img src="~/images/favourites.jpeg" />
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="right-text">
+                                <p>
+                                    You and I have our favs, but we know you have lots! Add as many players as you can to your
+                                    list of favourites. Your list will come in handy when you build your teams, whether it be
+                                    for a pool or a season.
+                                </p>
+                                <div class="white-button">
+                                    <a href="/search/searchplayers">Take me there!</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
     </div>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+
+    <!-- Scripts -->
+    <!-- Bootstrap core JavaScript -->
+    <script src="~/lib/jquery/dist/jquery.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
+
+    <script src="~/js/custom.js"></script>
+    <script src="~/js/isotope.min.js"></script>
+    <script src="~/js/lightbox.js"></script>
+    <script src="~/js/owl-carousel.js"></script>
+    <script>
+        //according to loftblog tut
+        $(".main-menu li:first").addClass("active");
+
+        var showSection = function showSection(section, isAnimate) {
+            var direction = section.replace(/#/, ""),
+                reqSection = $(".section").filter(
+                    '[data-section="' + direction + '"]'
+                ),
+                reqSectionPos = reqSection.offset().top - 0;
+
+            if (isAnimate) {
+                $("body, html").animate(
+                    {
+                        scrollTop: reqSectionPos
+                    },
+                    800
+                );
+            } else {
+                $("body, html").scrollTop(reqSectionPos);
+            }
+        };
+
+        var checkSection = function checkSection() {
+            $(".section").each(function () {
+                var $this = $(this),
+                    topEdge = $this.offset().top - 80,
+                    bottomEdge = topEdge + $this.height(),
+                    wScroll = $(window).scrollTop();
+                if (topEdge < wScroll && bottomEdge > wScroll) {
+                    var currentId = $this.data("section"),
+                        reqLink = $("a").filter("[href*=\\#" + currentId + "]");
+                    reqLink
+                        .closest("li")
+                        .addClass("active")
+                        .siblings()
+                        .removeClass("active");
+                }
+            });
+        };
+
+        $(".main-menu").on("click", "a", function (e) {
+            e.preventDefault();
+            showSection($(this).attr("href"), true);
+        });
+
+        $(window).scroll(function () {
+            checkSection();
+        });
+    </script>
+</body>
+</html>
+
