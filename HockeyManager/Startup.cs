@@ -60,6 +60,7 @@ namespace HockeyManager
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, HockeyContext context, IBackgroundJobClient backgroundJobs, IHostingEnvironment env)
         {
+            context.Database.EnsureCreated();
             DbInitializer dbInitializer = new DbInitializer(context);
             dbInitializer.FetchApiData().Wait();
             dbInitializer.ConfigurePlayerRanks().Wait();

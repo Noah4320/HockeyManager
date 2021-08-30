@@ -54,18 +54,35 @@ namespace HockeyManager.Areas.Identity.Data
                 await _context.TeamInfo.AddAsync(hMTeamsInfo);
                 await _context.SaveChangesAsync();
 
-                hMTeams.Add(new HMTeam
+               try
                 {
-                    Division = team.division.name,
-                    Conference = team.conference.name,
-                    GamesPlayed = teamStats.stats[0].splits[0].stat.gamesPlayed,
-                    Wins = Convert.ToInt32(teamStats.stats[0].splits[0].stat.wins),
-                    Loses = Convert.ToInt32(teamStats.stats[0].splits[0].stat.losses),
-                    OvertimeLoses = Convert.ToInt32(teamStats.stats[0].splits[0].stat.ot),
-                    Points = Convert.ToInt32(teamStats.stats[0].splits[0].stat.pts),
-                    ApiId = team.id,
-                    TeamInfoId = hMTeamsInfo.Id
-                });
+                    hMTeams.Add(new HMTeam
+                    {
+                        Division = team.division.name,
+                        Conference = team.conference.name,
+                        GamesPlayed = teamStats.stats[0].splits[0].stat.gamesPlayed,
+                        Wins = Convert.ToInt32(teamStats.stats[0].splits[0].stat.wins),
+                        Loses = Convert.ToInt32(teamStats.stats[0].splits[0].stat.losses),
+                        OvertimeLoses = Convert.ToInt32(teamStats.stats[0].splits[0].stat.ot),
+                        Points = Convert.ToInt32(teamStats.stats[0].splits[0].stat.pts),
+                        ApiId = team.id,
+                        TeamInfoId = hMTeamsInfo.Id
+                    });
+                } catch (Exception)
+                {
+                    hMTeams.Add(new HMTeam
+                    {
+                        Division = team.division.name,
+                        Conference = team.conference.name,
+                        GamesPlayed = 0,
+                        Wins = 0,
+                        Loses = 0,
+                        OvertimeLoses = 0,
+                        Points = 0,
+                        ApiId = team.id,
+                        TeamInfoId = hMTeamsInfo.Id
+                    });
+                }
 
             }
 
@@ -92,7 +109,7 @@ namespace HockeyManager.Areas.Identity.Data
                         var playerData = await httpClient.GetStringAsync(playerUrl);
                         var playerAbout = JsonConvert.DeserializeObject<PeopleRoot>(playerData);
 
-                        var playerStatsUrl = $"https://statsapi.web.nhl.com/api/v1/people/{player.person.id}/stats?stats=statsSingleSeason&season=20192020";
+                        var playerStatsUrl = $"https://statsapi.web.nhl.com/api/v1/people/{player.person.id}/stats?stats=statsSingleSeason&season=20202021";
                         var playerStatsData = await httpClient.GetStringAsync(playerStatsUrl);
                         var playerStats = JsonConvert.DeserializeObject<StatsRoot>(playerStatsData);
 
