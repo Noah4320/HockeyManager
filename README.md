@@ -17,4 +17,4 @@ Capstone Project Roadmap
 - [x] Create season hub page. Fully implement season schedule. Test game simulation, expect data to populate standings table and team roster table.
 - [x] Final testing for seasons mode.
 - [x] Create search users page. Fully implement search players feature. Test functionality.
-- [ ] Work on presentation
+- [x] Work on presentation
