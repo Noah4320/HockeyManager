@@ -20,21 +20,24 @@
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                <img src=@Html.DisplayFor(modelItem => item.TeamInfo.logoUrl) alt="Logo" width="200" height="75">
-            </td>
-            <td>
-                @Html.ActionLink(item.TeamInfo.Name, "Players", new {  id=item.Id  })
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Division)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Conference)
-            </td>
-        </tr>
-}
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    <a href='@Url.Action("Players", "Search", new { id = item.Id })'>
+                        <img src=@Html.DisplayFor(modelItem => item.TeamInfo.logoUrl) alt="Logo" width="200" height="75">
+                    </a>   
+                </td>
+                <td>
+                    @Html.ActionLink(item.TeamInfo.Name, "Players", new { id = item.Id })
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Division)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Conference)
+                </td>
+            </tr>
+        }
     </tbody>
 </table>

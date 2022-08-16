@@ -109,7 +109,7 @@ namespace HockeyManager.Areas.Identity.Data
                         var playerData = await httpClient.GetStringAsync(playerUrl);
                         var playerAbout = JsonConvert.DeserializeObject<PeopleRoot>(playerData);
 
-                        var playerStatsUrl = $"https://statsapi.web.nhl.com/api/v1/people/{player.person.id}/stats?stats=statsSingleSeason&season=20202021";
+                        var playerStatsUrl = $"https://statsapi.web.nhl.com/api/v1/people/{player.person.id}/stats?stats=statsSingleSeason&season=20212022";
                         var playerStatsData = await httpClient.GetStringAsync(playerStatsUrl);
                         var playerStats = JsonConvert.DeserializeObject<StatsRoot>(playerStatsData);
 
