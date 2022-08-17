@@ -13,6 +13,7 @@ namespace HockeyManager.Models
         public int Id { get; set; }
         public string Name { get; set; }
         public string Country { get; set; }
+        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}", ApplyFormatInEditMode = true)]
         public DateTimeOffset DateOfBirth { get; set; }   
         public string Height { get; set; }
         public long Weight { get; set; }
